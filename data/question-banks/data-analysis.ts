@@ -1,6 +1,6 @@
 import type { InterviewBank } from "./types";
 
-export const data-analysisBank: InterviewBank = {
+export const dataAnalysisBank: InterviewBank = {
   id: "data-analysis",
   title: "数据分析面试",
   description: "聚焦指标体系、分析方法与业务洞察",

@@ -1,6 +1,6 @@
 import type { InterviewBank } from "./types";
 
-export const hr-adminBank: InterviewBank = {
+export const hrAdminBank: InterviewBank = {
   id: "hr-admin",
   title: "行政 / 人事面试",
   description: "关注组织支持、流程管理与沟通协调",
