@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { interviewBanks, type InterviewRound } from "@/data/question-banks";
 
 const rounds: InterviewRound[] = ["综合", "HR", "业务", "主管", "终面", "压力", "英文"];
@@ -47,8 +48,12 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | undef
   return browserWindow.SpeechRecognition || browserWindow.webkitSpeechRecognition;
 }
 
-export default function InterviewPage() {
-  const [bankId, setBankId] = useState(interviewBanks[0]?.id ?? "");
+function InterviewPageContent() {
+  const searchParams = useSearchParams();
+  const queryBankId = searchParams.get("bank");
+  const initialBankId = queryBankId && interviewBanks.some((bank) => bank.id === queryBankId) ? queryBankId : interviewBanks[0]?.id ?? "";
+
+  const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
@@ -59,6 +64,12 @@ export default function InterviewPage() {
   const [report, setReport] = useState<ReportItem[]>([]);
   const [tip, setTip] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (queryBankId && interviewBanks.some((bank) => bank.id === queryBankId)) {
+      setBankId(queryBankId);
+    }
+  }, [queryBankId]);
 
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === bankId) ?? interviewBanks[0], [bankId]);
   const questions = useMemo(
@@ -214,5 +225,13 @@ export default function InterviewPage() {
         </section>
       </div>
     </main>
+  );
+}
+
+export default function InterviewPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-slate-100 p-6 text-slate-600">加载面试配置中...</main>}>
+      <InterviewPageContent />
+    </Suspense>
   );
 }
