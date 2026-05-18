@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const ecommerceBank: InterviewBank = {
   id: "ecommerce",
-  title: "电商运营面试",
+  name: "电商运营面试",
   description: "覆盖流量、转化、活动与复购运营",
+  targetUsers: "电商运营、店铺运营、平台运营求职者",
+  category: "运营增长",
+  icon: "🛒",
+  badge: "高频面试",
+  accentColor: "orange",
   questions: [
     {
       id: "ecommerce-1",

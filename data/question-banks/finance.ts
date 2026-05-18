@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const financeBank: InterviewBank = {
   id: "finance",
-  title: "财务 / 会计面试",
+  name: "财务 / 会计面试",
   description: "涵盖核算、预算、内控与财务分析",
+  targetUsers: "财务、会计、审计、税务岗位求职者",
+  category: "财务数据",
+  icon: "🧾",
+  badge: "推荐",
+  accentColor: "green",
   questions: [
     {
       id: "finance-1",

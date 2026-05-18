@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const liveBank: InterviewBank = {
   id: "live",
-  title: "直播运营面试",
+  name: "直播运营面试",
   description: "关注直播间增长、留存与转化能力",
+  targetUsers: "直播运营、直播中控、直播策划求职者",
+  category: "运营增长",
+  icon: "🎥",
+  badge: "热门",
+  accentColor: "pink",
   questions: [
     {
       id: "live-1",

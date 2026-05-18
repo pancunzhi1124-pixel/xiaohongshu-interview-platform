@@ -10,6 +10,8 @@ export type InterviewRound =
 export type InterviewQuestion = {
   id: string;
   question: string;
+  category?: string;
+  difficulty?: "easy" | "medium" | "hard";
   expectedPoints: string[];
   scoringRubric: string;
   round: InterviewRound[];
@@ -17,7 +19,12 @@ export type InterviewQuestion = {
 
 export type InterviewBank = {
   id: string;
-  title: string;
+  name: string;
   description: string;
+  targetUsers: string;
+  category: string;
+  icon: string;
+  badge?: string;
+  accentColor?: string;
   questions: InterviewQuestion[];
 };

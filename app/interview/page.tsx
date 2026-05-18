@@ -171,7 +171,7 @@ function InterviewPageContent() {
           <label className="mt-4 block text-sm">面试类型</label>
           <select className="mt-1 w-full rounded border p-2" value={bankId} onChange={(e) => setBankId(e.target.value)}>
             {interviewBanks.map((bank) => (
-              <option key={bank.id} value={bank.id}>{bank.title}</option>
+              <option key={bank.id} value={bank.id}>{bank.name}</option>
             ))}
           </select>
           <label className="mt-4 block text-sm">面试轮次</label>
