@@ -12,6 +12,41 @@ type ReportItem = {
   feedback: string;
 };
 
+type SpeechRecognitionEventLike = {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+};
+
+type SpeechRecognitionLike = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start: () => void;
+  stop: () => void;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | undefined {
+  if (typeof window === "undefined") return undefined;
+
+  const browserWindow = window as Window & {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  };
+
+  return browserWindow.SpeechRecognition || browserWindow.webkitSpeechRecognition;
+}
+
 export default function InterviewPage() {
   const [bankId, setBankId] = useState(interviewBanks[0]?.id ?? "");
   const [round, setRound] = useState<InterviewRound>("综合");
@@ -22,6 +57,7 @@ export default function InterviewPage() {
   const [speaking, setSpeaking] = useState(false);
   const [listening, setListening] = useState(false);
   const [report, setReport] = useState<ReportItem[]>([]);
+  const [tip, setTip] = useState("");
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === bankId) ?? interviewBanks[0], [bankId]);
@@ -55,20 +91,26 @@ export default function InterviewPage() {
   };
 
   const startRecognition = () => {
-    if (typeof window === "undefined") return;
-    const SR = (window as Window & { webkitSpeechRecognition?: new () => SpeechRecognition }).webkitSpeechRecognition;
-    if (!SR) return;
-    const rec = new SR();
-    rec.lang = round === "英文" ? "en-US" : "zh-CN";
-    rec.interimResults = true;
-    rec.continuous = false;
-    rec.onstart = () => setListening(true);
-    rec.onend = () => setListening(false);
-    rec.onresult = (e) => {
-      const text = Array.from(e.results).map((r) => r[0]?.transcript ?? "").join("");
+    const SpeechRecognitionConstructor = getSpeechRecognitionConstructor();
+
+    if (!SpeechRecognitionConstructor) {
+      setTip("当前浏览器不支持语音识别，建议使用 Chrome，或手动输入回答。");
+      return;
+    }
+
+    const recognition = new SpeechRecognitionConstructor();
+    recognition.lang = round === "英文" ? "en-US" : "zh-CN";
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => setListening(false);
+    recognition.onerror = () => setListening(false);
+    recognition.onresult = (event: SpeechRecognitionEventLike) => {
+      const text = event.results[0]?.[0]?.transcript || "";
       setAnswer((prev) => (prev ? `${prev}\n${text}` : text));
     };
-    rec.start();
+    setTip("");
+    recognition.start();
   };
 
   const submitAnswer = async () => {
@@ -145,6 +187,7 @@ export default function InterviewPage() {
             <button className="rounded border px-3 py-2" onClick={speakQuestion}>语音朗读 {speaking ? "(播放中)" : ""}</button>
             <button className="rounded border px-3 py-2" onClick={startRecognition}>语音识别 {listening ? "(识别中)" : ""}</button>
           </div>
+          {tip ? <p className="mt-2 text-sm text-amber-600">{tip}</p> : null}
           <textarea
             className="mt-3 min-h-32 w-full rounded border p-3"
             placeholder="手动输入兜底：请输入你的回答"
