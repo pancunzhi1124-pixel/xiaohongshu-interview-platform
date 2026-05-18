@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const operationsBank: InterviewBank = {
   id: "operations",
-  title: "新媒体 / 内容运营面试",
+  name: "新媒体 / 内容运营面试",
   description: "关注内容策略、增长与复盘能力",
+  targetUsers: "新媒体运营、内容运营、小红书运营求职者",
+  category: "运营增长",
+  icon: "📣",
+  badge: "热门",
+  accentColor: "purple",
   questions: [
     {
       id: "operations-1",

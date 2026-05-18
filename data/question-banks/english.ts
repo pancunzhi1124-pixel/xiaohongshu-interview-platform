@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const englishBank: InterviewBank = {
   id: "english",
-  title: "英文面试",
+  name: "英文面试",
   description: "用于英文自我表达、协作与问题解决评估",
+  targetUsers: "外企、跨境业务、英文沟通场景求职者",
+  category: "教育语言",
+  icon: "🌍",
+  badge: "英文专项",
+  accentColor: "indigo",
   questions: [
     {
       id: "english-1",

@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const serviceBank: InterviewBank = {
   id: "service",
-  title: "客服 / 用户服务面试",
+  name: "客服 / 用户服务面试",
   description: "聚焦问题处理、情绪安抚与服务质量",
+  targetUsers: "客服、用户运营、售后服务岗位求职者",
+  category: "销售客服",
+  icon: "🎧",
+  badge: "推荐",
+  accentColor: "blue",
   questions: [
     {
       id: "service-1",

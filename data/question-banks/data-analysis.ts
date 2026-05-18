@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const dataAnalysisBank: InterviewBank = {
   id: "data-analysis",
-  title: "数据分析面试",
+  name: "数据分析面试",
   description: "聚焦指标体系、分析方法与业务洞察",
+  targetUsers: "数据分析、商业分析、增长分析岗位求职者",
+  category: "财务数据",
+  icon: "📊",
+  badge: "高频面试",
+  accentColor: "blue",
   questions: [
     {
       id: "data-analysis-1",

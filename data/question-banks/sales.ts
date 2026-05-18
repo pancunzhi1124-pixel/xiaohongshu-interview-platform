@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const salesBank: InterviewBank = {
   id: "sales",
-  title: "销售 / 商务 BD 面试",
+  name: "销售 / 商务 BD 面试",
   description: "考察线索转化、谈判与客户经营能力",
+  targetUsers: "销售顾问、商务BD、客户开发岗位求职者",
+  category: "销售客服",
+  icon: "🤝",
+  badge: "高薪岗位",
+  accentColor: "cyan",
   questions: [
     {
       id: "sales-1",

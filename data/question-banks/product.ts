@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const productBank: InterviewBank = {
   id: "product",
-  title: "产品经理面试",
+  name: "产品经理面试",
   description: "覆盖需求洞察、方案设计与推进能力",
+  targetUsers: "产品经理、产品运营、策略产品求职者",
+  category: "技术产品",
+  icon: "🧩",
+  badge: "热门",
+  accentColor: "indigo",
   questions: [
     {
       id: "product-1",

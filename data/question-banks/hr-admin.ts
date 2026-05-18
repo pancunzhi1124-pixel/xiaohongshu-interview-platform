@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const hrAdminBank: InterviewBank = {
   id: "hr-admin",
-  title: "行政 / 人事面试",
+  name: "行政 / 人事面试",
   description: "关注组织支持、流程管理与沟通协调",
+  targetUsers: "行政、人事、招聘、综合支持岗位求职者",
+  category: "职能岗位",
+  icon: "🏢",
+  badge: "新手友好",
+  accentColor: "green",
   questions: [
     {
       id: "hr-admin-1",

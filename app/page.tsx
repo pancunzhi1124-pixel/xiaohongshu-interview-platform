@@ -1,73 +1,64 @@
 import Link from "next/link";
+import BankExplorer from "@/components/BankExplorer";
 import { interviewBanks } from "@/data/question-banks";
 
-const highlights = [
-  {
-    title: "固定题库主问题",
-    desc: "每个方向沉淀核心高频主问题，训练更有针对性。",
-  },
-  {
-    title: "AI 动态追问",
-    desc: "根据你的回答实时生成追问，模拟真实面试压力。",
-  },
-  {
-    title: "生成面试表现报告",
-    desc: "自动汇总得分与反馈，帮你快速定位短板并迭代。",
-  },
-];
+const highlights = ["14+ 面试方向", "70+ 高频问题", "AI 动态追问", "视频感模拟体验"];
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/60 to-indigo-50 p-6 md:p-10">
-      <section className="mx-auto max-w-6xl">
-        <div className="rounded-3xl border border-white/70 bg-white/80 p-8 shadow-xl shadow-blue-100/60 backdrop-blur md:p-12">
-          <span className="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
-            AI 面试练习平台
-          </span>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">多类型 AI 视频感模拟面试</h1>
-          <p className="mt-4 max-w-4xl text-slate-600 md:text-lg">
-            覆盖通用求职、应届生、运营、电商、直播、销售、客服、行政人事、产品、技术、数据分析、财务、教育、英文面试等方向。
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/interview" className="rounded-xl bg-slate-900 px-5 py-3 font-medium text-white transition hover:-translate-y-0.5 hover:bg-slate-700">
-              开始模拟面试
-            </Link>
-            <a href="#question-banks" className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium text-slate-700 transition hover:-translate-y-0.5 hover:bg-slate-50">
-              浏览题库
-            </a>
+    <main className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
+      <section className="relative isolate px-6 pb-16 pt-10 md:px-10 md:pt-16">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_10%_10%,#7c3aed66,transparent_35%),radial-gradient(circle_at_80%_20%,#3b82f666,transparent_35%),linear-gradient(135deg,#020617,#1e1b4b_55%,#312e81)]" />
+        <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2">
+          <div>
+            <span className="inline-flex rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs">AI 面试练习平台</span>
+            <h1 className="mt-4 text-4xl font-black leading-tight md:text-6xl">多类型 AI 视频感模拟面试</h1>
+            <p className="mt-4 text-slate-200 md:text-lg">覆盖通用求职、应届生、运营、电商、直播、销售、客服、行政人事、产品、技术、数据分析、财务、教育、英文面试等方向。</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/interview" className="rounded-xl bg-white px-5 py-3 font-semibold text-indigo-700 transition hover:-translate-y-0.5">立即开始模拟</Link>
+              <a href="#banks" className="rounded-xl border border-white/50 bg-white/10 px-5 py-3 font-semibold text-white">浏览题库</a>
+            </div>
           </div>
+          <div className="rounded-3xl border border-white/30 bg-white/10 p-6 backdrop-blur-xl">
+            <p className="text-sm text-slate-200">模拟面试报告预览</p>
+            <div className="mt-4 space-y-3">
+              <div className="rounded-2xl bg-white/15 p-3"><p className="text-sm">表达结构完整度</p><p className="text-xl font-bold">8.9 / 10</p></div>
+              <div className="rounded-2xl bg-white/15 p-3"><p className="text-sm">追问应对能力</p><p className="text-xl font-bold">A-</p></div>
+              <p className="rounded-2xl bg-indigo-500/30 p-3 text-sm">AI 建议：STAR 案例更聚焦结果量化，下一轮通过率可提升。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 md:px-10">
+        <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur md:grid-cols-4">
+          {highlights.map((item) => <p key={item} className="font-semibold text-slate-100">{item}</p>)}
         </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {highlights.map((item) => (
-            <article key={item.title} className="rounded-2xl border border-blue-100 bg-white/80 p-5 shadow-md shadow-blue-100/40 transition hover:-translate-y-1 hover:shadow-lg">
-              <h2 className="text-base font-semibold text-slate-900">{item.title}</h2>
-              <p className="mt-2 text-sm text-slate-600">{item.desc}</p>
+          {[
+            ["固定题库，主问题更稳定", "每个岗位沉淀高频核心题，让练习更有方向。"],
+            ["AI 追问，模拟真实面试官", "依据你的回答实时动态追问，逼近真实面试节奏。"],
+            ["生成报告，定位表达短板", "从结构、案例、说服力给出可执行改进建议。"],
+          ].map(([title, desc]) => (
+            <article key={title} className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur hover:-translate-y-1 transition">
+              <h2 className="text-lg font-bold">{title}</h2><p className="mt-2 text-sm text-slate-300">{desc}</p>
             </article>
           ))}
         </div>
+      </section>
 
-        <section id="question-banks" className="mt-10">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-2xl font-bold text-slate-900">题库方向</h2>
-            <p className="text-sm text-slate-500">共 {interviewBanks.length} 个面试类型</p>
-          </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {interviewBanks.map((bank) => (
-              <article key={bank.id} className="group rounded-3xl border border-indigo-100 bg-gradient-to-b from-white to-indigo-50/40 p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100">
-                <h3 className="text-lg font-semibold text-slate-900">{bank.title}</h3>
-                <p className="mt-2 min-h-10 text-sm text-slate-600">{bank.description}</p>
-                <div className="mt-4 space-y-2 text-sm text-slate-600">
-                  <p><span className="font-medium text-slate-800">适合人群：</span>希望提升 {bank.title} 面试表现的求职者</p>
-                  <p><span className="font-medium text-slate-800">题量：</span>{bank.questions.length} 题</p>
-                </div>
-                <Link href={`/banks/${bank.id}`} className="mt-5 inline-flex rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition group-hover:border-indigo-200 group-hover:text-indigo-700">
-                  查看题目
-                </Link>
-              </article>
-            ))}
-          </div>
-        </section>
+      <section id="banks" className="mx-auto mt-12 max-w-6xl px-6 pb-16 md:px-10">
+        <h2 className="text-3xl font-black">选择你的面试方向</h2>
+        <p className="mt-2 text-slate-300">先查看题目，再开始对应岗位模拟</p>
+        <div className="mt-6"><BankExplorer banks={interviewBanks} /></div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-20 md:px-10">
+        <div className="rounded-3xl border border-indigo-300/30 bg-gradient-to-r from-indigo-600/50 to-purple-600/50 p-8 text-center">
+          <h3 className="text-2xl font-black">准备好开始一次真实感模拟面试了吗？</h3>
+          <Link href="/interview" className="mt-5 inline-flex rounded-xl bg-white px-6 py-3 font-bold text-indigo-700">开始模拟面试</Link>
+        </div>
       </section>
     </main>
   );

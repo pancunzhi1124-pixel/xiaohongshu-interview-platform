@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const campusBank: InterviewBank = {
   id: "campus",
-  title: "应届生 / 实习生面试",
+  name: "应届生 / 实习生面试",
   description: "聚焦潜力、学习速度与校园经历迁移",
+  targetUsers: "应届生、实习生、校招生",
+  category: "校园求职",
+  icon: "🎓",
+  badge: "新手友好",
+  accentColor: "indigo",
   questions: [
     {
       id: "campus-1",

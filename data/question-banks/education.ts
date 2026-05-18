@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const educationBank: InterviewBank = {
   id: "education",
-  title: "教师 / 教培面试",
+  name: "教师 / 教培面试",
   description: "关注教学设计、课堂管理与学习效果",
+  targetUsers: "教师、教培顾问、课程顾问岗位求职者",
+  category: "教育语言",
+  icon: "📚",
+  badge: "新手友好",
+  accentColor: "purple",
   questions: [
     {
       id: "education-1",

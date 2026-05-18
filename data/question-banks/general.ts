@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const generalBank: InterviewBank = {
   id: "general",
-  title: "通用求职面试",
+  name: "通用求职面试",
   description: "适用于大多数岗位的结构化行为与动机问题",
+  targetUsers: "通用求职人群，社招与转岗候选人",
+  category: "通用求职",
+  icon: "💼",
+  badge: "推荐",
+  accentColor: "blue",
   questions: [
     {
       id: "general-1",

@@ -2,8 +2,13 @@ import type { InterviewBank } from "./types";
 
 export const techBank: InterviewBank = {
   id: "tech",
-  title: "技术岗基础面试",
+  name: "技术岗基础面试",
   description: "关注工程基础、问题排查与协作交付",
+  targetUsers: "前后端开发、测试、算法、运维岗位求职者",
+  category: "技术产品",
+  icon: "💻",
+  badge: "高薪岗位",
+  accentColor: "cyan",
   questions: [
     {
       id: "tech-1",
