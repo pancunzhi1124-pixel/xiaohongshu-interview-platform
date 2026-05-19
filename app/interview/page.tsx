@@ -5,7 +5,53 @@ import { useSearchParams } from "next/navigation";
 import { interviewBanks, type InterviewQuestion, type InterviewRound } from "@/data/question-banks";
 import InterviewIntensitySelector from "@/components/InterviewIntensitySelector";
 
-const rounds: InterviewRound[] = ["综合", "HR", "业务", "主管", "终面", "压力", "英文"];
+const roundOptions = [
+  {
+    value: "all",
+    label: "综合",
+    description: "混合多轮次问题",
+    round: "综合",
+  },
+  {
+    value: "hr",
+    label: "HR 初面",
+    description: "动机、稳定性、表达",
+    round: "HR",
+  },
+  {
+    value: "business",
+    label: "业务面",
+    description: "岗位能力与案例",
+    round: "业务",
+  },
+  {
+    value: "manager",
+    label: "主管面",
+    description: "执行、协作与结果",
+    round: "主管",
+  },
+  {
+    value: "final",
+    label: "终面",
+    description: "长期规划与匹配度",
+    round: "终面",
+  },
+  {
+    value: "stress",
+    label: "压力面",
+    description: "抗压与应变能力",
+    round: "压力",
+  },
+  {
+    value: "english",
+    label: "英文面试",
+    description: "英文表达与沟通",
+    round: "英文",
+  },
+] as const;
+
+type RoundFilter = (typeof roundOptions)[number]["value"];
+
 
 type InterviewStatus =
   | "idle"
@@ -88,6 +134,7 @@ function InterviewPageContent() {
 
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
+  const [roundFilter, setRoundFilter] = useState<RoundFilter>("all");
   const [questionCount, setQuestionCount] = useState(initialQuestionCount);
   const [sessionQuestions, setSessionQuestions] = useState<InterviewQuestion[]>([]);
   const [started, setStarted] = useState(false);
@@ -489,7 +536,7 @@ function InterviewPageContent() {
           <h1 className="text-2xl font-bold tracking-tight text-white">AI 面试官正在与你模拟面试</h1>
           <label className="mt-5 block text-sm text-slate-300">面试类型</label>
           <select
-            className="mt-2 w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+            className="mt-2 w-full appearance-none rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
             value={bankId}
             onChange={(e) => setBankId(e.target.value)}
             disabled={started}
@@ -500,19 +547,40 @@ function InterviewPageContent() {
               </option>
             ))}
           </select>
-          <label className="mt-4 block text-sm text-slate-300">面试轮次</label>
-          <select
-            className="mt-2 w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
-            value={round}
-            onChange={(e) => setRound(e.target.value as InterviewRound)}
-            disabled={started}
-          >
-            {rounds.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
+          <div className="mt-4">
+            <p className="text-sm text-slate-300">面试轮次</p>
+            <p className="mt-1 text-xs text-slate-400">选择你想模拟的面试场景，系统会优先抽取对应轮次的问题。</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {roundOptions.map((option) => {
+                const active = roundFilter === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      setRoundFilter(option.value);
+                      setRound(option.round);
+                    }}
+                    disabled={started}
+                    className={`relative rounded-2xl border px-3 py-3 text-left transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      active
+                        ? "border-cyan-300/60 bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-500/20 text-white shadow-[0_0_0_1px_rgba(34,211,238,0.25),0_16px_40px_rgba(59,130,246,0.16)] ring-1 ring-cyan-300/30"
+                        : "border-white/10 bg-white/5 text-slate-300 hover:border-cyan-300/30 hover:bg-white/10"
+                    }`}
+                  >
+                    {active ? (
+                      <span className="absolute right-2 top-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-cyan-300 text-[10px] font-semibold text-slate-950">
+                        ✓
+                      </span>
+                    ) : null}
+                    <p className="font-semibold">{option.label}</p>
+                    <p className="mt-1 text-xs text-slate-400">{option.description}</p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <label className="mt-4 block text-sm text-slate-300">模拟强度</label>
           <div className="mt-2">
             <InterviewIntensitySelector value={questionCount} disabled={started} onChange={setQuestionCount} />
