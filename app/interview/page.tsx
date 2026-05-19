@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { interviewBanks, type InterviewQuestion, type InterviewRound } from "@/data/question-banks";
+import InterviewIntensitySelector from "@/components/InterviewIntensitySelector";
 
 const rounds: InterviewRound[] = ["综合", "HR", "业务", "主管", "终面", "压力", "英文"];
 
@@ -513,26 +514,8 @@ function InterviewPageContent() {
             ))}
           </select>
           <label className="mt-4 block text-sm text-slate-300">模拟强度</label>
-          <div className="mt-2 grid gap-2">
-            {[
-              { label: "快速模拟 · 随机 3 题", value: 3 },
-              { label: "标准模拟 · 随机 5 题", value: 5 },
-              { label: "深度模拟 · 随机 8 题", value: 8 },
-            ].map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                disabled={started}
-                onClick={() => setQuestionCount(item.value)}
-                className={`rounded-xl border px-3 py-2 text-left text-sm transition ${
-                  questionCount === item.value
-                    ? "border-transparent bg-white/10 text-white ring-1 ring-cyan-300/70"
-                    : "border-white/10 bg-white/5 text-slate-300"
-                } disabled:cursor-not-allowed disabled:opacity-60`}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="mt-2">
+            <InterviewIntensitySelector value={questionCount} disabled={started} onChange={setQuestionCount} />
           </div>
           <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300">
             <p className="font-medium text-white">题库预览</p>
@@ -542,13 +525,16 @@ function InterviewPageContent() {
             <p>实际最多抽取：{Math.min(questions.length, questionCount)} 题</p>
           </div>
           {!started ? (
-            <button
-              className="mt-5 w-full rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-500/25 transition duration-300 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-              onClick={handleStartInterview}
-              disabled={!questions.length}
-            >
-              开始模拟面试
-            </button>
+            <div className="mt-5">
+              <button
+                className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-5 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/20 transition duration-300 hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={handleStartInterview}
+                disabled={!questions.length}
+              >
+                开始模拟面试
+              </button>
+              <p className="mt-2 text-xs text-slate-400">开始后将自动抽题、自动提问，并进入真实模拟面试流程</p>
+            </div>
           ) : (
             <p className="mt-5 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">面试进行中，右侧会自动朗读题目并开始听你回答。</p>
           )}
