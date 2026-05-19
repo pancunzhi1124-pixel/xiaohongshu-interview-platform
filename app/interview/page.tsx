@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { interviewBanks, type InterviewRound } from "@/data/question-banks";
+import { interviewBanks, type InterviewQuestion, type InterviewRound } from "@/data/question-banks";
 
 const rounds: InterviewRound[] = ["综合", "HR", "业务", "主管", "终面", "压力", "英文"];
 
@@ -49,6 +49,7 @@ type SpeechRecognitionLike = {
   onend: (() => void) | null;
 };
 type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+const allowedQuestionCounts = [3, 5, 8] as const;
 
 function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | undefined {
   if (typeof window === "undefined") return undefined;
@@ -59,9 +60,26 @@ function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | undef
   return browserWindow.SpeechRecognition || browserWindow.webkitSpeechRecognition;
 }
 
+
+function shuffleQuestions<T>(items: T[]): T[] {
+  const array = [...items];
+  for (let i = array.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function createSessionQuestions(questions: InterviewQuestion[], count: number): InterviewQuestion[] {
+  return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
+}
+
 function InterviewPageContent() {
   const searchParams = useSearchParams();
   const queryBankId = searchParams.get("bank");
+  const queryCount = searchParams.get("count");
+  const parsedQueryCount = Number(queryCount);
+  const initialQuestionCount = allowedQuestionCounts.includes(parsedQueryCount as (typeof allowedQuestionCounts)[number]) ? parsedQueryCount : 5;
   const initialBankId =
     queryBankId && interviewBanks.some((bank) => bank.id === queryBankId)
       ? queryBankId
@@ -69,6 +87,8 @@ function InterviewPageContent() {
 
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
+  const [questionCount, setQuestionCount] = useState(initialQuestionCount);
+  const [sessionQuestions, setSessionQuestions] = useState<InterviewQuestion[]>([]);
   const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
@@ -92,13 +112,21 @@ function InterviewPageContent() {
     }
   }, [queryBankId]);
 
+  useEffect(() => {
+    const nextCount = Number(searchParams.get("count"));
+    if (allowedQuestionCounts.includes(nextCount as (typeof allowedQuestionCounts)[number])) {
+      setQuestionCount(nextCount);
+    }
+  }, [searchParams]);
+
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === bankId) ?? interviewBanks[0], [bankId]);
   const questions = useMemo(() => (currentBank?.questions ?? []).filter((q) => q.round.includes(round)), [currentBank, round]);
-  const currentQuestion = questions[index];
+  const activeQuestions = started ? sessionQuestions : questions;
+  const currentQuestion = activeQuestions[index];
   const currentTarget: InterviewTarget = interviewStatus === "followup_asking" || interviewStatus === "followup_listening" ? "followup" : "main";
   const isFollowupStage = currentTarget === "followup";
   const currentPrompt = isFollowupStage ? followUpQuestion : currentQuestion?.question ?? "";
-  const isLastQuestion = index >= questions.length - 1;
+  const isLastQuestion = index >= activeQuestions.length - 1;
 
   const statusText = useMemo(() => {
     switch (interviewStatus) {
@@ -370,10 +398,15 @@ function InterviewPageContent() {
   };
 
   const handleStartInterview = async () => {
-    if (!questions.length) return;
+    const selectedQuestions = createSessionQuestions(questions, questionCount);
+    if (!selectedQuestions.length) {
+      setTip("当前筛选条件下没有可用题目，请更换面试类型或轮次。");
+      return;
+    }
 
     stopRecognition();
     stopCamera();
+    setSessionQuestions(selectedQuestions);
     setStarted(true);
     setIndex(0);
     setAnswer("");
@@ -385,16 +418,18 @@ function InterviewPageContent() {
     setInterviewStatus("idle");
     setTip("");
 
-    const firstQuestion = questions[0];
     await openCamera();
-    if (firstQuestion) {
-      startQuestionFlow("main", firstQuestion.question);
-    }
+    startQuestionFlow("main", selectedQuestions[0].question);
   };
 
   const handleNextQuestion = () => {
+    if (index >= sessionQuestions.length - 1) {
+      setTip("面试报告已生成。");
+      setInterviewStatus("completed");
+      return;
+    }
     const nextIndex = index + 1;
-    const nextQuestion = questions[nextIndex];
+    const nextQuestion = sessionQuestions[nextIndex];
 
     if (!nextQuestion) {
       setTip("面试报告已生成。");
@@ -477,7 +512,35 @@ function InterviewPageContent() {
               </option>
             ))}
           </select>
-          <p className="mt-4 text-xs text-slate-400">题目预览：{questions.slice(0, 2).map((q) => q.question).join(" / ") || "暂无匹配题目"}</p>
+          <label className="mt-4 block text-sm text-slate-300">模拟强度</label>
+          <div className="mt-2 grid gap-2">
+            {[
+              { label: "快速模拟 · 随机 3 题", value: 3 },
+              { label: "标准模拟 · 随机 5 题", value: 5 },
+              { label: "深度模拟 · 随机 8 题", value: 8 },
+            ].map((item) => (
+              <button
+                key={item.value}
+                type="button"
+                disabled={started}
+                onClick={() => setQuestionCount(item.value)}
+                className={`rounded-xl border px-3 py-2 text-left text-sm transition ${
+                  questionCount === item.value
+                    ? "border-transparent bg-white/10 text-white ring-1 ring-cyan-300/70"
+                    : "border-white/10 bg-white/5 text-slate-300"
+                } disabled:cursor-not-allowed disabled:opacity-60`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300">
+            <p className="font-medium text-white">题库预览</p>
+            <p className="mt-1 text-slate-400">开始面试后，将从当前筛选结果中随机抽取题目。</p>
+            <p className="mt-2">当前筛选题目数：{questions.length} 题</p>
+            <p>本场计划抽取：{questionCount} 题</p>
+            <p>实际最多抽取：{Math.min(questions.length, questionCount)} 题</p>
+          </div>
           {!started ? (
             <button
               className="mt-5 w-full rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-3 font-semibold text-white shadow-lg shadow-blue-500/25 transition duration-300 hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
@@ -508,7 +571,7 @@ function InterviewPageContent() {
           <div className="mt-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur">
             <div className="flex flex-wrap gap-2 text-xs">
               <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">状态：{statusText}</span>
-              <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">题号：{Math.min(index + 1, questions.length || 1)}</span>
+              <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">题号：{Math.min(index + 1, activeQuestions.length || 1)}</span>
               <span className="rounded-full border border-blue-300/30 bg-blue-400/15 px-3 py-1 text-blue-200">题库：{currentBank?.name}</span>
               <span className="rounded-full border border-purple-300/30 bg-purple-400/15 px-3 py-1 text-purple-200">轮次：{round}</span>
               <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1 text-emerald-200">难度：{currentQuestion?.difficulty ?? "普通"}</span>
@@ -571,7 +634,7 @@ function InterviewPageContent() {
             <div className="mt-3 rounded-2xl border border-cyan-300/30 bg-cyan-400/10 p-4">
               <p className="text-sm text-slate-300">综合得分</p>
               <p className="text-3xl font-bold text-white">{avgScore} / 10</p>
-              <p className="text-sm text-slate-400">已完成：{report.length} 题</p>
+              <p className="text-sm text-slate-400">已完成：{report.length} / {sessionQuestions.length || activeQuestions.length} 题</p>
             </div>
             <ul className="mt-3 space-y-2 text-sm">
               {report.map((item, i) => (
