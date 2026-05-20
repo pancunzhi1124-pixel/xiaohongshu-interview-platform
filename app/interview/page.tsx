@@ -84,6 +84,7 @@ type StructuredQuestion = {
   question: string;
   primaryType: string;
   difficulty: string;
+  round: string;
 };
 
 type SpeechRecognitionResultLike = { transcript: string };
@@ -128,6 +129,17 @@ function createSessionQuestions(questions: InterviewQuestion[], count: number): 
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
 }
 
+function normalizeRound(round: string): InterviewRound {
+  const r = (round || "").toLowerCase();
+  if (r === "hr") return "HR";
+  if (r === "business") return "业务";
+  if (r === "manager") return "主管";
+  if (r === "final") return "终面";
+  if (r === "stress") return "压力";
+  if (r === "english") return "英文";
+  return "综合";
+}
+
 function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): InterviewQuestion[] {
   return items.map((item) => ({
     id: item.id,
@@ -136,7 +148,7 @@ function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): Intervie
     difficulty: item.difficulty === "easy" || item.difficulty === "hard" ? item.difficulty : "medium",
     expectedPoints: ["观点清晰", "逻辑完整", "结合岗位场景"],
     scoringRubric: "重点考察答题结构、案例支撑和岗位匹配度。",
-    round: ["综合"],
+    round: [normalizeRound(item.round)],
   }));
 }
 
@@ -146,10 +158,7 @@ function InterviewPageContent() {
   const queryCount = searchParams.get("count");
   const parsedQueryCount = Number(queryCount);
   const initialQuestionCount = allowedQuestionCounts.includes(parsedQueryCount as (typeof allowedQuestionCounts)[number]) ? parsedQueryCount : 5;
-  const initialBankId =
-    queryBankId && interviewBanks.some((bank) => bank.id === queryBankId)
-      ? queryBankId
-      : interviewBanks[0]?.id ?? "";
+  const initialBankId = queryBankId || interviewBanks[0]?.id ?? "";
 
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
@@ -174,9 +183,7 @@ function InterviewPageContent() {
   const recognitionStoppingRef = useRef(false);
 
   useEffect(() => {
-    if (queryBankId && interviewBanks.some((bank) => bank.id === queryBankId)) {
-      setBankId(queryBankId);
-    }
+    if (queryBankId) setBankId(queryBankId);
   }, [queryBankId]);
 
   useEffect(() => {
@@ -467,7 +474,7 @@ function InterviewPageContent() {
   const handleStartInterview = async () => {
     let questionSource = questions;
     try {
-      const res = await fetch(`/api/question-pool?bankId=${encodeURIComponent(bankId)}`);
+      const res = await fetch(`/api/question-pool?bankId=${encodeURIComponent(bankId)}&round=${encodeURIComponent(roundFilter)}&pageSize=200`);
       const data = (await res.json()) as { questions?: StructuredQuestion[] };
       if (Array.isArray(data.questions) && data.questions.length > 0) {
         questionSource = mapStructuredToInterviewQuestion(data.questions).filter((q) => q.round.includes(round));
