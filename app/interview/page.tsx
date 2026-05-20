@@ -166,10 +166,7 @@ function InterviewPageContent() {
   const queryCount = searchParams.get("count");
   const parsedQueryCount = Number(queryCount);
   const initialQuestionCount = allowedQuestionCounts.includes(parsedQueryCount as (typeof allowedQuestionCounts)[number]) ? parsedQueryCount : 5;
-  const initialBankId =
-    queryBankId && interviewBanks.some((bank) => bank.id === queryBankId)
-      ? queryBankId
-      : interviewBanks[0]?.id ?? "";
+  const initialBankId = queryBankId || interviewBanks[0]?.id || "national-civil-service";
 
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
@@ -194,9 +191,7 @@ function InterviewPageContent() {
   const recognitionStoppingRef = useRef(false);
 
   useEffect(() => {
-    if (queryBankId && interviewBanks.some((bank) => bank.id === queryBankId)) {
-      setBankId(queryBankId);
-    }
+    if (queryBankId) setBankId(queryBankId);
   }, [queryBankId]);
 
   useEffect(() => {
@@ -487,11 +482,11 @@ function InterviewPageContent() {
   const handleStartInterview = async () => {
     let questionSource = questions;
     try {
-      const res = await fetch(`/api/question-pool?bankId=${encodeURIComponent(bankId)}`);
+      const params = new URLSearchParams({ bankId, examType: bankId, pageSize: "200" });
+      if (roundFilter !== "all") params.set("round", mapRoundToInterviewRound(roundFilter));
+      const res = await fetch(`/api/question-pool?${params.toString()}`);
       const data = (await res.json()) as { questions?: StructuredQuestion[] };
-      if (Array.isArray(data.questions) && data.questions.length > 0) {
-        questionSource = mapStructuredToInterviewQuestion(data.questions).filter((q) => q.round.includes(round));
-      }
+      if (Array.isArray(data.questions) && data.questions.length > 0) questionSource = mapStructuredToInterviewQuestion(data.questions).filter((q) => q.round.includes(round));
     } catch {
       // ignore and fallback to built-in banks
     }
