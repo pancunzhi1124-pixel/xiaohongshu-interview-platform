@@ -41,7 +41,10 @@ export type StructuredInterviewQuestion = {
 
 const primaryPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
 const fallbackPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
-const answerOverridesPath = path.join(process.cwd(), "data/question-pools/question-answer-overrides.json");
+const answerOverridePaths = [
+  path.join(process.cwd(), "data/question-pools/question-answer-overrides.json"),
+  path.join(process.cwd(), "data/question-pools/question-answer-overrides-002.json"),
+];
 const remoteFallbackUrl = "https://raw.githubusercontent.com/pancunzhi1124-pixel/xiaohongshu-interview-platform/question-pools/structured_interview_questions_categorized.json";
 
 function normalizeAnswerStatus(value: unknown): AnswerStatus {
@@ -70,19 +73,21 @@ function normalizeAnswerOverride(value: unknown): StructuredQuestionAnswer | nul
 }
 
 async function loadAnswerOverrides(): Promise<Record<string, StructuredQuestionAnswer>> {
-  try {
-    const file = await fs.readFile(answerOverridesPath, "utf8");
-    const parsed = JSON.parse(file);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-
-    return Object.fromEntries(
-      Object.entries(parsed)
-        .map(([id, value]) => [id, normalizeAnswerOverride(value)] as const)
-        .filter((entry): entry is readonly [string, StructuredQuestionAnswer] => Boolean(entry[1])),
-    );
-  } catch {
-    return {};
+  const merged: Record<string, StructuredQuestionAnswer> = {};
+  for (const filePath of answerOverridePaths) {
+    try {
+      const file = await fs.readFile(filePath, "utf8");
+      const parsed = JSON.parse(file);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
+      for (const [id, value] of Object.entries(parsed)) {
+        const normalized = normalizeAnswerOverride(value);
+        if (normalized) merged[id] = normalized;
+      }
+    } catch {
+      // optional batch file
+    }
   }
+  return merged;
 }
 
 function normalize(items: unknown[]): StructuredInterviewQuestion[] {
@@ -154,27 +159,19 @@ async function readRemotePool(): Promise<StructuredInterviewQuestion[]> {
 async function loadBaseQuestions() {
   const primary = await readPool(primaryPath);
   if (primary.length > 0) return primary;
-
   const fallback = await readPool(fallbackPath);
   if (fallback.length > 0) return fallback;
-
   const remoteFallback = await readRemotePool();
   if (remoteFallback.length > 0) return remoteFallback;
-
   return [];
 }
 
 export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
   const questions = await loadBaseQuestions();
   const overrides = await loadAnswerOverrides();
-
   return questions.map((question) => {
     const override = overrides[question.id];
     if (!override) return question;
-    return {
-      ...question,
-      ...override,
-      answerStatus: override.answerStatus ?? question.answerStatus,
-    };
+    return { ...question, ...override, answerStatus: override.answerStatus ?? question.answerStatus };
   });
 }
