@@ -78,6 +78,13 @@ type EvaluationResponse = {
   followUpQuestion: string;
   shortFeedback: string;
 };
+type StructuredQuestion = {
+  id: string;
+  bankId: string;
+  question: string;
+  primaryType: string;
+  difficulty: string;
+};
 
 type SpeechRecognitionResultLike = { transcript: string };
 type SpeechRecognitionEventLike = {
@@ -119,6 +126,18 @@ function shuffleQuestions<T>(items: T[]): T[] {
 
 function createSessionQuestions(questions: InterviewQuestion[], count: number): InterviewQuestion[] {
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
+}
+
+function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): InterviewQuestion[] {
+  return items.map((item) => ({
+    id: item.id,
+    question: item.question,
+    category: item.primaryType,
+    difficulty: item.difficulty === "easy" || item.difficulty === "hard" ? item.difficulty : "medium",
+    expectedPoints: ["观点清晰", "逻辑完整", "结合岗位场景"],
+    scoringRubric: "重点考察答题结构、案例支撑和岗位匹配度。",
+    round: ["综合"],
+  }));
 }
 
 function InterviewPageContent() {
@@ -446,7 +465,17 @@ function InterviewPageContent() {
   };
 
   const handleStartInterview = async () => {
-    const selectedQuestions = createSessionQuestions(questions, questionCount);
+    let questionSource = questions;
+    try {
+      const res = await fetch(`/api/question-pool?bankId=${encodeURIComponent(bankId)}`);
+      const data = (await res.json()) as { questions?: StructuredQuestion[] };
+      if (Array.isArray(data.questions) && data.questions.length > 0) {
+        questionSource = mapStructuredToInterviewQuestion(data.questions).filter((q) => q.round.includes(round));
+      }
+    } catch {
+      // ignore and fallback to built-in banks
+    }
+    const selectedQuestions = createSessionQuestions(questionSource, questionCount);
     if (!selectedQuestions.length) {
       setTip("当前筛选条件下没有可用题目，请更换面试类型或轮次。");
       return;
