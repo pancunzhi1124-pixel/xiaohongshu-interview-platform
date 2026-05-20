@@ -22,6 +22,7 @@ export type StructuredInterviewQuestion = {
 
 const primaryPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
 const fallbackPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
+const remoteFallbackUrl = "https://raw.githubusercontent.com/pancunzhi1124-pixel/xiaohongshu-interview-platform/question-pools/structured_interview_questions_categorized.json";
 
 function normalize(items: unknown[]): StructuredInterviewQuestion[] {
   return items
@@ -53,12 +54,30 @@ function normalize(items: unknown[]): StructuredInterviewQuestion[] {
     });
 }
 
+async function parsePoolContent(content: string): Promise<StructuredInterviewQuestion[]> {
+  try {
+    const parsed = JSON.parse(content);
+    if (!Array.isArray(parsed) || parsed.length === 0) return [];
+    return normalize(parsed);
+  } catch {
+    return [];
+  }
+}
+
 async function readPool(filePath: string): Promise<StructuredInterviewQuestion[]> {
   try {
     const file = await fs.readFile(filePath, "utf8");
-    const parsed = JSON.parse(file);
-    if (!Array.isArray(parsed) || parsed.length === 0) return [];
-    return normalize(parsed);
+    return parsePoolContent(file);
+  } catch {
+    return [];
+  }
+}
+
+async function readRemotePool(): Promise<StructuredInterviewQuestion[]> {
+  try {
+    const response = await fetch(remoteFallbackUrl, { next: { revalidate: 3600 } });
+    if (!response.ok) return [];
+    return parsePoolContent(await response.text());
   } catch {
     return [];
   }
@@ -70,6 +89,9 @@ export async function loadStructuredInterviewQuestions(): Promise<StructuredInte
 
   const fallback = await readPool(fallbackPath);
   if (fallback.length > 0) return fallback;
+
+  const remoteFallback = await readRemotePool();
+  if (remoteFallback.length > 0) return remoteFallback;
 
   return [];
 }
