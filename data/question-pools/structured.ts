@@ -44,6 +44,9 @@ const fallbackPath = path.join(process.cwd(), "structured_interview_questions_ca
 const answerOverridePaths = [
   path.join(process.cwd(), "data/question-pools/question-answer-overrides.json"),
   path.join(process.cwd(), "data/question-pools/question-answer-overrides-002.json"),
+  path.join(process.cwd(), "data/question-pools/question-answer-overrides-003.json"),
+  path.join(process.cwd(), "data/question-pools/question-answer-overrides-004.json"),
+  path.join(process.cwd(), "data/question-pools/question-answer-overrides-005.json"),
 ];
 const remoteFallbackUrl = "https://raw.githubusercontent.com/pancunzhi1124-pixel/xiaohongshu-interview-platform/question-pools/structured_interview_questions_categorized.json";
 
