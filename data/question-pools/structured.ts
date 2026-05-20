@@ -41,21 +41,7 @@ export type StructuredInterviewQuestion = {
 
 const primaryPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
 const fallbackPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
-const answerOverridePaths = [
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-002.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-003.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-004.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-005.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-006.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-007.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-008.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-009.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-010.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-011.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-012.json"),
-  path.join(process.cwd(), "data/question-pools/question-answer-overrides-013.json"),
-];
+const questionPoolsDir = path.join(process.cwd(), "data/question-pools");
 const remoteFallbackUrl = "https://raw.githubusercontent.com/pancunzhi1124-pixel/xiaohongshu-interview-platform/question-pools/structured_interview_questions_categorized.json";
 
 function normalizeAnswerStatus(value: unknown): AnswerStatus {
@@ -83,9 +69,21 @@ function normalizeAnswerOverride(value: unknown): StructuredQuestionAnswer | nul
   };
 }
 
+async function getAnswerOverridePaths() {
+  try {
+    const entries = await fs.readdir(questionPoolsDir);
+    return entries
+      .filter((name) => /^question-answer-overrides(?:-\d+)?\.json$/.test(name))
+      .sort((a, b) => a.localeCompare(b, "zh-CN"))
+      .map((name) => path.join(questionPoolsDir, name));
+  } catch {
+    return [];
+  }
+}
+
 async function loadAnswerOverrides(): Promise<Record<string, StructuredQuestionAnswer>> {
   const merged: Record<string, StructuredQuestionAnswer> = {};
-  for (const filePath of answerOverridePaths) {
+  for (const filePath of await getAnswerOverridePaths()) {
     try {
       const file = await fs.readFile(filePath, "utf8");
       const parsed = JSON.parse(file);
