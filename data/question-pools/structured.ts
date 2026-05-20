@@ -2,6 +2,19 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { inferExamType, getExamTypeName, type ExamType } from "@/data/question-pools/categories";
 
+export type AnswerSource = "manual" | "ai_generated" | "mixed";
+export type AnswerStatus = "pending" | "reviewing" | "ready";
+
+export type StructuredQuestionAnswer = {
+  answerStatus?: AnswerStatus;
+  answerOutline?: string[];
+  keyPoints?: string[];
+  sampleAnswer?: string;
+  scoringRubric?: string;
+  answerSource?: AnswerSource;
+  answerUpdatedAt?: string;
+};
+
 export type StructuredInterviewQuestion = {
   id: string;
   bankId: string;
@@ -15,14 +28,62 @@ export type StructuredInterviewQuestion = {
   jobTags: string[];
   difficulty: string;
   round: string;
-  answerStatus: string;
+  answerStatus: AnswerStatus;
+  answerOutline?: string[];
+  keyPoints?: string[];
+  sampleAnswer?: string;
+  scoringRubric?: string;
+  answerSource?: AnswerSource;
+  answerUpdatedAt?: string;
   examType?: ExamType;
   examTypeName?: string;
 };
 
 const primaryPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
 const fallbackPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
+const answerOverridesPath = path.join(process.cwd(), "data/question-pools/question-answer-overrides.json");
 const remoteFallbackUrl = "https://raw.githubusercontent.com/pancunzhi1124-pixel/xiaohongshu-interview-platform/question-pools/structured_interview_questions_categorized.json";
+
+function normalizeAnswerStatus(value: unknown): AnswerStatus {
+  if (value === "ready" || value === "reviewing" || value === "pending") return value;
+  return "pending";
+}
+
+function normalizeStringArray(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const items = value.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+  return items.length > 0 ? items : undefined;
+}
+
+function normalizeAnswerOverride(value: unknown): StructuredQuestionAnswer | null {
+  if (!value || typeof value !== "object") return null;
+  const item = value as Record<string, unknown>;
+  return {
+    answerStatus: normalizeAnswerStatus(item.answerStatus),
+    answerOutline: normalizeStringArray(item.answerOutline),
+    keyPoints: normalizeStringArray(item.keyPoints),
+    sampleAnswer: typeof item.sampleAnswer === "string" ? item.sampleAnswer : undefined,
+    scoringRubric: typeof item.scoringRubric === "string" ? item.scoringRubric : undefined,
+    answerSource: item.answerSource === "manual" || item.answerSource === "ai_generated" || item.answerSource === "mixed" ? item.answerSource : undefined,
+    answerUpdatedAt: typeof item.answerUpdatedAt === "string" ? item.answerUpdatedAt : undefined,
+  };
+}
+
+async function loadAnswerOverrides(): Promise<Record<string, StructuredQuestionAnswer>> {
+  try {
+    const file = await fs.readFile(answerOverridesPath, "utf8");
+    const parsed = JSON.parse(file);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+
+    return Object.fromEntries(
+      Object.entries(parsed)
+        .map(([id, value]) => [id, normalizeAnswerOverride(value)] as const)
+        .filter((entry): entry is readonly [string, StructuredQuestionAnswer] => Boolean(entry[1])),
+    );
+  } catch {
+    return {};
+  }
+}
 
 function normalize(items: unknown[]): StructuredInterviewQuestion[] {
   return items
@@ -34,6 +95,7 @@ function normalize(items: unknown[]): StructuredInterviewQuestion[] {
       const bankId = typeof item.bankId === "string" ? item.bankId : "private-company";
       const sourceTitle = typeof item.sourceTitle === "string" ? item.sourceTitle : "";
       const examType = inferExamType({ bankId, sourceTitle, jobTags });
+      const answerStatus = normalizeAnswerStatus(item.answerStatus);
       return {
         id: String(item.id),
         bankId,
@@ -47,7 +109,13 @@ function normalize(items: unknown[]): StructuredInterviewQuestion[] {
         jobTags,
         difficulty: typeof item.difficulty === "string" ? item.difficulty : "medium",
         round: typeof item.round === "string" ? item.round : "all",
-        answerStatus: typeof item.answerStatus === "string" ? item.answerStatus : "pending",
+        answerStatus,
+        answerOutline: normalizeStringArray(item.answerOutline),
+        keyPoints: normalizeStringArray(item.keyPoints),
+        sampleAnswer: typeof item.sampleAnswer === "string" ? item.sampleAnswer : undefined,
+        scoringRubric: typeof item.scoringRubric === "string" ? item.scoringRubric : undefined,
+        answerSource: item.answerSource === "manual" || item.answerSource === "ai_generated" || item.answerSource === "mixed" ? item.answerSource : undefined,
+        answerUpdatedAt: typeof item.answerUpdatedAt === "string" ? item.answerUpdatedAt : undefined,
         examType,
         examTypeName: getExamTypeName(examType),
       };
@@ -83,7 +151,7 @@ async function readRemotePool(): Promise<StructuredInterviewQuestion[]> {
   }
 }
 
-export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
+async function loadBaseQuestions() {
   const primary = await readPool(primaryPath);
   if (primary.length > 0) return primary;
 
@@ -94,4 +162,19 @@ export async function loadStructuredInterviewQuestions(): Promise<StructuredInte
   if (remoteFallback.length > 0) return remoteFallback;
 
   return [];
+}
+
+export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
+  const questions = await loadBaseQuestions();
+  const overrides = await loadAnswerOverrides();
+
+  return questions.map((question) => {
+    const override = overrides[question.id];
+    if (!override) return question;
+    return {
+      ...question,
+      ...override,
+      answerStatus: override.answerStatus ?? question.answerStatus,
+    };
+  });
 }
