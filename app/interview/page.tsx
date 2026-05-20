@@ -158,7 +158,7 @@ function InterviewPageContent() {
   const queryCount = searchParams.get("count");
   const parsedQueryCount = Number(queryCount);
   const initialQuestionCount = allowedQuestionCounts.includes(parsedQueryCount as (typeof allowedQuestionCounts)[number]) ? parsedQueryCount : 5;
-  const initialBankId = queryBankId || interviewBanks[0]?.id ?? "";
+  const initialBankId = queryBankId || (interviewBanks[0]?.id ?? "");
 
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
