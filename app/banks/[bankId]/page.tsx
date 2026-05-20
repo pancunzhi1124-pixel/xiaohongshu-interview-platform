@@ -1,83 +1,70 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { interviewBanks } from "@/data/question-banks";
+import { loadStructuredInterviewQuestions, type StructuredInterviewQuestion } from "@/data/question-pools/structured";
 
 type BankPageProps = {
   params: Promise<{ bankId: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const roundLabelMap: Record<string, string> = {
-  hr: "HR 初面",
-  business: "业务面",
-  manager: "主管面",
-  final: "终面",
-  stress: "压力面",
-  english: "英文面试",
-  HR: "HR 初面",
-  业务: "业务面",
-  主管: "主管面",
-  终面: "终面",
-  压力: "压力面",
-  英文: "英文面试",
-  综合: "HR 初面",
-};
-const difficultyLabelMap = { easy: "基础", medium: "普通", hard: "进阶" } as const;
+const abilityFilters = ["综合分析", "计划组织", "人际关系", "应急应变", "基层治理", "群众工作", "执法情景", "岗位认知"];
+const jobFilters = ["综合管理岗", "乡镇基层岗", "社区工作者", "社工岗", "教师岗", "高校辅导员", "高校管理岗", "医疗卫生岗", "农业农村岗", "林草/生态环保岗", "应急管理岗", "税务系统", "海关/边检/公安系统", "银行系统", "国家电网/电力系统", "国企央企通用岗", "文旅宣传岗", "窗口服务岗", "村干部/驻村干部", "人才引进综合岗"];
+
+function getSingleParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 export function generateStaticParams() {
   return interviewBanks.map((bank) => ({ bankId: bank.id }));
 }
 
-export default async function BankPage({ params }: BankPageProps) {
+export default async function BankPage({ params, searchParams }: BankPageProps) {
   const { bankId } = await params;
   const bank = interviewBanks.find((item) => item.id === bankId);
   if (!bank) notFound();
 
+  const allPool = await loadStructuredInterviewQuestions();
+  const structured = allPool.filter((q) => q.bankId === bankId);
+  const query = searchParams ? await searchParams : {};
+  const keyword = getSingleParam(query.keyword)?.trim() ?? "";
+  const typeFilter = getSingleParam(query.type) ?? "all";
+  const jobFilter = getSingleParam(query.job) ?? "all";
+  const page = Math.max(Number(getSingleParam(query.page) ?? "1") || 1, 1);
+
+  const sourceQuestions: StructuredInterviewQuestion[] = structured.length > 0 ? structured : bank.questions.map((q, idx) => ({ id: q.id, bankId, sourceTitle: bank.name, examDate: "", province: "", questionNo: String(idx + 1), question: q.question, primaryType: q.category ?? "综合分析", abilityTypes: q.category ? [q.category] : [], jobTags: [], difficulty: q.difficulty ?? "medium", round: q.round[0] ?? "综合", answerStatus: "pending" }));
+
+  const filtered = sourceQuestions.filter((q) => (!keyword || q.question.includes(keyword) || q.sourceTitle.includes(keyword)) && (typeFilter === "all" || q.primaryType === typeFilter || q.abilityTypes.includes(typeFilter)) && (jobFilter === "all" || q.jobTags.includes(jobFilter)));
+
+  const pageSize = 20;
+  const totalPages = Math.max(Math.ceil(filtered.length / pageSize), 1);
+  const currentPage = Math.min(page, totalPages);
+  const currentItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const buildHref = (nextPage: number) => {
+    const params = new URLSearchParams();
+    if (keyword) params.set("keyword", keyword);
+    if (typeFilter !== "all") params.set("type", typeFilter);
+    if (jobFilter !== "all") params.set("job", jobFilter);
+    params.set("page", String(nextPage));
+    return `/banks/${bankId}?${params.toString()}`;
+  };
+
   return (
-    <main className="relative min-h-screen overflow-hidden bg-slate-950 px-6 py-8 text-white md:px-10">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-20 left-4 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
-        <div className="absolute right-4 top-0 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl" />
-      </div>
-
-      <div className="mx-auto max-w-6xl">
-        <Link href="/" className="text-sm text-slate-300 transition hover:text-white">← 返回首页</Link>
-        <section className="mt-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-10">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-4xl">{bank.icon}</span>
-            {bank.badge ? <span className="rounded-full border border-white/20 bg-white/15 px-3 py-1 text-xs text-white">{bank.badge}</span> : null}
-          </div>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-white md:text-5xl">{bank.name}</h1>
-          <p className="mt-3 text-slate-300">{bank.description}</p>
-          <p className="mt-2 text-sm text-slate-400">适合人群：{bank.targetUsers}</p>
-          <p className="mt-1 text-sm text-cyan-300">题量：{bank.questions.length} 题</p>
-          <Link href={`/interview?bank=${bank.id}`} className="mt-5 inline-flex rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-5 py-3 font-semibold text-white shadow-lg shadow-blue-500/25 transition duration-300 hover:brightness-110">开始模拟面试</Link>
-        </section>
-
-        <section className="mt-8">
-          <h2 className="text-2xl font-bold tracking-tight text-white">题目列表</h2>
-          <div className="mt-4 grid gap-4">
-            {bank.questions.map((item, idx) => {
-              const key = item.round.find((r) => r !== "综合") ?? item.round[0] ?? "综合";
-              const d = item.difficulty ?? (idx % 3 === 0 ? "easy" : idx % 3 === 1 ? "medium" : "hard");
-              return (
-                <article key={item.id} className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur transition duration-300 hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-white/10">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm text-slate-300">第 {idx + 1} 题</p>
-                    <div className="flex flex-wrap gap-2 text-xs">
-                      <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">{roundLabelMap[key] ?? key}</span>
-                      <span className="rounded-full border border-blue-300/30 bg-blue-400/15 px-3 py-1 text-blue-200">{difficultyLabelMap[d]}</span>
-                    </div>
-                  </div>
-                  <p className="mt-3 text-base text-white md:text-lg">{item.question}</p>
-                  <div className="mt-4 text-xs">
-                    <span className="rounded-full border border-purple-300/30 bg-purple-400/15 px-3 py-1 text-purple-200">分类：{item.category ?? bank.category}</span>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
+    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white md:px-10">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <Link href="/" className="text-sm text-slate-300">← 返回首页</Link>
+        <h1 className="text-3xl font-bold">{bank.name}（共 {filtered.length} 题）</h1>
+        <form className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-4">
+          <input name="keyword" defaultValue={keyword} placeholder="搜索题目/来源" className="rounded-lg bg-slate-900 px-3 py-2" />
+          <select name="type" defaultValue={typeFilter} className="rounded-lg bg-slate-900 px-3 py-2"><option value="all">全部题型/能力</option>{abilityFilters.map((x) => <option key={x} value={x}>{x}</option>)}</select>
+          <select name="job" defaultValue={jobFilter} className="rounded-lg bg-slate-900 px-3 py-2"><option value="all">全部岗位/系统</option>{jobFilters.map((x) => <option key={x} value={x}>{x}</option>)}</select>
+          <button className="rounded-lg bg-cyan-500 px-3 py-2">筛选</button>
+        </form>
+        <div className="grid gap-3 md:grid-cols-4">{abilityFilters.map((x) => <div key={x} className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm">{x}</div>)}</div>
+        <div className="grid gap-3 md:grid-cols-4">{jobFilters.map((x) => <div key={x} className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm">{x}</div>)}</div>
+        <div className="space-y-3">{currentItems.map((q) => <article key={q.id} className="rounded-2xl border border-white/10 bg-white/5 p-4"><p>{q.questionNo}. {q.question}</p><p className="mt-2 text-sm text-slate-300">{q.primaryType} | {q.abilityTypes.join("、") || "-"} | {q.jobTags.join("、") || "-"}</p><p className="text-xs text-slate-400">{q.sourceTitle} {q.examDate} {q.province} 难度：{q.difficulty}</p>{q.answerStatus === "pending" ? <p className="mt-2 text-sm text-amber-300">参考答案暂未整理，可先使用 AI 模拟面试进行作答训练。</p> : null}</article>)}</div>
+        <div className="flex items-center justify-between"><Link href={buildHref(Math.max(currentPage - 1, 1))} className="rounded bg-white/10 px-3 py-2">上一页</Link><span>{currentPage}/{totalPages}</span><Link href={buildHref(Math.min(currentPage + 1, totalPages))} className="rounded bg-white/10 px-3 py-2">下一页</Link></div>
       </div>
     </main>
   );
