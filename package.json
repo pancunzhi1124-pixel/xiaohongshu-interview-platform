@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "answers:generate": "node scripts/generate-question-answers.mjs",
+    "answers:generate:sample": "ANSWER_LIMIT=10 node scripts/generate-question-answers.mjs"
   },
   "dependencies": {
     "next": "^16.0.1",
