@@ -1,6 +1,7 @@
 import Link from "next/link";
 import BankExplorer from "@/components/BankExplorer";
 import { interviewBanks } from "@/data/question-banks";
+import { loadStructuredInterviewQuestions } from "@/data/question-pools/structured";
 
 const highlights = ["14+ 面试方向", "70+ 高频问题", "1 次 AI 动态追问", "视频感模拟体验"];
 
@@ -10,7 +11,12 @@ const featureCards = [
   ["自动生成报告，定位表达短板", "从结构、岗位匹配与表达说服力给出可执行优化建议。"],
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const structuredQuestions = await loadStructuredInterviewQuestions();
+  const structuredCounts = structuredQuestions.reduce<Record<string, number>>((acc, item) => {
+    acc[item.bankId] = (acc[item.bankId] ?? 0) + 1;
+    return acc;
+  }, {});
   return (
     <main className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <section className="relative isolate px-6 pb-16 pt-10 md:px-10 md:pt-16">
@@ -69,7 +75,7 @@ export default function HomePage() {
       <section id="banks" className="mx-auto mt-12 max-w-6xl px-6 pb-16 md:px-10">
         <h2 className="text-3xl font-bold tracking-tight text-white">选择你的面试方向</h2>
         <p className="mt-2 text-slate-300">先查看题目，再进入对应岗位模拟</p>
-        <div className="mt-6"><BankExplorer banks={interviewBanks} /></div>
+        <div className="mt-6"><BankExplorer banks={interviewBanks} questionCounts={structuredCounts} /></div>
       </section>
     </main>
   );

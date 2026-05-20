@@ -12,6 +12,7 @@ import { productBank } from "./product";
 import { salesBank } from "./sales";
 import { serviceBank } from "./service";
 import { techBank } from "./tech";
+import { structuredInterviewBanks } from "./structured";
 
 export const interviewBanks = [
   generalBank,
@@ -28,6 +29,7 @@ export const interviewBanks = [
   financeBank,
   educationBank,
   englishBank,
+  ...structuredInterviewBanks,
 ];
 
 export type { InterviewBank, InterviewQuestion, InterviewRound } from "./types";

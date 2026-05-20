@@ -84,6 +84,7 @@ type StructuredQuestion = {
   question: string;
   primaryType: string;
   difficulty: string;
+  round?: string;
 };
 
 type SpeechRecognitionResultLike = { transcript: string };
@@ -128,6 +129,25 @@ function createSessionQuestions(questions: InterviewQuestion[], count: number): 
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
 }
 
+function mapRoundToInterviewRound(round?: string): InterviewRound {
+  switch (round) {
+    case "hr":
+      return "HR";
+    case "business":
+      return "业务";
+    case "manager":
+      return "主管";
+    case "final":
+      return "终面";
+    case "stress":
+      return "压力";
+    case "english":
+      return "英文";
+    default:
+      return "综合";
+  }
+}
+
 function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): InterviewQuestion[] {
   return items.map((item) => ({
     id: item.id,
@@ -136,7 +156,7 @@ function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): Intervie
     difficulty: item.difficulty === "easy" || item.difficulty === "hard" ? item.difficulty : "medium",
     expectedPoints: ["观点清晰", "逻辑完整", "结合岗位场景"],
     scoringRubric: "重点考察答题结构、案例支撑和岗位匹配度。",
-    round: ["综合"],
+    round: [mapRoundToInterviewRound(item.round)],
   }));
 }
 
