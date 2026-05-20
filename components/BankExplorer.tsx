@@ -14,7 +14,7 @@ const accentStyles: Record<string, string> = {
   indigo: "from-indigo-500/25 to-violet-500/10",
 };
 
-export default function BankExplorer({ banks }: { banks: InterviewBank[] }) {
+export default function BankExplorer({ banks, questionCounts }: { banks: InterviewBank[]; questionCounts?: Record<string, number> }) {
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("全部");
 
@@ -56,7 +56,7 @@ export default function BankExplorer({ banks }: { banks: InterviewBank[] }) {
               <h3 className="mt-4 text-lg font-semibold text-white">{bank.name}</h3>
               <p className="mt-2 text-sm text-slate-300">{bank.description}</p>
               <p className="mt-3 text-sm text-slate-400"><span className="font-medium">适合人群：</span>{bank.targetUsers}</p>
-              <div className="mt-4 flex items-center justify-between text-sm"><span className="text-cyan-300">{bank.questions.length} 题</span><span className="font-medium text-blue-300">查看题目 →</span></div>
+              <div className="mt-4 flex items-center justify-between text-sm"><span className="text-cyan-300">{questionCounts?.[bank.id] ?? bank.questions.length} 题</span><span className="font-medium text-blue-300">查看题目 →</span></div>
             </Link>
           ))}
         </div>

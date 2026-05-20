@@ -17,15 +17,25 @@ export type StructuredInterviewQuestion = {
   answerStatus: string;
 };
 
-const structuredPoolPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
+const primaryStructuredPoolPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
+const fallbackStructuredPoolPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
 
-export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
+function normalizeStructuredQuestions(parsed: unknown): StructuredInterviewQuestion[] {
+  if (!Array.isArray(parsed)) return [];
+  return parsed.filter((item): item is StructuredInterviewQuestion => typeof item?.id === "string" && typeof item?.question === "string" && typeof item?.bankId === "string");
+}
+
+async function readStructuredFile(filePath: string): Promise<StructuredInterviewQuestion[]> {
   try {
-    const file = await fs.readFile(structuredPoolPath, "utf8");
-    const parsed = JSON.parse(file);
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item): item is StructuredInterviewQuestion => typeof item?.id === "string" && typeof item?.question === "string" && typeof item?.bankId === "string");
+    const file = await fs.readFile(filePath, "utf8");
+    return normalizeStructuredQuestions(JSON.parse(file));
   } catch {
     return [];
   }
+}
+
+export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
+  const primary = await readStructuredFile(primaryStructuredPoolPath);
+  if (primary.length > 0) return primary;
+  return readStructuredFile(fallbackStructuredPoolPath);
 }
