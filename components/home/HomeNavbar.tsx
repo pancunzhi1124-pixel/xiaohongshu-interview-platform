@@ -4,7 +4,7 @@ const navItems = [
   { label: "首页", href: "#top" },
   { label: "浏览题库", href: "#banks" },
   { label: "模拟面试", href: "/interview" },
-  { label: "更新公告", href: "#announcement" },
+  { label: "更新公告", href: "/announcements" },
   { label: "使用说明", href: "#features" },
 ];
 

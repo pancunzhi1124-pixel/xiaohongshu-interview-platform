@@ -1,7 +1,7 @@
 import Link from "next/link";
 import BankExplorer from "@/components/BankExplorer";
-import HomeAnnouncement from "@/components/home/HomeAnnouncement";
 import HomeNavbar from "@/components/home/HomeNavbar";
+import HeroAnnouncementsPanel from "@/components/home/HeroAnnouncementsPanel";
 import { interviewBanks } from "@/data/question-banks";
 import { examTypeCategories } from "@/data/question-pools/categories";
 import { loadStructuredInterviewQuestions } from "@/data/question-pools/structured";
@@ -27,10 +27,8 @@ export default async function HomePage() {
   return (
     <main id="top" className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <HomeNavbar />
-      <HomeAnnouncement />
-
       <section className="relative isolate px-6 pb-16 pt-10 md:px-10 md:pt-14">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-6xl items-start gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:gap-10">
           <div>
             <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs text-slate-200">AI 面试练习平台</span>
             <h1 className="mt-4 text-4xl font-bold tracking-tight md:text-6xl">全类型 AI 结构化模拟面试</h1>
@@ -43,6 +41,9 @@ export default async function HomePage() {
                 浏览题库
               </a>
             </div>
+          </div>
+          <div className="w-full">
+            <HeroAnnouncementsPanel />
           </div>
         </div>
       </section>
