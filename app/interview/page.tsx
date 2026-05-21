@@ -197,20 +197,34 @@ function shuffleQuestions<T>(items: T[]): T[] {
 function createSessionQuestions(questions: InterviewQuestion[], count: number): InterviewQuestion[] {
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
 }
-function sortQuestionsByPriority(questions: InterviewQuestion[], keywords: readonly string[]) {
-  const scored = questions.map((q) => {
-    const text = `${q.category} ${q.question}`.toLowerCase();
-    const hit = keywords.some((k) => text.includes(k.toLowerCase()));
-    return { q, score: (q.expectedPoints?.length ? 2 : 0) + (hit ? 3 : 0) + (q.difficulty === "medium" ? 1 : 0) };
-  });
-  return scored.sort((a, b) => b.score - a.score).map((item) => item.q).filter((item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx);
+function getQuestionSearchText(question: InterviewQuestion): string {
+  return [
+    question.question,
+    question.category,
+    question.scoringRubric,
+    ...(question.expectedPoints ?? []),
+    ...(question.round ?? []),
+  ]
+    .filter((item) => Boolean(item))
+    .join(" ")
+    .toLowerCase();
 }
 
-function pickQuestionsByPriority(questions: InterviewQuestion[], count: number, keywords: readonly string[]) {
-  const prioritized = sortQuestionsByPriority(questions, keywords);
-  const matched = prioritized.filter((q) => keywords.some((keyword) => `${q.category} ${q.question}`.toLowerCase().includes(keyword.toLowerCase())));
-  const remaining = prioritized.filter((q) => !matched.some((item) => item.id === q.id));
-  return [...matched, ...remaining].slice(0, count);
+function matchQuestionByKeywords(question: InterviewQuestion, keywords: readonly string[]): boolean {
+  if (keywords.length === 0) return false;
+  const text = getQuestionSearchText(question);
+  return keywords.some((keyword) => text.includes(keyword.toLowerCase()));
+}
+
+function sortQuestionsByPriority(questions: InterviewQuestion[], keywords: readonly string[]): InterviewQuestion[] {
+  const scored = questions.map((q) => {
+    const hit = matchQuestionByKeywords(q, keywords);
+    return { q, score: (q.expectedPoints?.length ? 2 : 0) + (hit ? 3 : 0) + (q.difficulty === "medium" ? 1 : 0) };
+  });
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.q)
+    .filter((item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx);
 }
 
 function mapRoundToInterviewRound(round?: string): InterviewRound {
@@ -304,6 +318,43 @@ function InterviewPageContent() {
   const isFollowupStage = currentTarget === "followup";
   const currentPrompt = isFollowupStage ? followUpQuestion : currentQuestion?.question ?? "";
   const isLastQuestion = index >= activeQuestions.length - 1;
+  const currentBankQuestions = questions;
+
+  const questionPoolMeta = useMemo(() => {
+    const bankQuestions = currentBankQuestions;
+    if (bankQuestions.length === 0) {
+      return { bankCount: 0, matchedCount: 0, selected: [] as InterviewQuestion[] };
+    }
+
+    if (isPublicMode) {
+      if (!selectedMode || isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
+        const shuffled = shuffleQuestions(bankQuestions);
+        return {
+          bankCount: bankQuestions.length,
+          matchedCount: bankQuestions.length,
+          selected: shuffled.slice(0, Math.min(questionCount, shuffled.length)),
+        };
+      }
+      const prioritized = sortQuestionsByPriority(bankQuestions, selectedMode.keywords);
+      const matched = bankQuestions.filter((q) => matchQuestionByKeywords(q, selectedMode.keywords));
+      return {
+        bankCount: bankQuestions.length,
+        matchedCount: matched.length,
+        selected: prioritized.slice(0, Math.min(questionCount, prioritized.length)),
+      };
+    }
+
+    const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : privateRoundOptions[0];
+    const roundMatched = bankQuestions.filter((q) => q.round.includes(privateMode.round) || matchQuestionByKeywords(q, privateMode.keywords));
+    const roundMatchedIds = new Set(roundMatched.map((q) => q.id));
+    const rest = bankQuestions.filter((q) => !roundMatchedIds.has(q.id));
+    const ordered = shuffleQuestions([...roundMatched, ...rest]);
+    return {
+      bankCount: bankQuestions.length,
+      matchedCount: roundMatched.length,
+      selected: ordered.slice(0, Math.min(questionCount, ordered.length)),
+    };
+  }, [currentBankQuestions, isPublicMode, selectedMode, questionCount]);
 
   useEffect(() => {
     if (isPublicMode) {
@@ -587,7 +638,7 @@ function InterviewPageContent() {
   };
 
   const handleStartInterview = async () => {
-    let questionSource = questions;
+    let questionSource = currentBankQuestions;
     try {
       const params = new URLSearchParams({ bankId, examType: bankId, pageSize: "240" });
       if (!isPublicMode && roundFilter) {
@@ -601,15 +652,17 @@ function InterviewPageContent() {
     } catch {
       // ignore and fallback to built-in banks
     }
-    if (!isPublicMode && roundFilter) {
-      const strictRoundFiltered = questionSource.filter((item) => item.round.includes(mapRoundToInterviewRound(roundFilter)));
-      questionSource = strictRoundFiltered.length > 0 ? strictRoundFiltered : pickQuestionsByPriority(questionSource, questionSource.length, selectedMode.keywords);
+    const safeQuestionSource = questionSource.filter((item) => Boolean(item.question));
+    const sourceToUse = safeQuestionSource.length > 0 ? safeQuestionSource : currentBankQuestions;
+    const selectedQuestions = questionPoolMeta.selected.length > 0
+      ? questionPoolMeta.selected
+      : createSessionQuestions(sourceToUse, questionCount);
+    if (!selectedQuestions.length && currentBankQuestions.length > 0) {
+      setTip("当前筛选条件未抽到题目，已自动放宽条件，请重试。");
+      return;
     }
-    const selectedQuestions = isPublicMode && selectedMode.value === "structured-mixed"
-      ? createSessionQuestions(questionSource, questionCount)
-      : pickQuestionsByPriority(questionSource, questionCount, selectedMode.keywords);
     if (!selectedQuestions.length) {
-      setTip("当前题库题量不足，无法完成本场抽题，请调整模拟强度后重试。");
+      setTip("当前题库暂无可用题目，请返回题库检查数据。");
       return;
     }
 
@@ -752,16 +805,17 @@ function InterviewPageContent() {
           <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300">
             <p className="font-medium text-white">题库预览</p>
             <p className="mt-1 text-slate-400">开始面试后，将从当前筛选结果中随机抽取题目。</p>
-            <p className="mt-2">当前题库题数：{questions.length} 题</p>
+            <p className="mt-2">当前题库总题数：{questionPoolMeta.bankCount} 题</p>
+            <p>模式优先匹配：{questionPoolMeta.matchedCount} 题</p>
             <p>本场计划抽取：{questionCount} 题</p>
-            <p>实际抽取：{Math.min(questions.length, questionCount)} 题</p>
+            <p>实际抽取：{questionPoolMeta.selected.length} 题</p>
           </div>
           {!started ? (
             <div className="mt-5">
               <button
                 className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-5 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/20 transition duration-300 hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={handleStartInterview}
-                disabled={questions.length === 0}
+                disabled={currentBankQuestions.length === 0}
               >
                 开始模拟面试
               </button>
@@ -795,8 +849,20 @@ function InterviewPageContent() {
               <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1 text-emerald-200">难度：{currentQuestion?.difficulty ?? "普通"}</span>
             </div>
             <p className="mt-3 text-sm text-slate-400">当前题目</p>
-            <p className="mt-1 text-lg text-white md:text-xl">{currentPrompt || currentQuestion?.question || "点击开始模拟面试后显示首题"}</p>
+            <p className="mt-1 text-lg text-white md:text-xl">{currentPrompt || currentQuestion?.question || (currentBankQuestions.length > 0 ? "点击开始模拟面试后，将从当前题库抽取题目。" : "当前题库暂无可用题目，请返回题库检查数据。")}</p>
             {currentQuestion?.category ? <p className="mt-2 text-sm text-slate-400">题目类型：{currentQuestion.category}</p> : null}
+            {started && sessionQuestions.length === 0 && currentBankQuestions.length > 0 ? (
+              <div className="mt-3 rounded-xl border border-amber-300/20 bg-amber-400/10 p-3 text-sm text-amber-200">
+                <p>当前筛选条件未抽到题目，已自动放宽条件，请重试。</p>
+                <button
+                  type="button"
+                  className="mt-2 rounded-lg border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-xs text-amber-100 hover:bg-amber-300/20"
+                  onClick={handleStartInterview}
+                >
+                  重新抽题
+                </button>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
