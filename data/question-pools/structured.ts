@@ -25,9 +25,9 @@ export type StructuredInterviewQuestion = {
 
 const allowedExamTypes = new Set<ExamType>(["national-civil-service", "provincial-civil-service", "public-institution", "state-owned-enterprise"]);
 const canonicalQuestionTypeSet = new Set<string>(canonicalQuestionTypes);
-const primaryStructuredPoolPath = path.join(process.cwd(), "data/question-pools/structured-interview-questions.json");
+const questionPoolDir = path.join(process.cwd(), "data/question-pools");
+const primaryStructuredPoolPath = path.join(questionPoolDir, "structured-interview-questions.json");
 const fallbackStructuredPoolPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
-const staticAnswerOverridesPath = path.join(process.cwd(), "data/question-pools/structured-answer-overrides.json");
 
 const roundMap: Record<string, string> = { hr: "HR", business: "业务", manager: "主管", final: "终面", stress: "压力", english: "英文", all: "综合", general: "综合", unknown: "综合" };
 const legacyTypeMap: Record<string, QuestionType> = { 综合分析: "综合分析", 计划组织: "计划组织", 应急应变: "应急应变", 人际关系: "人际沟通", 人际沟通: "人际沟通", 岗位认知: "岗位认知" };
@@ -59,9 +59,7 @@ function normalizeRound(round: unknown): string {
 
 function extractYear(item: Record<string, unknown>): string {
   const date = String(item.examDate ?? "");
-  const dateYear = date.match(/20\d{2}/)?.[0];
-  if (dateYear) return dateYear;
-  return String(item.sourceTitle ?? "").match(/20\d{2}/)?.[0] ?? "";
+  return date.match(/20\d{2}/)?.[0] ?? String(item.sourceTitle ?? "").match(/20\d{2}/)?.[0] ?? "";
 }
 
 function isTargetYear(item: Record<string, unknown>): boolean {
@@ -97,20 +95,12 @@ function classifyQuestionType(item: Record<string, unknown>, question: string): 
   if (containsAny(question, ["突发", "突然", "现场", "投诉", "举报", "舆情", "围观", "拍视频", "怎么办", "处理", "争执", "吵闹", "火灾", "停电", "事故", "泄漏", "晕倒", "情绪激动", "大吵大闹", "堵门", "应急"])) return "应急应变";
   if (containsAny(question, ["同事", "领导", "群众", "小王", "小李", "小张", "老王", "老李", "老张", "沟通", "不配合", "不满", "批评", "误会", "矛盾", "分歧", "关系", "抱怨", "情绪低落"])) return "人际沟通";
   if (containsAny(question, ["岗位", "报考", "自我介绍", "优势", "职业规划", "新人", "入职", "适合", "匹配", "为什么选择", "为什么报考", "认识自己", "开展工作"])) return "岗位认知";
-  if (legacyTypeMap[rawType]) return legacyTypeMap[rawType];
-  return "综合分析";
+  return legacyTypeMap[rawType] ?? "综合分析";
 }
 
 function normalizeAbilityTypes(item: Record<string, unknown>, primaryType: QuestionType): string[] {
   const rawAbilityTypes = Array.isArray(item.abilityTypes) ? item.abilityTypes.map(String) : [];
-  const normalized = rawAbilityTypes.map((type) => {
-    if (type === "人际关系") return "沟通协调";
-    if (type === "计划组织") return "组织协调";
-    if (type === "应急应变") return "应急处置";
-    if (type === "岗位认知") return "岗位匹配";
-    if (type === "执法情景") return "依法行政";
-    return type;
-  }).filter((type) => type && !canonicalQuestionTypeSet.has(type));
+  const normalized = rawAbilityTypes.map((type) => ({ 人际关系: "沟通协调", 计划组织: "组织协调", 应急应变: "应急处置", 岗位认知: "岗位匹配", 执法情景: "依法行政" }[type] ?? type)).filter((type) => type && !canonicalQuestionTypeSet.has(type));
   const extra: string[] = [];
   if (primaryType === "计划组织") extra.push("组织协调");
   if (primaryType === "应急应变") extra.push("应急处置");
@@ -130,10 +120,15 @@ function buildFallbackAnswer(question: string, primaryType: QuestionType): strin
 
 async function readAnswerOverrides(): Promise<Record<string, string>> {
   try {
-    const file = await fs.readFile(staticAnswerOverridesPath, "utf8");
-    const parsed = JSON.parse(file);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    return Object.fromEntries(Object.entries(parsed).filter(([, value]) => typeof value === "string")) as Record<string, string>;
+    const files = await fs.readdir(questionPoolDir);
+    const overrideFiles = files.filter((file) => /^structured-answer-overrides.*\.json$/.test(file)).sort();
+    const parsedFiles = await Promise.all(overrideFiles.map(async (file) => {
+      const raw = await fs.readFile(path.join(questionPoolDir, file), "utf8");
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+      return Object.fromEntries(Object.entries(parsed).filter(([, value]) => typeof value === "string")) as Record<string, string>;
+    }));
+    return Object.assign({}, ...parsedFiles);
   } catch {
     return {};
   }
@@ -150,7 +145,6 @@ function normalizeStructuredQuestions(parsed: unknown, answerOverrides: Record<s
       const question = String(item.question ?? "").trim();
       const primaryType = classifyQuestionType(item, question);
       const id = String(item.id);
-      const answer = answerOverrides[id] || buildFallbackAnswer(question, primaryType);
       return {
         id,
         bankId: examType,
@@ -165,7 +159,7 @@ function normalizeStructuredQuestions(parsed: unknown, answerOverrides: Record<s
         jobTags: Array.isArray(item.jobTags) ? item.jobTags.map(String) : [],
         difficulty: String(item.difficulty ?? "medium"),
         round: normalizeRound(item.round),
-        answer,
+        answer: answerOverrides[id] || buildFallbackAnswer(question, primaryType),
         answerStatus: "answered",
       };
     })
