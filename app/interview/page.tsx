@@ -280,7 +280,7 @@ function sortQuestionsByPriority(questions: InterviewQuestion[], keywords: reado
 function pickQuestionsByPriority(
   bankQuestions: InterviewQuestion[],
   count: number,
-  selectedMode: InterviewModeOption | undefined,
+  selectedMode: InterviewModeOption,
   isPrivateInterview: boolean,
 ): { bankCount: number; matchedCount: number; selectedQuestions: InterviewQuestion[] } {
   if (bankQuestions.length === 0) {
@@ -290,7 +290,7 @@ function pickQuestionsByPriority(
   const maxCount = Math.min(count, bankQuestions.length);
 
   if (!isPrivateInterview) {
-    if (!selectedMode || isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
+    if (isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
       return {
         bankCount: bankQuestions.length,
         matchedCount: bankQuestions.length,
@@ -441,10 +441,11 @@ function InterviewPageContent() {
     ? "选择你想模拟的面试轮次，系统会优先抽取对应问题。"
     : "选择结构化面试模式，系统会在当前题库内按模式优先抽题。";
   const questions = useMemo(() => (currentBank?.questions ?? []), [currentBank]);
-  const selectedMode = useMemo(
-    () => activeModeOptions.find((item) => item.value === activeModeKey) ?? activeModeOptions[0],
-    [activeModeKey, activeModeOptions],
-  );
+  const selectedMode = useMemo<InterviewModeOption>(() => {
+    const found = activeModeOptions.find((item) => item.value === activeModeKey);
+    if (found) return found;
+    return isPrivateInterview ? defaultPrivateRoundOption : defaultPublicModeOption;
+  }, [activeModeOptions, activeModeKey, isPrivateInterview]);
 
   const modeMetaText = isPrivateInterview && isPrivateRoundOption(selectedMode)
     ? `轮次：${selectedMode.roundLabel}`
@@ -490,7 +491,7 @@ function InterviewPageContent() {
     }
 
     if (!isPrivateInterview) {
-      if (!selectedMode || isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
+      if (isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
         return {
           bankCount: bankQuestions.length,
           matchedCount: bankQuestions.length,
