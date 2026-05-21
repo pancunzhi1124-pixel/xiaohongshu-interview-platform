@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import TopNavbar from "@/components/layout/TopNavbar";
 
 export const metadata: Metadata = {
   title: "多类型 AI 视频感模拟面试",
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body className="bg-slate-950 text-white">
+        <TopNavbar />
+        {children}
+      </body>
     </html>
   );
 }
