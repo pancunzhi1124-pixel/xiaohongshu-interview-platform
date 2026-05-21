@@ -8,18 +8,33 @@ import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
 
-const roundOptions = [
-  {
-    value: "all",
-    label: "综合",
-    description: "混合多轮次问题",
-    round: "综合",
-    keywords: ["综合"],
-  },
+type PublicInterviewModeKey =
+  | "structured-mixed"
+  | "analysis"
+  | "organization"
+  | "communication"
+  | "emergency"
+  | "position-awareness"
+  | "scenario";
+
+type PrivateInterviewRoundKey =
+  | "hr"
+  | "business"
+  | "manager"
+  | "final"
+  | "stress"
+  | "english"
+  | "project-followup";
+
+type InterviewModeKey = PublicInterviewModeKey | PrivateInterviewRoundKey;
+type RoundFilter = PrivateInterviewRoundKey | "";
+
+const privateRoundOptions = [
   {
     value: "hr",
     label: "HR 初面",
     description: "动机、稳定性、表达",
+    roundLabel: "HR 初面",
     round: "HR",
     keywords: ["自我介绍", "动机", "优势", "稳定"],
   },
@@ -27,6 +42,7 @@ const roundOptions = [
     value: "business",
     label: "业务面",
     description: "岗位能力与案例",
+    roundLabel: "业务面",
     round: "业务",
     keywords: ["能力", "案例", "专业"],
   },
@@ -34,6 +50,7 @@ const roundOptions = [
     value: "manager",
     label: "主管面",
     description: "执行、协作与结果",
+    roundLabel: "主管面",
     round: "主管",
     keywords: ["协作", "项目", "解决"],
   },
@@ -41,6 +58,7 @@ const roundOptions = [
     value: "final",
     label: "终面",
     description: "长期规划与匹配度",
+    roundLabel: "终面",
     round: "终面",
     keywords: ["价值观", "规划", "判断"],
   },
@@ -48,6 +66,7 @@ const roundOptions = [
     value: "stress",
     label: "压力面",
     description: "抗压与应变能力",
+    roundLabel: "压力面",
     round: "压力",
     keywords: ["压力", "冲突", "反问"],
   },
@@ -55,29 +74,29 @@ const roundOptions = [
     value: "english",
     label: "英文面试",
     description: "英文表达与沟通",
+    roundLabel: "英文面",
     round: "英文",
     keywords: ["英文", "english"],
+  },
+  {
+    value: "project-followup",
+    label: "项目经历追问",
+    description: "围绕项目细节深挖追问",
+    roundLabel: "项目经历追问",
+    round: "综合",
+    keywords: ["项目", "经历", "负责", "难点", "复盘", "结果"],
   },
 ] as const;
 const publicBankIds = new Set(["national-civil-service", "provincial-civil-service", "public-institution", "state-owned-enterprise"]);
 const publicModeOptions = [
-  { value: "all", label: "结构化综合面", description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型", round: "综合", keywords: ["综合分析", "组织", "沟通", "应急"] },
-  { value: "analysis", label: "综合分析专项", description: "社会现象、政策理解、观点态度", round: "综合", keywords: ["综合分析", "社会现象", "观点", "政策"] },
-  { value: "organize", label: "组织管理专项", description: "调研、宣传、培训、会议、活动组织", round: "综合", keywords: ["组织", "调研", "宣传", "培训", "活动"] },
-  { value: "communication", label: "人际沟通专项", description: "领导、同事、群众、服务对象沟通", round: "综合", keywords: ["人际", "沟通", "同事", "领导", "群众"] },
-  { value: "emergency", label: "应急应变专项", description: "突发事件、舆情、安全、群众矛盾处理", round: "综合", keywords: ["应急", "突发", "舆情", "安全"] },
-  { value: "position", label: "岗位认知专项", description: "岗位理解、职业规划、责任担当", round: "综合", keywords: ["岗位", "认知", "职业规划", "责任"] },
-  { value: "simulation", label: "情景模拟专项", description: "现场劝说、沟通解释、模拟发言", round: "综合", keywords: ["模拟", "劝说", "发言", "情景"] },
+  { value: "structured-mixed", label: "结构化综合面", description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型", modeLabel: "结构化综合面", keywords: ["综合分析", "组织", "沟通", "应急"] },
+  { value: "analysis", label: "综合分析专项", description: "社会现象、政策理解、观点态度", modeLabel: "综合分析专项", keywords: ["综合分析", "社会现象", "政策理解", "观点理解", "现象", "看法"] },
+  { value: "organization", label: "组织管理专项", description: "调研、宣传、培训、会议、活动组织", modeLabel: "组织管理专项", keywords: ["组织", "调研", "宣传", "培训", "会议", "活动", "检查", "座谈"] },
+  { value: "communication", label: "人际沟通专项", description: "领导、同事、群众、服务对象沟通", modeLabel: "人际沟通专项", keywords: ["人际", "沟通", "领导", "同事", "群众", "协调", "矛盾"] },
+  { value: "emergency", label: "应急应变专项", description: "突发事件、舆情、安全、群众矛盾处理", modeLabel: "应急应变专项", keywords: ["应急", "突发", "舆情", "安全", "事故", "现场", "处理"] },
+  { value: "position-awareness", label: "岗位认知专项", description: "岗位理解、职业规划、责任担当", modeLabel: "岗位认知专项", keywords: ["岗位", "认知", "职业", "规划", "初心", "责任", "担当"] },
+  { value: "scenario", label: "情景模拟专项", description: "现场劝说、沟通解释、模拟发言", modeLabel: "情景模拟专项", keywords: ["模拟", "劝说", "现场", "发言", "沟通", "解释"] },
 ] as const;
-
-type RoundFilter = (typeof roundOptions)[number]["value"];
-type PublicInterviewMode = (typeof publicModeOptions)[number]["value"];
-type InterviewModeKey = RoundFilter | PublicInterviewMode;
-type PrivateCompanyRound = Exclude<RoundFilter, "all">;
-
-function isPrivateCompanyMode(value: InterviewModeKey): value is PrivateCompanyRound {
-  return ["hr", "business", "manager", "final", "stress", "english"].includes(value);
-}
 
 
 type InterviewStatus =
@@ -155,13 +174,20 @@ function shuffleQuestions<T>(items: T[]): T[] {
 function createSessionQuestions(questions: InterviewQuestion[], count: number): InterviewQuestion[] {
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
 }
-function pickQuestionsByPriority(questions: InterviewQuestion[], count: number, keywords: readonly string[]) {
+function sortQuestionsByPriority(questions: InterviewQuestion[], keywords: readonly string[]) {
   const scored = questions.map((q) => {
     const text = `${q.category} ${q.question}`.toLowerCase();
     const hit = keywords.some((k) => text.includes(k.toLowerCase()));
     return { q, score: (q.expectedPoints?.length ? 2 : 0) + (hit ? 3 : 0) + (q.difficulty === "medium" ? 1 : 0) };
   });
-  return scored.sort((a, b) => b.score - a.score).map((item) => item.q).filter((item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx).slice(0, count);
+  return scored.sort((a, b) => b.score - a.score).map((item) => item.q).filter((item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx);
+}
+
+function pickQuestionsByPriority(questions: InterviewQuestion[], count: number, keywords: readonly string[]) {
+  const prioritized = sortQuestionsByPriority(questions, keywords);
+  const matched = prioritized.filter((q) => keywords.some((keyword) => `${q.category} ${q.question}`.toLowerCase().includes(keyword.toLowerCase())));
+  const remaining = prioritized.filter((q) => !matched.some((item) => item.id === q.id));
+  return [...matched, ...remaining].slice(0, count);
 }
 
 function mapRoundToInterviewRound(round?: string): InterviewRound {
@@ -205,8 +231,8 @@ function InterviewPageContent() {
 
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
-  const [roundFilter, setRoundFilter] = useState<RoundFilter>("all");
-  const [activeModeKey, setActiveModeKey] = useState<InterviewModeKey>("all");
+  const [roundFilter, setRoundFilter] = useState<RoundFilter>("hr");
+  const [activeModeKey, setActiveModeKey] = useState<InterviewModeKey>("structured-mixed");
   const [questionCount, setQuestionCount] = useState(initialQuestionCount);
   const [sessionQuestions, setSessionQuestions] = useState<InterviewQuestion[]>([]);
   const [started, setStarted] = useState(false);
@@ -239,14 +265,30 @@ function InterviewPageContent() {
 
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === bankId) ?? interviewBanks[0], [bankId]);
   const isPublicMode = publicBankIds.has(bankId);
-  const activeRoundOptions = isPublicMode ? publicModeOptions : roundOptions;
-  const questions = useMemo(() => (currentBank?.questions ?? []).filter((q) => q.round.includes(round)), [currentBank, round]);
+  const activeModeOptions = isPublicMode ? publicModeOptions : privateRoundOptions;
+  const questions = useMemo(() => (currentBank?.questions ?? []), [currentBank]);
+  const selectedMode = useMemo(
+    () => activeModeOptions.find((item) => item.value === activeModeKey) ?? activeModeOptions[0],
+    [activeModeKey, activeModeOptions],
+  );
   const activeQuestions = started ? sessionQuestions : questions;
   const currentQuestion = activeQuestions[index];
   const currentTarget: InterviewTarget = interviewStatus === "followup_asking" || interviewStatus === "followup_listening" ? "followup" : "main";
   const isFollowupStage = currentTarget === "followup";
   const currentPrompt = isFollowupStage ? followUpQuestion : currentQuestion?.question ?? "";
   const isLastQuestion = index >= activeQuestions.length - 1;
+
+  useEffect(() => {
+    if (isPublicMode) {
+      setActiveModeKey("structured-mixed");
+      setRound("综合");
+      setRoundFilter("");
+      return;
+    }
+    setActiveModeKey("hr");
+    setRound("HR");
+    setRoundFilter("hr");
+  }, [isPublicMode, bankId]);
 
   const statusText = useMemo(() => {
     switch (interviewStatus) {
@@ -521,17 +563,26 @@ function InterviewPageContent() {
     let questionSource = questions;
     try {
       const params = new URLSearchParams({ bankId, examType: bankId, pageSize: "240" });
-      if (roundFilter !== "all") params.set("round", mapRoundToInterviewRound(roundFilter));
+      if (!isPublicMode && roundFilter) {
+        params.set("round", mapRoundToInterviewRound(roundFilter));
+      }
       const res = await fetch(`/api/question-pool?${params.toString()}`);
       const data = (await res.json()) as { questions?: StructuredQuestion[] };
-      if (Array.isArray(data.questions) && data.questions.length > 0) questionSource = mapStructuredToInterviewQuestion(data.questions).filter((q) => q.round.includes(round));
+      if (Array.isArray(data.questions) && data.questions.length > 0) {
+        questionSource = mapStructuredToInterviewQuestion(data.questions);
+      }
     } catch {
       // ignore and fallback to built-in banks
     }
-    const activeMode = activeRoundOptions.find((item) => item.value === activeModeKey) ?? activeRoundOptions[0];
-    const selectedQuestions = activeMode.value === "all" ? createSessionQuestions(questionSource, questionCount) : pickQuestionsByPriority(questionSource, questionCount, activeMode.keywords);
+    if (!isPublicMode && roundFilter) {
+      const strictRoundFiltered = questionSource.filter((item) => item.round.includes(mapRoundToInterviewRound(roundFilter)));
+      questionSource = strictRoundFiltered.length > 0 ? strictRoundFiltered : pickQuestionsByPriority(questionSource, questionSource.length, selectedMode.keywords);
+    }
+    const selectedQuestions = isPublicMode && selectedMode.value === "structured-mixed"
+      ? createSessionQuestions(questionSource, questionCount)
+      : pickQuestionsByPriority(questionSource, questionCount, selectedMode.keywords);
     if (!selectedQuestions.length) {
-      setTip("当前筛选条件下没有可用题目，请更换面试类型或轮次。");
+      setTip("当前题库题量不足，无法完成本场抽题，请调整模拟强度后重试。");
       return;
     }
 
@@ -628,10 +679,10 @@ function InterviewPageContent() {
             ))}
           </select>
           <div className="mt-4">
-            <p className="text-sm text-slate-300">面试轮次</p>
-            <p className="mt-1 text-xs text-slate-400">选择你想模拟的面试场景，系统会优先抽取对应轮次的问题。</p>
+            <p className="text-sm text-slate-300">{isPublicMode ? "面试模式" : "面试轮次"}</p>
+            <p className="mt-1 text-xs text-slate-400">{isPublicMode ? "选择结构化面试模式，系统会在当前题库内按模式优先抽题。" : "选择你想模拟的面试轮次，系统会优先抽取对应问题。"}</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              {activeRoundOptions.map((option) => {
+              {activeModeOptions.map((option) => {
                 const active = activeModeKey === option.value;
 
                 return (
@@ -640,12 +691,13 @@ function InterviewPageContent() {
                     type="button"
                     onClick={() => {
                       setActiveModeKey(option.value);
-                      if (isPrivateCompanyMode(option.value)) {
-                        setRoundFilter(option.value);
+                      if (!isPublicMode) {
+                        setRoundFilter(option.value as PrivateInterviewRoundKey);
+                        setRound(option.round);
                       } else {
-                        setRoundFilter("all");
+                        setRoundFilter("");
+                        setRound("综合");
                       }
-                      setRound(option.round);
                     }}
                     disabled={started}
                     className={`relative rounded-2xl border px-3 py-3 text-left transition duration-300 disabled:cursor-not-allowed disabled:opacity-60 ${
@@ -673,16 +725,16 @@ function InterviewPageContent() {
           <div className="mt-4 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-300">
             <p className="font-medium text-white">题库预览</p>
             <p className="mt-1 text-slate-400">开始面试后，将从当前筛选结果中随机抽取题目。</p>
-            <p className="mt-2">当前筛选题目数：{questions.length} 题</p>
+            <p className="mt-2">当前题库题数：{questions.length} 题</p>
             <p>本场计划抽取：{questionCount} 题</p>
-            <p>实际最多抽取：{Math.min(questions.length, questionCount)} 题</p>
+            <p>实际抽取：{Math.min(questions.length, questionCount)} 题</p>
           </div>
           {!started ? (
             <div className="mt-5">
               <button
                 className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-5 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/20 transition duration-300 hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={handleStartInterview}
-                disabled={!questions.length}
+                disabled={questions.length === 0}
               >
                 开始模拟面试
               </button>
@@ -712,11 +764,11 @@ function InterviewPageContent() {
               <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">状态：{statusText}</span>
               <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">题号：{Math.min(index + 1, activeQuestions.length || 1)}</span>
               <span className="rounded-full border border-blue-300/30 bg-blue-400/15 px-3 py-1 text-blue-200">题库：{currentBank?.name}</span>
-              <span className="rounded-full border border-purple-300/30 bg-purple-400/15 px-3 py-1 text-purple-200">轮次：{round}</span>
+              <span className="rounded-full border border-purple-300/30 bg-purple-400/15 px-3 py-1 text-purple-200">{isPublicMode ? `模式：${selectedMode.label}` : `轮次：${selectedMode.roundLabel}`}</span>
               <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1 text-emerald-200">难度：{currentQuestion?.difficulty ?? "普通"}</span>
             </div>
             <p className="mt-3 text-sm text-slate-400">当前题目</p>
-            <p className="mt-1 text-lg text-white md:text-xl">{currentPrompt || currentQuestion?.question || "已完成全部题目"}</p>
+            <p className="mt-1 text-lg text-white md:text-xl">{currentPrompt || currentQuestion?.question || "点击开始模拟面试后显示首题"}</p>
             {currentQuestion?.category ? <p className="mt-2 text-sm text-slate-400">题目类型：{currentQuestion.category}</p> : null}
           </div>
 
