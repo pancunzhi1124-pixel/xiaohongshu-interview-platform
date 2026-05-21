@@ -29,7 +29,30 @@ type PrivateInterviewRoundKey =
 type InterviewModeKey = PublicInterviewModeKey | PrivateInterviewRoundKey;
 type RoundFilter = PrivateInterviewRoundKey | "";
 
-const privateRoundOptions = [
+type PublicInterviewModeOption = {
+  value: PublicInterviewModeKey;
+  label: string;
+  description: string;
+  modeLabel: string;
+  keywords: readonly string[];
+};
+
+type PrivateInterviewRoundOption = {
+  value: PrivateInterviewRoundKey;
+  label: string;
+  description: string;
+  roundLabel: string;
+  round: InterviewRound;
+  keywords: readonly string[];
+};
+
+type InterviewModeOption = PublicInterviewModeOption | PrivateInterviewRoundOption;
+
+function hasRound(option: InterviewModeOption): option is PrivateInterviewRoundOption {
+  return "round" in option;
+}
+
+const privateRoundOptions: readonly PrivateInterviewRoundOption[] = [
   {
     value: "hr",
     label: "HR 初面",
@@ -88,7 +111,7 @@ const privateRoundOptions = [
   },
 ] as const;
 const publicBankIds = new Set(["national-civil-service", "provincial-civil-service", "public-institution", "state-owned-enterprise"]);
-const publicModeOptions = [
+const publicModeOptions: readonly PublicInterviewModeOption[] = [
   { value: "structured-mixed", label: "结构化综合面", description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型", modeLabel: "结构化综合面", keywords: ["综合分析", "组织", "沟通", "应急"] },
   { value: "analysis", label: "综合分析专项", description: "社会现象、政策理解、观点态度", modeLabel: "综合分析专项", keywords: ["综合分析", "社会现象", "政策理解", "观点理解", "现象", "看法"] },
   { value: "organization", label: "组织管理专项", description: "调研、宣传、培训、会议、活动组织", modeLabel: "组织管理专项", keywords: ["组织", "调研", "宣传", "培训", "会议", "活动", "检查", "座谈"] },
@@ -691,8 +714,8 @@ function InterviewPageContent() {
                     type="button"
                     onClick={() => {
                       setActiveModeKey(option.value);
-                      if (!isPublicMode) {
-                        setRoundFilter(option.value as PrivateInterviewRoundKey);
+                      if (hasRound(option)) {
+                        setRoundFilter(option.value);
                         setRound(option.round);
                       } else {
                         setRoundFilter("");
