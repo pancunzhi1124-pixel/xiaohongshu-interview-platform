@@ -344,12 +344,13 @@ function InterviewPageContent() {
 
   const normalizedBankId = useMemo(() => normalizeStructuredBankId(bankId), [bankId]);
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === normalizedBankId) ?? interviewBanks[0], [normalizedBankId]);
-  const isPublicMode =
-    normalizedBankId === "national-civil-service" ||
-    normalizedBankId === "provincial-civil-service" ||
-    normalizedBankId === "public-institution" ||
-    normalizedBankId === "state-owned-enterprise";
-  const activeModeOptions = isPublicMode ? publicModeOptions : privateRoundOptions;
+  const isPrivateCompany = normalizedBankId === "private-company";
+  const isPublicMode = !isPrivateCompany;
+  const activeModeOptions = isPrivateCompany ? privateRoundOptions : publicModeOptions;
+  const modeSectionTitle = isPrivateCompany ? "面试轮次" : "面试模式";
+  const modeSectionDescription = isPrivateCompany
+    ? "选择你想模拟的面试轮次，系统会优先抽取对应问题。"
+    : "选择结构化面试模式，系统会在当前题库内按模式优先抽题。";
   const questions = useMemo(() => (currentBank?.questions ?? []), [currentBank]);
   const selectedMode = useMemo(
     () => activeModeOptions.find((item) => item.value === activeModeKey) ?? activeModeOptions[0],
@@ -818,8 +819,8 @@ function InterviewPageContent() {
             ))}
           </select>
           <div className="mt-4">
-            <p className="text-sm text-slate-300">{isPublicMode ? "面试模式" : "面试轮次"}</p>
-            <p className="mt-1 text-xs text-slate-400">{isPublicMode ? "选择结构化面试模式，系统会在当前题库内按模式优先抽题。" : "选择你想模拟的面试轮次，系统会优先抽取对应问题。"}</p>
+            <p className="text-sm text-slate-300">{modeSectionTitle}</p>
+            <p className="mt-1 text-xs text-slate-400">{modeSectionDescription}</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               {activeModeOptions.map((option) => {
                 const active = activeModeKey === option.value;
