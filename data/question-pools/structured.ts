@@ -39,7 +39,7 @@ function containsAny(text: string, keys: string[]) {
 function inferExamType(raw: Record<string, unknown>): ExamType {
   const bankId = String(raw.bankId ?? "").toLowerCase();
   const text = [raw.sourceTitle, raw.question, ...(Array.isArray(raw.jobTags) ? raw.jobTags : [raw.jobTags])].filter(Boolean).join(" ").toLowerCase();
-  if (bankId === "national-civil-service" || containsAny(text, ["国考", "国家公务员", "中央机关", "税务系统", "税务局", "国税", "海关", "边检", "铁路公安", "公安系统", "国家部委"])) return "national-civil-service";
+  if (bankId === "national-civil-service" || containsAny(text, ["国考", "国家公务员", "中央机关", "税务系统", "税务局", "国税", "海关", "边检", "铁路公安", "公安系统", "国家部委", "部委", "国考面试", "国考税务", "国考海关"])) return "national-civil-service";
   if (bankId === "provincial-civil-service" || bankId === "civil-service-structured" || (containsAny(text, ["省考", "公务员", "选调", "定向选调", "省直", "市直", "县区公务员", "市考", "遴选", "三支一扶"]) && !containsAny(text, ["国考", "国家公务员", "中央机关"]))) return "provincial-civil-service";
   if (bankId === "state-owned-enterprise" || containsAny(text, ["国企", "央企", "银行", "农商", "国家电网", "国网", "电力系统", "烟草", "铁路", "移动", "联通", "电信", "国资", "有限公司", "中烟", "邮政"])) return "state-owned-enterprise";
   return "public-institution";
