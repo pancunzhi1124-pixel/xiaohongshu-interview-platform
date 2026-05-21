@@ -9,8 +9,9 @@ type BankPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-type BankDisplayQuestion = Omit<StructuredInterviewQuestion, "examType" | "abilityTypes" | "jobTags"> & {
+type BankDisplayQuestion = Omit<StructuredInterviewQuestion, "examType" | "abilityTypes" | "jobTags" | "primaryType"> & {
   examType: StructuredInterviewQuestion["examType"] | "private-company";
+  primaryType: string;
   abilityTypes: string[];
   jobTags: string[];
 };
@@ -20,7 +21,7 @@ type FilterKey = "type" | "job" | "province" | "year" | "difficulty" | "round";
 const examTypeIds = new Set(Object.keys(examTypeCategoryMap));
 const getOne = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 const unique = (arr: string[]) => Array.from(new Set(arr.filter(Boolean))).sort();
-const defaultTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知"];
+const defaultTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"];
 const filterLabels: Record<FilterKey, string> = {
   type: "题型",
   job: "岗位",
