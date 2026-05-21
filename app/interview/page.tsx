@@ -48,8 +48,8 @@ type PrivateInterviewRoundOption = {
 
 type InterviewModeOption = PublicInterviewModeOption | PrivateInterviewRoundOption;
 
-function hasRound(option: InterviewModeOption): option is PrivateInterviewRoundOption {
-  return "round" in option;
+function isPrivateRoundOption(option: InterviewModeOption): option is PrivateInterviewRoundOption {
+  return "roundLabel" in option;
 }
 
 const privateRoundOptions: readonly PrivateInterviewRoundOption[] = [
@@ -294,6 +294,10 @@ function InterviewPageContent() {
     () => activeModeOptions.find((item) => item.value === activeModeKey) ?? activeModeOptions[0],
     [activeModeKey, activeModeOptions],
   );
+
+  const modeMetaText = isPrivateRoundOption(selectedMode)
+    ? `轮次：${selectedMode.roundLabel}`
+    : `模式：${selectedMode.label}`;
   const activeQuestions = started ? sessionQuestions : questions;
   const currentQuestion = activeQuestions[index];
   const currentTarget: InterviewTarget = interviewStatus === "followup_asking" || interviewStatus === "followup_listening" ? "followup" : "main";
@@ -714,7 +718,7 @@ function InterviewPageContent() {
                     type="button"
                     onClick={() => {
                       setActiveModeKey(option.value);
-                      if (hasRound(option)) {
+                      if (isPrivateRoundOption(option)) {
                         setRoundFilter(option.value);
                         setRound(option.round);
                       } else {
@@ -787,7 +791,7 @@ function InterviewPageContent() {
               <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">状态：{statusText}</span>
               <span className="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-3 py-1 text-cyan-200">题号：{Math.min(index + 1, activeQuestions.length || 1)}</span>
               <span className="rounded-full border border-blue-300/30 bg-blue-400/15 px-3 py-1 text-blue-200">题库：{currentBank?.name}</span>
-              <span className="rounded-full border border-purple-300/30 bg-purple-400/15 px-3 py-1 text-purple-200">{isPublicMode ? `模式：${selectedMode.label}` : `轮次：${selectedMode.roundLabel}`}</span>
+              <span className="rounded-full border border-purple-300/30 bg-purple-400/15 px-3 py-1 text-purple-200">{modeMetaText}</span>
               <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1 text-emerald-200">难度：{currentQuestion?.difficulty ?? "普通"}</span>
             </div>
             <p className="mt-3 text-sm text-slate-400">当前题目</p>
