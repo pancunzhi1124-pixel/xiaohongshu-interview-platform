@@ -47,6 +47,7 @@ type PrivateInterviewRoundOption = {
 };
 
 type InterviewModeOption = PublicInterviewModeOption | PrivateInterviewRoundOption;
+type InterviewUiKind = "public-structured" | "private-company";
 type StructuredBankId =
   | "national-civil-service"
   | "provincial-civil-service"
@@ -56,6 +57,40 @@ type StructuredBankId =
 
 function isPrivateRoundOption(option: InterviewModeOption): option is PrivateInterviewRoundOption {
   return "roundLabel" in option;
+}
+
+function getInterviewUiKind(inputId: string, inputName?: string): InterviewUiKind {
+  const text = `${inputId} ${inputName ?? ""}`.toLowerCase();
+
+  if (
+    text.includes("private-company")
+    || text.includes("通用求职")
+    || text.includes("私企")
+    || text.includes("民企")
+    || text.includes("求职面试")
+  ) {
+    return "private-company";
+  }
+
+  if (
+    text.includes("national-civil-service")
+    || text.includes("provincial-civil-service")
+    || text.includes("public-institution")
+    || text.includes("state-owned-enterprise")
+    || text.includes("国考")
+    || text.includes("省考")
+    || text.includes("事业编")
+    || text.includes("事业单位")
+    || text.includes("公务员")
+    || text.includes("选调")
+    || text.includes("国企")
+    || text.includes("央企")
+    || text.includes("银行结构化")
+  ) {
+    return "public-structured";
+  }
+
+  return "private-company";
 }
 
 const privateRoundOptions: readonly PrivateInterviewRoundOption[] = [
@@ -344,11 +379,12 @@ function InterviewPageContent() {
 
   const normalizedBankId = useMemo(() => normalizeStructuredBankId(bankId), [bankId]);
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === normalizedBankId) ?? interviewBanks[0], [normalizedBankId]);
-  const isPrivateCompany = normalizedBankId === "private-company";
-  const isPublicMode = !isPrivateCompany;
-  const activeModeOptions = isPrivateCompany ? privateRoundOptions : publicModeOptions;
-  const modeSectionTitle = isPrivateCompany ? "面试轮次" : "面试模式";
-  const modeSectionDescription = isPrivateCompany
+  const interviewUiKind = useMemo(() => getInterviewUiKind(bankId, currentBank?.name), [bankId, currentBank?.name]);
+  const isPrivateInterview = interviewUiKind === "private-company";
+  const isPublicMode = !isPrivateInterview;
+  const activeModeOptions = isPrivateInterview ? privateRoundOptions : publicModeOptions;
+  const modeSectionTitle = isPrivateInterview ? "面试轮次" : "面试模式";
+  const modeSectionDescription = isPrivateInterview
     ? "选择你想模拟的面试轮次，系统会优先抽取对应问题。"
     : "选择结构化面试模式，系统会在当前题库内按模式优先抽题。";
   const questions = useMemo(() => (currentBank?.questions ?? []), [currentBank]);
@@ -357,7 +393,7 @@ function InterviewPageContent() {
     [activeModeKey, activeModeOptions],
   );
 
-  const modeMetaText = isPrivateRoundOption(selectedMode)
+  const modeMetaText = isPrivateInterview && isPrivateRoundOption(selectedMode)
     ? `轮次：${selectedMode.roundLabel}`
     : `模式：${selectedMode.label}`;
   const activeQuestions = started ? sessionQuestions : questions;
@@ -400,7 +436,7 @@ function InterviewPageContent() {
       return { bankCount: 0, matchedCount: 0, selected: [] as InterviewQuestion[] };
     }
 
-    if (isPublicMode) {
+    if (!isPrivateInterview) {
       if (!selectedMode || isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
         const shuffled = shuffleQuestions(bankQuestions);
         return {
@@ -428,19 +464,19 @@ function InterviewPageContent() {
       matchedCount: roundMatched.length,
       selected: ordered.slice(0, Math.min(questionCount, ordered.length)),
     };
-  }, [currentBankQuestions, isPublicMode, selectedMode, questionCount]);
+  }, [currentBankQuestions, isPrivateInterview, selectedMode, questionCount]);
 
   useEffect(() => {
-    if (isPublicMode) {
-      setActiveModeKey("structured-mixed");
-      setRound("综合");
-      setRoundFilter("");
+    if (isPrivateInterview) {
+      setActiveModeKey("hr");
+      setRound("HR");
+      setRoundFilter("hr");
       return;
     }
-    setActiveModeKey("hr");
-    setRound("HR");
-    setRoundFilter("hr");
-  }, [isPublicMode, normalizedBankId]);
+    setActiveModeKey("structured-mixed");
+    setRound("综合");
+    setRoundFilter("");
+  }, [isPrivateInterview, bankId]);
 
   const statusText = useMemo(() => {
     switch (interviewStatus) {
@@ -831,7 +867,7 @@ function InterviewPageContent() {
                     type="button"
                     onClick={() => {
                       setActiveModeKey(option.value);
-                      if (isPrivateRoundOption(option)) {
+                      if (isPrivateInterview && isPrivateRoundOption(option)) {
                         setRoundFilter(option.value);
                         setRound(option.round);
                       } else {
