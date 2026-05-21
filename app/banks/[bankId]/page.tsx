@@ -15,28 +15,41 @@ type BankDisplayQuestion = Omit<StructuredInterviewQuestion, "examType" | "abili
   primaryType: string;
   abilityTypes: string[];
   jobTags: string[];
+  industry?: string;
+  companyType?: string;
+  company?: string;
+  position?: string;
 };
 
-type FilterKey = "type" | "job" | "province" | "year" | "difficulty" | "round";
+type PublicFilterKey = "type" | "job" | "province" | "year" | "difficulty" | "round";
+type PrivateFilterKey = "industry" | "companyType" | "position" | "round" | "type" | "difficulty";
 
 const examTypeIds = new Set(Object.keys(examTypeCategoryMap));
 const getOne = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 const unique = (arr: string[]) => Array.from(new Set(arr.filter(Boolean))).sort();
 const defaultTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"];
-const filterLabels: Record<FilterKey, string> = {
-  type: "题型",
+const publicFilterLabels: Record<PublicFilterKey, string> = {
+  type: "类型",
   job: "岗位",
   province: "地区",
   year: "年份",
   difficulty: "难度",
-  round: "轮次",
+  round: "批次",
+};
+const privateFilterLabels: Record<PrivateFilterKey, string> = {
+  industry: "行业",
+  companyType: "公司类型",
+  position: "岗位方向",
+  round: "面试轮次",
+  type: "题型",
+  difficulty: "难度",
 };
 const difficultyLabels: Record<string, string> = {
   easy: "简单",
   medium: "中等",
   hard: "较难",
 };
-const displayOption = (key: FilterKey, value: string) => key === "difficulty" ? difficultyLabels[value] ?? value : value;
+const displayDifficulty = (value: string) => difficultyLabels[value] ?? value;
 
 export default async function BankPage({ params, searchParams }: BankPageProps) {
   const { bankId } = await params;
@@ -44,6 +57,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
   const allPool = await loadStructuredInterviewQuestions();
   const isExamType = examTypeIds.has(bankId);
   const bank = interviewBanks.find((item) => item.id === bankId);
+  const isPrivateCompany = bankId === "private-company";
 
   if (!isExamType && !bank) notFound();
 
@@ -67,12 +81,18 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
         difficulty: q.difficulty ?? "medium",
         round: q.round[0] ?? "综合",
         answerStatus: "pending",
+        company: "",
+        companyType: "",
+        industry: "",
+        position: "",
       }))
     : [];
 
   const fallback: BankDisplayQuestion[] = !isExamType && sourceQuestions.length === 0 ? builtInQuestions : sourceQuestions;
   const keyword = getOne(query.keyword).trim().toLowerCase();
-  const filters = {
+  const page = Math.max(Number(getOne(query.page) || "1") || 1, 1);
+
+  const publicFilters: Record<PublicFilterKey, string> = {
     type: getOne(query.type) || "all",
     job: getOne(query.job) || "all",
     province: getOne(query.province) || "all",
@@ -80,21 +100,43 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
     difficulty: getOne(query.difficulty) || "all",
     round: getOne(query.round) || "all",
   };
-  const page = Math.max(Number(getOne(query.page) || "1") || 1, 1);
+
+  const privateFilters: Record<PrivateFilterKey, string> = {
+    industry: getOne(query.industry) || "all",
+    companyType: getOne(query.companyType) || "all",
+    position: getOne(query.position) || "all",
+    round: getOne(query.round) || "all",
+    type: getOne(query.type) || "all",
+    difficulty: getOne(query.difficulty) || "all",
+  };
 
   const filtered = fallback.filter((q) => {
     const year = q.examDate?.slice(0, 4) || "";
     const abilityTypes: string[] = q.abilityTypes ?? [];
     const jobTags: string[] = q.jobTags ?? [];
+    const company = q.company ?? "";
+    const position = q.position ?? jobTags[0] ?? "";
+
+    if (isPrivateCompany) {
+      return (
+        (!keyword || [q.question, q.sourceTitle, company, position, q.questionNo].join(" ").toLowerCase().includes(keyword)) &&
+        (privateFilters.industry === "all" || q.industry === privateFilters.industry) &&
+        (privateFilters.companyType === "all" || q.companyType === privateFilters.companyType) &&
+        (privateFilters.position === "all" || position === privateFilters.position || jobTags.includes(privateFilters.position)) &&
+        (privateFilters.round === "all" || q.round === privateFilters.round) &&
+        (privateFilters.type === "all" || q.primaryType === privateFilters.type || abilityTypes.includes(privateFilters.type)) &&
+        (privateFilters.difficulty === "all" || q.difficulty === privateFilters.difficulty)
+      );
+    }
 
     return (
       (!keyword || [q.question, q.sourceTitle, q.province, q.questionNo].join(" ").toLowerCase().includes(keyword)) &&
-      (filters.type === "all" || q.primaryType === filters.type || abilityTypes.includes(filters.type)) &&
-      (filters.job === "all" || jobTags.includes(filters.job)) &&
-      (filters.province === "all" || q.province === filters.province) &&
-      (filters.year === "all" || year === filters.year) &&
-      (filters.difficulty === "all" || q.difficulty === filters.difficulty) &&
-      (filters.round === "all" || q.round === filters.round)
+      (publicFilters.type === "all" || q.primaryType === publicFilters.type || abilityTypes.includes(publicFilters.type)) &&
+      (publicFilters.job === "all" || jobTags.includes(publicFilters.job)) &&
+      (publicFilters.province === "all" || q.province === publicFilters.province) &&
+      (publicFilters.year === "all" || year === publicFilters.year) &&
+      (publicFilters.difficulty === "all" || q.difficulty === publicFilters.difficulty) &&
+      (publicFilters.round === "all" || q.round === publicFilters.round)
     );
   });
 
@@ -108,17 +150,20 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
   const jobs = unique(fallback.flatMap((q) => q.jobTags));
   const rounds = unique(fallback.map((q) => q.round));
   const difficultyOptions = unique(fallback.map((q) => q.difficulty));
+  const industries = unique(fallback.map((q) => q.industry ?? ""));
+  const companyTypes = unique(fallback.map((q) => q.companyType ?? ""));
+  const positions = unique(fallback.flatMap((q) => [q.position ?? "", ...(q.jobTags ?? [])]));
   const title = isExamType ? examTypeCategoryMap[bankId as keyof typeof examTypeCategoryMap].name : bank?.name || bankId;
   const desc = isExamType ? examTypeCategoryMap[bankId as keyof typeof examTypeCategoryMap].description : bank?.description || "";
   const yearRange = years.length ? `${years[0]} - ${years[years.length - 1]}` : "-";
   const qstr = (p: number) => {
     const sp = new URLSearchParams();
-    Object.entries({ ...filters, keyword: keyword || "", page: String(p) }).forEach(([k, v]) => {
+    const activeFilters = isPrivateCompany ? privateFilters : publicFilters;
+    Object.entries({ ...activeFilters, keyword: keyword || "", page: String(p) }).forEach(([k, v]) => {
       if (v && v !== "all") sp.set(k, v);
     });
     return `/banks/${bankId}?${sp.toString()}`;
   };
-  const getOptions = (key: FilterKey) => key === "type" ? types : key === "job" ? jobs : key === "province" ? provinces : key === "year" ? years : key === "difficulty" ? difficultyOptions : rounds;
 
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-8 text-white md:px-10">
@@ -136,15 +181,41 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
           </div>
         </header>
         <form className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-4">
-          <input name="keyword" defaultValue={keyword} placeholder="搜索题目、来源、地区、题号" className="rounded-lg bg-slate-900 px-3 py-2" />
-          {(["type", "job", "province", "year", "difficulty", "round"] as const).map((k) => (
-            <select key={k} name={k} defaultValue={filters[k]} className="rounded-lg bg-slate-900 px-3 py-2">
-              <option value="all">全部{filterLabels[k]}</option>
-              {getOptions(k).map((x) => (
-                <option key={x} value={x}>{displayOption(k, x)}</option>
-              ))}
-            </select>
-          ))}
+          <input
+            name="keyword"
+            defaultValue={keyword}
+            placeholder={isPrivateCompany ? "搜索公司、岗位、题目关键词" : "搜索题目、来源、地区、题号"}
+            className="rounded-lg bg-slate-900 px-3 py-2"
+          />
+          {isPrivateCompany ? (
+            ([
+              ["industry", industries],
+              ["companyType", companyTypes],
+              ["position", positions],
+              ["round", rounds],
+              ["type", types],
+              ["difficulty", difficultyOptions],
+            ] as const).map(([k, options]) => (
+              <select key={k} name={k} defaultValue={privateFilters[k]} className="rounded-lg bg-slate-900 px-3 py-2">
+                <option value="all">全部{privateFilterLabels[k]}</option>
+                {options.map((x) => (
+                  <option key={x} value={x}>{k === "difficulty" ? displayDifficulty(x) : x}</option>
+                ))}
+              </select>
+            ))
+          ) : (
+            (["type", "job", "province", "year", "difficulty", "round"] as const).map((k) => {
+              const options = k === "type" ? types : k === "job" ? jobs : k === "province" ? provinces : k === "year" ? years : k === "difficulty" ? difficultyOptions : rounds;
+              return (
+                <select key={k} name={k} defaultValue={publicFilters[k]} className="rounded-lg bg-slate-900 px-3 py-2">
+                  <option value="all">全部{publicFilterLabels[k]}</option>
+                  {options.map((x) => (
+                    <option key={x} value={x}>{k === "difficulty" ? displayDifficulty(x) : x}</option>
+                  ))}
+                </select>
+              );
+            })
+          )}
           <button className="rounded-lg bg-cyan-500 px-3 py-2">筛选</button>
         </form>
         {items.length === 0 ? (
@@ -156,7 +227,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
               return (
                 <article key={q.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <p className="text-base font-semibold">{displayNo}. {q.question}</p>
-                  <p className="mt-1 text-sm text-slate-300">题型：{q.primaryType}｜能力：{q.abilityTypes.join("、") || "-"}｜岗位：{q.jobTags.join("、") || "-"}</p>
+                  <p className="mt-1 text-sm text-slate-300">题型：{q.primaryType}｜能力：{q.abilityTypes.join("、") || "-"}｜岗位：{q.jobTags.join("、") || q.position || "-"}</p>
                   <p className="mt-1 text-xs text-slate-400">来源：{q.sourceTitle || "-"}｜日期：{q.examDate || "-"}｜地区：{q.province || "-"}｜难度：{difficultyLabels[q.difficulty] ?? q.difficulty ?? "-"}｜轮次：{q.round || "-"}</p>
                   {q.answerStatus === "pending" && <p className="mt-2 text-sm text-amber-300">参考答案暂未整理，可先使用 AI 模拟面试进行作答训练。</p>}
                   {q.answerStatus === "answered" && q.answer && (
