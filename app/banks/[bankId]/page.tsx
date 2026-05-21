@@ -4,6 +4,9 @@ import { interviewBanks } from "@/data/question-banks";
 import { examTypeCategoryMap } from "@/data/question-pools/categories";
 import { loadStructuredInterviewQuestions, type StructuredInterviewQuestion } from "@/data/question-pools/structured";
 import { formatAnswerForDisplay } from "@/lib/formatAnswerForDisplay";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
+import FloatingOrbs from "@/components/ui/FloatingOrbs";
+import GlassCard from "@/components/ui/GlassCard";
 
 type BankPageProps = {
   params: Promise<{ bankId: string }>;
@@ -165,11 +168,15 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
     return `/banks/${bankId}?${sp.toString()}`;
   };
 
+  const hasActiveFilters = Object.values(isPrivateCompany ? privateFilters : publicFilters).some((v) => v !== "all") || Boolean(keyword);
+
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white md:px-10">
+    <main className="relative min-h-screen bg-slate-950 px-6 py-8 text-white md:px-10">
+      <AnimatedBackground />
+      <FloatingOrbs />
       <div className="mx-auto max-w-6xl space-y-6">
         <Link href="/" className="text-sm text-slate-300">← 返回首页</Link>
-        <header className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <GlassCard className="p-5">
           <h1 className="text-3xl font-bold">{title}</h1>
           <p className="mt-2 text-slate-300">{desc}</p>
           <div className="mt-3 grid gap-2 text-sm text-slate-300 md:grid-cols-5">
@@ -179,13 +186,13 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
             <p>覆盖题型：{types.length}</p>
             <Link href={`/interview?bank=${bankId}`} className="text-cyan-300">开始模拟面试 →</Link>
           </div>
-        </header>
-        <form className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-4">
+        </GlassCard>
+        <form className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-3 xl:grid-cols-4">
           <input
             name="keyword"
             defaultValue={keyword}
             placeholder={isPrivateCompany ? "搜索公司、岗位、题目关键词" : "搜索题目、来源、地区、题号"}
-            className="rounded-lg bg-slate-900 px-3 py-2"
+            className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 focus:border-cyan-300"
           />
           {isPrivateCompany ? (
             ([
@@ -196,7 +203,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
               ["type", types],
               ["difficulty", difficultyOptions],
             ] as const).map(([k, options]) => (
-              <select key={k} name={k} defaultValue={privateFilters[k]} className="rounded-lg bg-slate-900 px-3 py-2">
+              <select key={k} name={k} defaultValue={privateFilters[k]} className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 focus:border-cyan-300">
                 <option value="all">全部{privateFilterLabels[k]}</option>
                 {options.map((x) => (
                   <option key={x} value={x}>{k === "difficulty" ? displayDifficulty(x) : x}</option>
@@ -207,7 +214,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
             (["type", "job", "province", "year", "difficulty", "round"] as const).map((k) => {
               const options = k === "type" ? types : k === "job" ? jobs : k === "province" ? provinces : k === "year" ? years : k === "difficulty" ? difficultyOptions : rounds;
               return (
-                <select key={k} name={k} defaultValue={publicFilters[k]} className="rounded-lg bg-slate-900 px-3 py-2">
+                <select key={k} name={k} defaultValue={publicFilters[k]} className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 focus:border-cyan-300">
                   <option value="all">全部{publicFilterLabels[k]}</option>
                   {options.map((x) => (
                     <option key={x} value={x}>{k === "difficulty" ? displayDifficulty(x) : x}</option>
@@ -216,10 +223,12 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
               );
             })
           )}
-          <button className="rounded-lg bg-cyan-500 px-3 py-2">筛选</button>
+          <button className="rounded-lg bg-cyan-500 px-3 py-2 transition hover:bg-cyan-400">应用筛选</button>
+          <Link href={`/banks/${bankId}`} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-center text-sm text-slate-200 hover:bg-white/10">重置筛选</Link>
         </form>
+        {hasActiveFilters ? <div className="flex flex-wrap gap-2">{Object.entries(isPrivateCompany ? privateFilters : publicFilters).filter(([,v]) => v!=="all").map(([k,v]) => <span key={k} className="rounded-full border border-cyan-300/40 bg-cyan-400/10 px-3 py-1 text-xs">{k}：{v}</span>)}{keyword ? <span className="rounded-full border border-purple-300/40 bg-purple-400/10 px-3 py-1 text-xs">关键词：{keyword}</span> : null}</div> : null}
         {items.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/20 p-8 text-center text-slate-300">没有符合条件的题目。</div>
+          <div className="rounded-2xl border border-dashed border-white/20 p-8 text-center text-slate-300">当前筛选条件较严格，建议重置筛选或减少筛选项。</div>
         ) : (
           <div className="space-y-4">
             {items.map((q, idx) => {

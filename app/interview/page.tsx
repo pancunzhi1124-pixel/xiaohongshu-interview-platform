@@ -4,6 +4,9 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { interviewBanks, type InterviewQuestion, type InterviewRound } from "@/data/question-banks";
 import InterviewIntensitySelector from "@/components/InterviewIntensitySelector";
+import AnimatedBackground from "@/components/ui/AnimatedBackground";
+import FloatingOrbs from "@/components/ui/FloatingOrbs";
+import GlassCard from "@/components/ui/GlassCard";
 
 const roundOptions = [
   {
@@ -11,43 +14,60 @@ const roundOptions = [
     label: "综合",
     description: "混合多轮次问题",
     round: "综合",
+    keywords: ["综合"],
   },
   {
     value: "hr",
     label: "HR 初面",
     description: "动机、稳定性、表达",
     round: "HR",
+    keywords: ["自我介绍", "动机", "优势", "稳定"],
   },
   {
     value: "business",
     label: "业务面",
     description: "岗位能力与案例",
     round: "业务",
+    keywords: ["能力", "案例", "专业"],
   },
   {
     value: "manager",
     label: "主管面",
     description: "执行、协作与结果",
     round: "主管",
+    keywords: ["协作", "项目", "解决"],
   },
   {
     value: "final",
     label: "终面",
     description: "长期规划与匹配度",
     round: "终面",
+    keywords: ["价值观", "规划", "判断"],
   },
   {
     value: "stress",
     label: "压力面",
     description: "抗压与应变能力",
     round: "压力",
+    keywords: ["压力", "冲突", "反问"],
   },
   {
     value: "english",
     label: "英文面试",
     description: "英文表达与沟通",
     round: "英文",
+    keywords: ["英文", "english"],
   },
+] as const;
+const publicBankIds = new Set(["national-civil-service", "provincial-civil-service", "public-institution", "state-owned-enterprise"]);
+const publicModeOptions = [
+  { value: "all", label: "结构化综合面", description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型", round: "综合", keywords: ["综合分析", "组织", "沟通", "应急"] },
+  { value: "analysis", label: "综合分析专项", description: "社会现象、政策理解、观点态度", round: "综合", keywords: ["综合分析", "社会现象", "观点", "政策"] },
+  { value: "organize", label: "组织管理专项", description: "调研、宣传、培训、会议、活动组织", round: "综合", keywords: ["组织", "调研", "宣传", "培训", "活动"] },
+  { value: "communication", label: "人际沟通专项", description: "领导、同事、群众、服务对象沟通", round: "综合", keywords: ["人际", "沟通", "同事", "领导", "群众"] },
+  { value: "emergency", label: "应急应变专项", description: "突发事件、舆情、安全、群众矛盾处理", round: "综合", keywords: ["应急", "突发", "舆情", "安全"] },
+  { value: "position", label: "岗位认知专项", description: "岗位理解、职业规划、责任担当", round: "综合", keywords: ["岗位", "认知", "职业规划", "责任"] },
+  { value: "simulation", label: "情景模拟专项", description: "现场劝说、沟通解释、模拟发言", round: "综合", keywords: ["模拟", "劝说", "发言", "情景"] },
 ] as const;
 
 type RoundFilter = (typeof roundOptions)[number]["value"];
@@ -128,6 +148,14 @@ function shuffleQuestions<T>(items: T[]): T[] {
 function createSessionQuestions(questions: InterviewQuestion[], count: number): InterviewQuestion[] {
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
 }
+function pickQuestionsByPriority(questions: InterviewQuestion[], count: number, keywords: string[]) {
+  const scored = questions.map((q) => {
+    const text = `${q.category} ${q.question}`.toLowerCase();
+    const hit = keywords.some((k) => text.includes(k.toLowerCase()));
+    return { q, score: (q.expectedPoints?.length ? 2 : 0) + (hit ? 3 : 0) + (q.difficulty === "medium" ? 1 : 0) };
+  });
+  return scored.sort((a, b) => b.score - a.score).map((item) => item.q).filter((item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx).slice(0, count);
+}
 
 function mapRoundToInterviewRound(round?: string): InterviewRound {
   switch (round) {
@@ -162,7 +190,7 @@ function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): Intervie
 
 function InterviewPageContent() {
   const searchParams = useSearchParams();
-  const queryBankId = searchParams.get("bank");
+  const queryBankId = searchParams.get("bank") ?? searchParams.get("bankId");
   const queryCount = searchParams.get("count");
   const parsedQueryCount = Number(queryCount);
   const initialQuestionCount = allowedQuestionCounts.includes(parsedQueryCount as (typeof allowedQuestionCounts)[number]) ? parsedQueryCount : 5;
@@ -202,6 +230,8 @@ function InterviewPageContent() {
   }, [searchParams]);
 
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === bankId) ?? interviewBanks[0], [bankId]);
+  const isPublicMode = publicBankIds.has(bankId);
+  const activeRoundOptions = isPublicMode ? publicModeOptions : roundOptions;
   const questions = useMemo(() => (currentBank?.questions ?? []).filter((q) => q.round.includes(round)), [currentBank, round]);
   const activeQuestions = started ? sessionQuestions : questions;
   const currentQuestion = activeQuestions[index];
@@ -482,7 +512,7 @@ function InterviewPageContent() {
   const handleStartInterview = async () => {
     let questionSource = questions;
     try {
-      const params = new URLSearchParams({ bankId, examType: bankId, pageSize: "200" });
+      const params = new URLSearchParams({ bankId, examType: bankId, pageSize: "240" });
       if (roundFilter !== "all") params.set("round", mapRoundToInterviewRound(roundFilter));
       const res = await fetch(`/api/question-pool?${params.toString()}`);
       const data = (await res.json()) as { questions?: StructuredQuestion[] };
@@ -490,7 +520,8 @@ function InterviewPageContent() {
     } catch {
       // ignore and fallback to built-in banks
     }
-    const selectedQuestions = createSessionQuestions(questionSource, questionCount);
+    const activeMode = activeRoundOptions.find((item) => item.value === roundFilter) ?? activeRoundOptions[0];
+    const selectedQuestions = activeMode.value === "all" ? createSessionQuestions(questionSource, questionCount) : pickQuestionsByPriority(questionSource, questionCount, activeMode.keywords);
     if (!selectedQuestions.length) {
       setTip("当前筛选条件下没有可用题目，请更换面试类型或轮次。");
       return;
@@ -569,14 +600,11 @@ function InterviewPageContent() {
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 p-6 text-white">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-20 left-4 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
-        <div className="absolute right-6 top-6 h-80 w-80 rounded-full bg-blue-500/20 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl" />
-      </div>
+      <AnimatedBackground />
+      <FloatingOrbs />
 
       <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-3">
-        <section className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur lg:col-span-1">
+        <GlassCard className="p-5 lg:col-span-1">
           <h1 className="text-2xl font-bold tracking-tight text-white">AI 面试官正在与你模拟面试</h1>
           <label className="mt-5 block text-sm text-slate-300">面试类型</label>
           <select
@@ -595,7 +623,7 @@ function InterviewPageContent() {
             <p className="text-sm text-slate-300">面试轮次</p>
             <p className="mt-1 text-xs text-slate-400">选择你想模拟的面试场景，系统会优先抽取对应轮次的问题。</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              {roundOptions.map((option) => {
+              {activeRoundOptions.map((option) => {
                 const active = roundFilter === option.value;
 
                 return (
@@ -625,7 +653,7 @@ function InterviewPageContent() {
               })}
             </div>
           </div>
-          <label className="mt-4 block text-sm text-slate-300">模拟强度</label>
+          <label className="mt-4 block text-sm text-slate-300">模拟强度{isPublicMode ? "（含真题套卷模式在后续迭代开放）" : ""}</label>
           <div className="mt-2">
             <InterviewIntensitySelector value={questionCount} disabled={started} onChange={setQuestionCount} />
           </div>
@@ -650,7 +678,7 @@ function InterviewPageContent() {
           ) : (
             <p className="mt-5 rounded-xl border border-cyan-300/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">面试进行中，右侧会自动朗读题目并开始听你回答。</p>
           )}
-        </section>
+        </GlassCard>
 
         <section className="rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur lg:col-span-2">
           <h2 className="text-xl font-bold tracking-tight text-white">{statusText}</h2>
