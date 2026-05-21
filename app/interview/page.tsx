@@ -267,6 +267,49 @@ function sortQuestionsByPriority(questions: InterviewQuestion[], keywords: reado
     .filter((item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx);
 }
 
+function pickQuestionsByPriority(
+  bankQuestions: InterviewQuestion[],
+  count: number,
+  selectedMode: InterviewModeOption | undefined,
+  isPrivateInterview: boolean,
+): { bankCount: number; matchedCount: number; selectedQuestions: InterviewQuestion[] } {
+  if (bankQuestions.length === 0) {
+    return { bankCount: 0, matchedCount: 0, selectedQuestions: [] };
+  }
+
+  const maxCount = Math.min(count, bankQuestions.length);
+
+  if (!isPrivateInterview) {
+    if (!selectedMode || isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
+      return {
+        bankCount: bankQuestions.length,
+        matchedCount: bankQuestions.length,
+        selectedQuestions: createSessionQuestions(bankQuestions, maxCount),
+      };
+    }
+
+    const prioritized = sortQuestionsByPriority(bankQuestions, selectedMode.keywords);
+    const matched = bankQuestions.filter((q) => matchQuestionByKeywords(q, selectedMode.keywords));
+    return {
+      bankCount: bankQuestions.length,
+      matchedCount: matched.length,
+      selectedQuestions: prioritized.slice(0, maxCount),
+    };
+  }
+
+  const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : privateRoundOptions[0];
+  const roundMatched = bankQuestions.filter((q) => q.round.includes(privateMode.round) || matchQuestionByKeywords(q, privateMode.keywords));
+  const roundMatchedIds = new Set(roundMatched.map((q) => q.id));
+  const rest = bankQuestions.filter((q) => !roundMatchedIds.has(q.id));
+  const ordered = [...shuffleQuestions(roundMatched), ...shuffleQuestions(rest)];
+
+  return {
+    bankCount: bankQuestions.length,
+    matchedCount: roundMatched.length,
+    selectedQuestions: ordered.slice(0, maxCount),
+  };
+}
+
 function mapRoundToInterviewRound(round?: string): InterviewRound {
   switch (round) {
     case "hr":
@@ -433,38 +476,30 @@ function InterviewPageContent() {
   const questionPoolMeta = useMemo(() => {
     const bankQuestions = currentBankQuestions;
     if (bankQuestions.length === 0) {
-      return { bankCount: 0, matchedCount: 0, selected: [] as InterviewQuestion[] };
+      return { bankCount: 0, matchedCount: 0 };
     }
 
     if (!isPrivateInterview) {
       if (!selectedMode || isPrivateRoundOption(selectedMode) || selectedMode.value === "structured-mixed") {
-        const shuffled = shuffleQuestions(bankQuestions);
         return {
           bankCount: bankQuestions.length,
           matchedCount: bankQuestions.length,
-          selected: shuffled.slice(0, Math.min(questionCount, shuffled.length)),
         };
       }
-      const prioritized = sortQuestionsByPriority(bankQuestions, selectedMode.keywords);
       const matched = bankQuestions.filter((q) => matchQuestionByKeywords(q, selectedMode.keywords));
       return {
         bankCount: bankQuestions.length,
         matchedCount: matched.length,
-        selected: prioritized.slice(0, Math.min(questionCount, prioritized.length)),
       };
     }
 
     const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : privateRoundOptions[0];
     const roundMatched = bankQuestions.filter((q) => q.round.includes(privateMode.round) || matchQuestionByKeywords(q, privateMode.keywords));
-    const roundMatchedIds = new Set(roundMatched.map((q) => q.id));
-    const rest = bankQuestions.filter((q) => !roundMatchedIds.has(q.id));
-    const ordered = shuffleQuestions([...roundMatched, ...rest]);
     return {
       bankCount: bankQuestions.length,
       matchedCount: roundMatched.length,
-      selected: ordered.slice(0, Math.min(questionCount, ordered.length)),
     };
-  }, [currentBankQuestions, isPrivateInterview, selectedMode, questionCount]);
+  }, [currentBankQuestions, isPrivateInterview, selectedMode]);
 
   useEffect(() => {
     if (isPrivateInterview) {
@@ -750,9 +785,12 @@ function InterviewPageContent() {
   const handleStartInterview = async () => {
     const safeQuestionSource = currentBankQuestions.filter((item) => Boolean(item.question));
     const sourceToUse = safeQuestionSource.length > 0 ? safeQuestionSource : currentBankQuestions;
-    const selectedQuestions = questionPoolMeta.selected.length > 0
-      ? questionPoolMeta.selected
-      : createSessionQuestions(sourceToUse, questionCount);
+    const { selectedQuestions } = pickQuestionsByPriority(
+      sourceToUse,
+      questionCount,
+      selectedMode,
+      isPrivateInterview,
+    );
     if (!selectedQuestions.length && currentBankQuestions.length > 0) {
       setTip("当前筛选条件未抽到题目，已自动放宽条件，请重试。");
       return;
@@ -904,7 +942,7 @@ function InterviewPageContent() {
             <p className="mt-2">当前题库总题数：{questionPoolMeta.bankCount} 题</p>
             <p>模式优先匹配：{questionPoolMeta.matchedCount} 题</p>
             <p>本场计划抽取：{questionCount} 题</p>
-            <p>实际抽取：{questionPoolMeta.selected.length} 题</p>
+            <p>实际抽取：{Math.min(questionCount, questionPoolMeta.bankCount)} 题</p>
           </div>
           {!started ? (
             <div className="mt-5">
