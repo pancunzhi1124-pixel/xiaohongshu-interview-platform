@@ -93,15 +93,17 @@ function getInterviewUiKind(inputId: string, inputName?: string): InterviewUiKin
   return "private-company";
 }
 
+const defaultPrivateRoundOption = {
+  value: "hr",
+  label: "HR 初面",
+  description: "动机、稳定性、表达",
+  roundLabel: "HR 初面",
+  round: "HR",
+  keywords: ["自我介绍", "动机", "优势", "稳定"],
+} satisfies PrivateInterviewRoundOption;
+
 const privateRoundOptions: readonly PrivateInterviewRoundOption[] = [
-  {
-    value: "hr",
-    label: "HR 初面",
-    description: "动机、稳定性、表达",
-    roundLabel: "HR 初面",
-    round: "HR",
-    keywords: ["自我介绍", "动机", "优势", "稳定"],
-  },
+  defaultPrivateRoundOption,
   {
     value: "business",
     label: "业务面",
@@ -151,8 +153,16 @@ const privateRoundOptions: readonly PrivateInterviewRoundOption[] = [
     keywords: ["项目", "经历", "负责", "难点", "复盘", "结果"],
   },
 ] as const;
+const defaultPublicModeOption = {
+  value: "structured-mixed",
+  label: "结构化综合面",
+  description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型",
+  modeLabel: "结构化综合面",
+  keywords: ["综合分析", "组织", "沟通", "应急"],
+} satisfies PublicInterviewModeOption;
+
 const publicModeOptions: readonly PublicInterviewModeOption[] = [
-  { value: "structured-mixed", label: "结构化综合面", description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型", modeLabel: "结构化综合面", keywords: ["综合分析", "组织", "沟通", "应急"] },
+  defaultPublicModeOption,
   { value: "analysis", label: "综合分析专项", description: "社会现象、政策理解、观点态度", modeLabel: "综合分析专项", keywords: ["综合分析", "社会现象", "政策理解", "观点理解", "现象", "看法"] },
   { value: "organization", label: "组织管理专项", description: "调研、宣传、培训、会议、活动组织", modeLabel: "组织管理专项", keywords: ["组织", "调研", "宣传", "培训", "会议", "活动", "检查", "座谈"] },
   { value: "communication", label: "人际沟通专项", description: "领导、同事、群众、服务对象沟通", modeLabel: "人际沟通专项", keywords: ["人际", "沟通", "领导", "同事", "群众", "协调", "矛盾"] },
@@ -297,7 +307,7 @@ function pickQuestionsByPriority(
     };
   }
 
-  const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : privateRoundOptions[0];
+  const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : defaultPrivateRoundOption;
   const roundMatched = bankQuestions.filter((q) => q.round.includes(privateMode.round) || matchQuestionByKeywords(q, privateMode.keywords));
   const roundMatchedIds = new Set(roundMatched.map((q) => q.id));
   const rest = bankQuestions.filter((q) => !roundMatchedIds.has(q.id));
@@ -493,7 +503,7 @@ function InterviewPageContent() {
       };
     }
 
-    const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : privateRoundOptions[0];
+    const privateMode = isPrivateRoundOption(selectedMode) ? selectedMode : defaultPrivateRoundOption;
     const roundMatched = bankQuestions.filter((q) => q.round.includes(privateMode.round) || matchQuestionByKeywords(q, privateMode.keywords));
     return {
       bankCount: bankQuestions.length,
