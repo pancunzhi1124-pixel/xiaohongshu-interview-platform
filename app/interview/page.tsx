@@ -47,6 +47,12 @@ type PrivateInterviewRoundOption = {
 };
 
 type InterviewModeOption = PublicInterviewModeOption | PrivateInterviewRoundOption;
+type StructuredBankId =
+  | "national-civil-service"
+  | "provincial-civil-service"
+  | "public-institution"
+  | "state-owned-enterprise"
+  | "private-company";
 
 function isPrivateRoundOption(option: InterviewModeOption): option is PrivateInterviewRoundOption {
   return "roundLabel" in option;
@@ -110,7 +116,6 @@ const privateRoundOptions: readonly PrivateInterviewRoundOption[] = [
     keywords: ["项目", "经历", "负责", "难点", "复盘", "结果"],
   },
 ] as const;
-const publicBankIds = new Set(["national-civil-service", "provincial-civil-service", "public-institution", "state-owned-enterprise"]);
 const publicModeOptions: readonly PublicInterviewModeOption[] = [
   { value: "structured-mixed", label: "结构化综合面", description: "混合抽取综合分析、组织管理、人际沟通、应急应变等题型", modeLabel: "结构化综合面", keywords: ["综合分析", "组织", "沟通", "应急"] },
   { value: "analysis", label: "综合分析专项", description: "社会现象、政策理解、观点态度", modeLabel: "综合分析专项", keywords: ["综合分析", "社会现象", "政策理解", "观点理解", "现象", "看法"] },
@@ -258,6 +263,42 @@ function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): Intervie
   }));
 }
 
+function normalizeStructuredBankId(input?: string | null): StructuredBankId {
+  switch (input) {
+    case "national-civil-service":
+    case "national":
+    case "civil-service":
+    case "公务员":
+    case "公务员 / 选调结构化面试":
+      return "national-civil-service";
+    case "provincial-civil-service":
+    case "provincial":
+    case "省考":
+      return "provincial-civil-service";
+    case "public-institution":
+    case "institution":
+    case "事业编":
+    case "事业单位":
+      return "public-institution";
+    case "state-owned-enterprise":
+    case "state-owned":
+    case "bank":
+    case "国企":
+    case "央企":
+    case "银行":
+    case "国企 / 银行结构化面试":
+      return "state-owned-enterprise";
+    case "private-company":
+    case "private":
+    case "company":
+    case "私企":
+    case "民企":
+      return "private-company";
+    default:
+      return "national-civil-service";
+  }
+}
+
 function InterviewPageContent() {
   const searchParams = useSearchParams();
   const queryBankId = searchParams.get("bank") ?? searchParams.get("bankId");
@@ -283,6 +324,7 @@ function InterviewPageContent() {
   const [report, setReport] = useState<ReportItem[]>([]);
   const [tip, setTip] = useState("");
   const [cameraReady, setCameraReady] = useState(false);
+  const [bankQuestions, setBankQuestions] = useState<InterviewQuestion[]>([]);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
@@ -300,8 +342,13 @@ function InterviewPageContent() {
     }
   }, [searchParams]);
 
-  const currentBank = useMemo(() => interviewBanks.find((x) => x.id === bankId) ?? interviewBanks[0], [bankId]);
-  const isPublicMode = publicBankIds.has(bankId);
+  const normalizedBankId = useMemo(() => normalizeStructuredBankId(bankId), [bankId]);
+  const currentBank = useMemo(() => interviewBanks.find((x) => x.id === normalizedBankId) ?? interviewBanks[0], [normalizedBankId]);
+  const isPublicMode =
+    normalizedBankId === "national-civil-service" ||
+    normalizedBankId === "provincial-civil-service" ||
+    normalizedBankId === "public-institution" ||
+    normalizedBankId === "state-owned-enterprise";
   const activeModeOptions = isPublicMode ? publicModeOptions : privateRoundOptions;
   const questions = useMemo(() => (currentBank?.questions ?? []), [currentBank]);
   const selectedMode = useMemo(
@@ -318,7 +365,33 @@ function InterviewPageContent() {
   const isFollowupStage = currentTarget === "followup";
   const currentPrompt = isFollowupStage ? followUpQuestion : currentQuestion?.question ?? "";
   const isLastQuestion = index >= activeQuestions.length - 1;
-  const currentBankQuestions = questions;
+  const currentBankQuestions = bankQuestions.length > 0 ? bankQuestions : questions;
+
+  useEffect(() => {
+    let active = true;
+    const fetchStructuredQuestions = async (targetBankId: StructuredBankId) => {
+      try {
+        const params = new URLSearchParams({ bankId: targetBankId, examType: targetBankId, pageSize: "1000" });
+        const res = await fetch(`/api/question-pool?${params.toString()}`);
+        const data = (await res.json()) as { questions?: StructuredQuestion[] };
+        if (!active) return;
+        if (Array.isArray(data.questions) && data.questions.length > 0) {
+          const mapped = mapStructuredToInterviewQuestion(data.questions).filter((item) => Boolean(item.question));
+          setBankQuestions(mapped);
+          return;
+        }
+      } catch {
+        // ignore and fallback below
+      }
+      if (!active) return;
+      setBankQuestions(questions.filter((item) => Boolean(item.question)));
+    };
+
+    fetchStructuredQuestions(normalizedBankId);
+    return () => {
+      active = false;
+    };
+  }, [normalizedBankId, questions]);
 
   const questionPoolMeta = useMemo(() => {
     const bankQuestions = currentBankQuestions;
@@ -366,7 +439,7 @@ function InterviewPageContent() {
     setActiveModeKey("hr");
     setRound("HR");
     setRoundFilter("hr");
-  }, [isPublicMode, bankId]);
+  }, [isPublicMode, normalizedBankId]);
 
   const statusText = useMemo(() => {
     switch (interviewStatus) {
@@ -638,21 +711,7 @@ function InterviewPageContent() {
   };
 
   const handleStartInterview = async () => {
-    let questionSource = currentBankQuestions;
-    try {
-      const params = new URLSearchParams({ bankId, examType: bankId, pageSize: "240" });
-      if (!isPublicMode && roundFilter) {
-        params.set("round", mapRoundToInterviewRound(roundFilter));
-      }
-      const res = await fetch(`/api/question-pool?${params.toString()}`);
-      const data = (await res.json()) as { questions?: StructuredQuestion[] };
-      if (Array.isArray(data.questions) && data.questions.length > 0) {
-        questionSource = mapStructuredToInterviewQuestion(data.questions);
-      }
-    } catch {
-      // ignore and fallback to built-in banks
-    }
-    const safeQuestionSource = questionSource.filter((item) => Boolean(item.question));
+    const safeQuestionSource = currentBankQuestions.filter((item) => Boolean(item.question));
     const sourceToUse = safeQuestionSource.length > 0 ? safeQuestionSource : currentBankQuestions;
     const selectedQuestions = questionPoolMeta.selected.length > 0
       ? questionPoolMeta.selected
@@ -815,7 +874,7 @@ function InterviewPageContent() {
               <button
                 className="w-full rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-5 py-4 text-base font-semibold text-white shadow-lg shadow-cyan-500/20 transition duration-300 hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={handleStartInterview}
-                disabled={currentBankQuestions.length === 0}
+                disabled={bankQuestions.length === 0}
               >
                 开始模拟面试
               </button>
