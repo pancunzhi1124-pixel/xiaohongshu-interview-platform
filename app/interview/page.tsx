@@ -71,6 +71,13 @@ const publicModeOptions = [
 ] as const;
 
 type RoundFilter = (typeof roundOptions)[number]["value"];
+type PublicInterviewMode = (typeof publicModeOptions)[number]["value"];
+type InterviewModeKey = RoundFilter | PublicInterviewMode;
+type PrivateCompanyRound = Exclude<RoundFilter, "all">;
+
+function isPrivateCompanyMode(value: InterviewModeKey): value is PrivateCompanyRound {
+  return ["hr", "business", "manager", "final", "stress", "english"].includes(value);
+}
 
 
 type InterviewStatus =
@@ -199,6 +206,7 @@ function InterviewPageContent() {
   const [bankId, setBankId] = useState(initialBankId);
   const [round, setRound] = useState<InterviewRound>("综合");
   const [roundFilter, setRoundFilter] = useState<RoundFilter>("all");
+  const [activeModeKey, setActiveModeKey] = useState<InterviewModeKey>("all");
   const [questionCount, setQuestionCount] = useState(initialQuestionCount);
   const [sessionQuestions, setSessionQuestions] = useState<InterviewQuestion[]>([]);
   const [started, setStarted] = useState(false);
@@ -520,7 +528,7 @@ function InterviewPageContent() {
     } catch {
       // ignore and fallback to built-in banks
     }
-    const activeMode = activeRoundOptions.find((item) => item.value === roundFilter) ?? activeRoundOptions[0];
+    const activeMode = activeRoundOptions.find((item) => item.value === activeModeKey) ?? activeRoundOptions[0];
     const selectedQuestions = activeMode.value === "all" ? createSessionQuestions(questionSource, questionCount) : pickQuestionsByPriority(questionSource, questionCount, activeMode.keywords);
     if (!selectedQuestions.length) {
       setTip("当前筛选条件下没有可用题目，请更换面试类型或轮次。");
@@ -624,14 +632,19 @@ function InterviewPageContent() {
             <p className="mt-1 text-xs text-slate-400">选择你想模拟的面试场景，系统会优先抽取对应轮次的问题。</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               {activeRoundOptions.map((option) => {
-                const active = roundFilter === option.value;
+                const active = activeModeKey === option.value;
 
                 return (
                   <button
                     key={option.value}
                     type="button"
                     onClick={() => {
-                      setRoundFilter(option.value);
+                      setActiveModeKey(option.value);
+                      if (isPrivateCompanyMode(option.value)) {
+                        setRoundFilter(option.value);
+                      } else {
+                        setRoundFilter("all");
+                      }
                       setRound(option.round);
                     }}
                     disabled={started}
