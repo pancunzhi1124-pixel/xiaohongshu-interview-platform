@@ -7,6 +7,7 @@ import { formatAnswerForDisplay } from "@/lib/formatAnswerForDisplay";
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
+import BankFilters from "@/components/banks/BankFilters";
 
 type BankPageProps = {
   params: Promise<{ bankId: string }>;
@@ -31,22 +32,6 @@ const examTypeIds = new Set(Object.keys(examTypeCategoryMap));
 const getOne = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 const unique = (arr: string[]) => Array.from(new Set(arr.filter(Boolean))).sort();
 const defaultTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"];
-const publicFilterLabels: Record<PublicFilterKey, string> = {
-  type: "类型",
-  job: "岗位",
-  province: "地区",
-  year: "年份",
-  difficulty: "难度",
-  round: "批次",
-};
-const privateFilterLabels: Record<PrivateFilterKey, string> = {
-  industry: "行业",
-  companyType: "公司类型",
-  position: "岗位方向",
-  round: "面试轮次",
-  type: "题型",
-  difficulty: "难度",
-};
 const difficultyLabels: Record<string, string> = {
   easy: "简单",
   medium: "中等",
@@ -170,6 +155,24 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
 
   const hasActiveFilters = Object.values(isPrivateCompany ? privateFilters : publicFilters).some((v) => v !== "all") || Boolean(keyword);
 
+  const publicOptionsMap: Record<string, { value: string; label: string }[]> = {
+    type: [{ value: "all", label: "全部类型" }, ...types.map((x) => ({ value: x, label: x }))],
+    job: [{ value: "all", label: "全部岗位" }, ...jobs.map((x) => ({ value: x, label: x }))],
+    province: [{ value: "all", label: "全部地区" }, ...provinces.map((x) => ({ value: x, label: x }))],
+    year: [{ value: "all", label: "全部年份" }, ...years.map((x) => ({ value: x, label: x }))],
+    difficulty: [{ value: "all", label: "全部难度" }, ...difficultyOptions.map((x) => ({ value: x, label: displayDifficulty(x) }))],
+    round: [{ value: "all", label: "全部批次" }, ...rounds.map((x) => ({ value: x, label: x }))],
+  };
+
+  const privateOptionsMap: Record<string, { value: string; label: string }[]> = {
+    industry: [{ value: "all", label: "全部行业" }, ...industries.map((x) => ({ value: x, label: x }))],
+    companyType: [{ value: "all", label: "全部公司类型" }, ...companyTypes.map((x) => ({ value: x, label: x }))],
+    position: [{ value: "all", label: "全部岗位方向" }, ...positions.map((x) => ({ value: x, label: x }))],
+    round: [{ value: "all", label: "全部面试轮次" }, ...rounds.map((x) => ({ value: x, label: x }))],
+    type: [{ value: "all", label: "全部题型" }, ...types.map((x) => ({ value: x, label: x }))],
+    difficulty: [{ value: "all", label: "全部难度" }, ...difficultyOptions.map((x) => ({ value: x, label: displayDifficulty(x) }))],
+  };
+
   return (
     <main className="relative min-h-screen bg-slate-950 px-6 py-8 text-white md:px-10">
       <AnimatedBackground />
@@ -187,45 +190,15 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
             <Link href={`/interview?bank=${bankId}`} className="text-cyan-300">开始模拟面试 →</Link>
           </div>
         </GlassCard>
-        <form className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-3 xl:grid-cols-4">
-          <input
-            name="keyword"
-            defaultValue={keyword}
-            placeholder={isPrivateCompany ? "搜索公司、岗位、题目关键词" : "搜索题目、来源、地区、题号"}
-            className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 focus:border-cyan-300"
-          />
-          {isPrivateCompany ? (
-            ([
-              ["industry", industries],
-              ["companyType", companyTypes],
-              ["position", positions],
-              ["round", rounds],
-              ["type", types],
-              ["difficulty", difficultyOptions],
-            ] as const).map(([k, options]) => (
-              <select key={k} name={k} defaultValue={privateFilters[k]} className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 focus:border-cyan-300">
-                <option value="all">全部{privateFilterLabels[k]}</option>
-                {options.map((x) => (
-                  <option key={x} value={x}>{k === "difficulty" ? displayDifficulty(x) : x}</option>
-                ))}
-              </select>
-            ))
-          ) : (
-            (["type", "job", "province", "year", "difficulty", "round"] as const).map((k) => {
-              const options = k === "type" ? types : k === "job" ? jobs : k === "province" ? provinces : k === "year" ? years : k === "difficulty" ? difficultyOptions : rounds;
-              return (
-                <select key={k} name={k} defaultValue={publicFilters[k]} className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 focus:border-cyan-300">
-                  <option value="all">全部{publicFilterLabels[k]}</option>
-                  {options.map((x) => (
-                    <option key={x} value={x}>{k === "difficulty" ? displayDifficulty(x) : x}</option>
-                  ))}
-                </select>
-              );
-            })
-          )}
-          <button className="rounded-lg bg-cyan-500 px-3 py-2 transition hover:bg-cyan-400">应用筛选</button>
-          <Link href={`/banks/${bankId}`} className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-center text-sm text-slate-200 hover:bg-white/10">重置筛选</Link>
-        </form>
+        <BankFilters
+          bankId={bankId}
+          isPrivateCompany={isPrivateCompany}
+          keywordDefault={keyword}
+          publicFilters={publicFilters}
+          privateFilters={privateFilters}
+          publicOptions={publicOptionsMap}
+          privateOptions={privateOptionsMap}
+        />
         {hasActiveFilters ? <div className="flex flex-wrap gap-2">{Object.entries(isPrivateCompany ? privateFilters : publicFilters).filter(([,v]) => v!=="all").map(([k,v]) => <span key={k} className="rounded-full border border-cyan-300/40 bg-cyan-400/10 px-3 py-1 text-xs">{k}：{v}</span>)}{keyword ? <span className="rounded-full border border-purple-300/40 bg-purple-400/10 px-3 py-1 text-xs">关键词：{keyword}</span> : null}</div> : null}
         {items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-white/20 p-8 text-center text-slate-300">当前筛选条件较严格，建议重置筛选或减少筛选项。</div>

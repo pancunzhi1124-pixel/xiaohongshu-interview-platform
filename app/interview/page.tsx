@@ -7,6 +7,7 @@ import InterviewIntensitySelector from "@/components/InterviewIntensitySelector"
 import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
+import SmartSelect from "@/components/ui/SmartSelect";
 
 type PublicInterviewModeKey =
   | "structured-mixed"
@@ -891,18 +892,15 @@ function InterviewPageContent() {
         <GlassCard className="p-5 lg:col-span-1">
           <h1 className="text-2xl font-bold tracking-tight text-white">AI 面试官正在与你模拟面试</h1>
           <label className="mt-5 block text-sm text-slate-300">面试类型</label>
-          <select
-            className="mt-2 w-full appearance-none rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-white outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-60"
+          <SmartSelect
+            className="mt-2"
             value={bankId}
-            onChange={(e) => setBankId(e.target.value)}
+            onChange={setBankId}
             disabled={started}
-          >
-            {interviewBanks.map((bank) => (
-              <option key={bank.id} value={bank.id}>
-                {bank.name}
-              </option>
-            ))}
-          </select>
+            options={interviewBanks.map((bank) => ({ value: bank.id, label: bank.name }))}
+            placeholder="选择面试类型"
+            searchable
+          />
           <div className="mt-4">
             <p className="text-sm text-slate-300">{modeSectionTitle}</p>
             <p className="mt-1 text-xs text-slate-400">{modeSectionDescription}</p>
