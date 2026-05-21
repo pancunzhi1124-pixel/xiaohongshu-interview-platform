@@ -15,9 +15,26 @@ type BankDisplayQuestion = Omit<StructuredInterviewQuestion, "examType" | "abili
   jobTags: string[];
 };
 
+type FilterKey = "type" | "job" | "province" | "year" | "difficulty" | "round";
+
 const examTypeIds = new Set(Object.keys(examTypeCategoryMap));
 const getOne = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 const unique = (arr: string[]) => Array.from(new Set(arr.filter(Boolean))).sort();
+const defaultTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知"];
+const filterLabels: Record<FilterKey, string> = {
+  type: "题型",
+  job: "岗位",
+  province: "地区",
+  year: "年份",
+  difficulty: "难度",
+  round: "轮次",
+};
+const difficultyLabels: Record<string, string> = {
+  easy: "简单",
+  medium: "中等",
+  hard: "较难",
+};
+const displayOption = (key: FilterKey, value: string) => key === "difficulty" ? difficultyLabels[value] ?? value : value;
 
 export default async function BankPage({ params, searchParams }: BankPageProps) {
   const { bankId } = await params;
@@ -85,9 +102,10 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
   const items = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const provinces = unique(fallback.map((q) => q.province));
   const years = unique(fallback.map((q) => q.examDate?.slice(0, 4) || ""));
-  const types = unique(fallback.flatMap((q) => [q.primaryType, ...q.abilityTypes]));
+  const types = unique([...defaultTypes, ...fallback.flatMap((q) => [q.primaryType, ...q.abilityTypes])]);
   const jobs = unique(fallback.flatMap((q) => q.jobTags));
   const rounds = unique(fallback.map((q) => q.round));
+  const difficultyOptions = unique(fallback.map((q) => q.difficulty));
   const title = isExamType ? examTypeCategoryMap[bankId as keyof typeof examTypeCategoryMap].name : bank?.name || bankId;
   const desc = isExamType ? examTypeCategoryMap[bankId as keyof typeof examTypeCategoryMap].description : bank?.description || "";
   const yearRange = years.length ? `${years[0]} - ${years[years.length - 1]}` : "-";
@@ -98,6 +116,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
     });
     return `/banks/${bankId}?${sp.toString()}`;
   };
+  const getOptions = (key: FilterKey) => key === "type" ? types : key === "job" ? jobs : key === "province" ? provinces : key === "year" ? years : key === "difficulty" ? difficultyOptions : rounds;
 
   return (
     <main className="min-h-screen bg-slate-950 px-6 py-8 text-white md:px-10">
@@ -118,9 +137,9 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
           <input name="keyword" defaultValue={keyword} placeholder="搜索题目、来源、地区、题号" className="rounded-lg bg-slate-900 px-3 py-2" />
           {(["type", "job", "province", "year", "difficulty", "round"] as const).map((k) => (
             <select key={k} name={k} defaultValue={filters[k]} className="rounded-lg bg-slate-900 px-3 py-2">
-              <option value="all">全部{k}</option>
-              {(k === "type" ? types : k === "job" ? jobs : k === "province" ? provinces : k === "year" ? years : k === "difficulty" ? unique(fallback.map((q) => q.difficulty)) : rounds).map((x) => (
-                <option key={x} value={x}>{x}</option>
+              <option value="all">全部{filterLabels[k]}</option>
+              {getOptions(k).map((x) => (
+                <option key={x} value={x}>{displayOption(k, x)}</option>
               ))}
             </select>
           ))}
@@ -134,7 +153,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
               <article key={q.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <p className="text-base font-semibold">{q.questionNo}. {q.question}</p>
                 <p className="mt-1 text-sm text-slate-300">题型：{q.primaryType}｜能力：{q.abilityTypes.join("、") || "-"}｜岗位：{q.jobTags.join("、") || "-"}</p>
-                <p className="mt-1 text-xs text-slate-400">来源：{q.sourceTitle || "-"}｜日期：{q.examDate || "-"}｜地区：{q.province || "-"}｜难度：{q.difficulty || "-"}｜轮次：{q.round || "-"}</p>
+                <p className="mt-1 text-xs text-slate-400">来源：{q.sourceTitle || "-"}｜日期：{q.examDate || "-"}｜地区：{q.province || "-"}｜难度：{difficultyLabels[q.difficulty] ?? q.difficulty ?? "-"}｜轮次：{q.round || "-"}</p>
                 {q.answerStatus === "pending" && <p className="mt-2 text-sm text-amber-300">参考答案暂未整理，可先使用 AI 模拟面试进行作答训练。</p>}
                 {q.answerStatus === "answered" && q.answer && (
                   <div className="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-3 text-sm leading-7 text-slate-100">
