@@ -158,7 +158,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
                   <p className="mt-1 text-xs text-slate-400">来源：{q.sourceTitle || "-"}｜日期：{q.examDate || "-"}｜地区：{q.province || "-"}｜难度：{difficultyLabels[q.difficulty] ?? q.difficulty ?? "-"}｜轮次：{q.round || "-"}</p>
                   {q.answerStatus === "pending" && <p className="mt-2 text-sm text-amber-300">参考答案暂未整理，可先使用 AI 模拟面试进行作答训练。</p>}
                   {q.answerStatus === "answered" && q.answer && (
-                    <details open className="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-3 text-sm leading-7 text-slate-100">
+                    <details className="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-3 text-sm leading-7 text-slate-100">
                       <summary className="cursor-pointer font-semibold text-cyan-200">查看 AI 生成参考答案（待人工审核）</summary>
                       <div className="mt-3 rounded-lg bg-slate-950/70 p-4">
                         <p className="whitespace-pre-wrap leading-8">{q.answer}</p>
