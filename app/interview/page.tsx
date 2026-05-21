@@ -148,7 +148,7 @@ function shuffleQuestions<T>(items: T[]): T[] {
 function createSessionQuestions(questions: InterviewQuestion[], count: number): InterviewQuestion[] {
   return shuffleQuestions(questions).slice(0, Math.min(count, questions.length));
 }
-function pickQuestionsByPriority(questions: InterviewQuestion[], count: number, keywords: string[]) {
+function pickQuestionsByPriority(questions: InterviewQuestion[], count: number, keywords: readonly string[]) {
   const scored = questions.map((q) => {
     const text = `${q.category} ${q.question}`.toLowerCase();
     const hit = keywords.some((k) => text.includes(k.toLowerCase()));
