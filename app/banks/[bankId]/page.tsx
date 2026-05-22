@@ -46,6 +46,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
   const isExamType = examTypeIds.has(bankId);
   const bank = interviewBanks.find((item) => item.id === bankId);
   const isPrivateCompany = bankId === "private-company";
+  const isPrivateCompanyBank = bankId === "private-company";
 
   if (!isExamType && !bank) notFound();
 
@@ -210,7 +211,7 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
                 <article key={q.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <p className="text-base font-semibold">{displayNo}. {q.question}</p>
                   <p className="mt-1 text-sm text-slate-300">题型：{q.primaryType}｜能力：{q.abilityTypes.join("、") || "-"}｜岗位：{q.jobTags.join("、") || q.position || "-"}</p>
-                  <p className="mt-1 text-xs text-slate-400">来源：{q.sourceTitle || "-"}｜日期：{q.examDate || "-"}｜地区：{q.province || "-"}｜难度：{difficultyLabels[q.difficulty] ?? q.difficulty ?? "-"}｜轮次：{q.round || "-"}</p>
+                  <p className="mt-1 text-xs text-slate-400">来源：{q.sourceTitle || "-"}｜日期：{q.examDate || "-"}｜地区：{q.province || "-"}｜难度：{difficultyLabels[q.difficulty] ?? q.difficulty ?? "-"}{isPrivateCompanyBank && q.round ? <>｜轮次：{q.round}</> : null}</p>
                   {q.answerStatus === "pending" && <p className="mt-2 text-sm text-amber-300">参考答案暂未整理，可先使用 AI 模拟面试进行作答训练。</p>}
                   {q.answerStatus === "answered" && q.answer && (
                     <details className="mt-3 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-3 text-sm leading-7 text-slate-100">
