@@ -66,17 +66,11 @@ export default function AnnouncementsPage() {
                 </span>
               </div>
               <h2 className="mt-3 text-xl font-semibold">
-                <Link href={`/announcements/${item.id}`} className="transition hover:text-cyan-300 focus-visible:text-cyan-300">
+                <Link href={`/announcements/${item.id}`} className="cursor-pointer transition hover:text-cyan-300 hover:underline focus-visible:text-cyan-300">
                   {item.title}
                 </Link>
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">{item.description}</p>
-              <Link
-                href={`/announcements/${item.id}`}
-                className="mt-4 inline-flex text-sm font-medium text-cyan-200 transition hover:text-cyan-300"
-              >
-                查看详情 →
-              </Link>
             </article>
           ))}
         </section>
