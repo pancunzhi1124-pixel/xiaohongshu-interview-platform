@@ -18,7 +18,7 @@ export default function HomePage() {
       <AnimatedBackground />
       <FloatingOrbs />
 
-      <section className="relative isolate px-6 pb-16 pt-8 md:px-10 md:pt-12">
+      <section id="hero" className="relative isolate px-6 pb-16 pt-8 md:px-10 md:pt-12">
         <div className="mx-auto max-w-6xl rounded-[2rem] border border-white/10 bg-slate-950/35">
           <InteractiveGridBackground />
           <div className="relative z-10 grid items-start gap-8 px-6 py-8 lg:grid-cols-[1.1fr_0.9fr] md:px-8 md:py-10">
@@ -43,7 +43,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="usage-guide" className="mx-auto max-w-6xl px-6 pb-16 md:px-10">
+      <section id="features" className="mx-auto max-w-6xl px-6 pb-16 md:px-10">
         <div className="grid gap-3 rounded-3xl border border-white/10 bg-white/5 p-4 text-center md:grid-cols-4">
           {highlights.map((item) => (
             <p key={item} className="font-semibold text-slate-200">
