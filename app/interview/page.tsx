@@ -207,33 +207,7 @@ type StructuredQuestion = {
   round?: string;
 };
 
-type SpeechRecognitionResultLike = { transcript: string };
-type SpeechRecognitionEventLike = {
-  resultIndex: number;
-  results: ArrayLike<ArrayLike<SpeechRecognitionResultLike>>;
-};
-type SpeechRecognitionLike = {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  start: () => void;
-  stop: () => void;
-  onstart: (() => void) | null;
-  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-  onerror: ((event: unknown) => void) | null;
-  onend: (() => void) | null;
-};
-type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 const allowedQuestionCounts = [3, 5, 8] as const;
-
-function getSpeechRecognitionConstructor(): SpeechRecognitionConstructor | undefined {
-  if (typeof window === "undefined") return undefined;
-  const browserWindow = window as Window & {
-    SpeechRecognition?: SpeechRecognitionConstructor;
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
-  };
-  return browserWindow.SpeechRecognition || browserWindow.webkitSpeechRecognition;
-}
 
 
 function shuffleQuestions<T>(items: T[]): T[] {
@@ -417,8 +391,10 @@ function InterviewPageContent() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const recognitionStoppingRef = useRef(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingTargetRef = useRef<InterviewTarget>("main");
 
   useEffect(() => {
     if (queryBankId) setBankId(queryBankId);
@@ -563,19 +539,10 @@ function InterviewPageContent() {
     }
   }, [interviewStatus, isLastQuestion]);
 
-  const stopRecognition = () => {
-    const recognition = recognitionRef.current;
-    if (!recognition) {
-      recognitionStoppingRef.current = false;
-      return;
-    }
-
-    recognitionStoppingRef.current = true;
-    try {
-      recognition.stop();
-    } catch {
-      recognitionRef.current = null;
-      recognitionStoppingRef.current = false;
+  const stopAudioRecording = () => {
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== "inactive") {
+      recorder.stop();
     }
   };
 
@@ -614,54 +581,77 @@ function InterviewPageContent() {
     window.speechSynthesis.speak(utterance);
   };
 
-  const startAutoListening = (target: InterviewTarget) => {
-    const SpeechRecognitionConstructor = getSpeechRecognitionConstructor();
+  const transcribeAudioBlob = async (audioBlob: Blob, target: InterviewTarget) => {
+    const file = new File([audioBlob], "interview-answer.webm", { type: audioBlob.type || "audio/webm" });
+    const formData = new FormData();
+    formData.append("audio", file);
+    const response = await fetch("/api/interview/transcribe", {
+      method: "POST",
+      body: formData,
+    });
+    const data = (await response.json()) as { text?: string; error?: string };
+    if (!response.ok) {
+      throw new Error(data.error ?? "转写失败，请稍后重试。");
+    }
+    const transcript = (data.text ?? "").trim();
+    if (!transcript) {
+      throw new Error("未识别到语音内容，请重试或手动输入。");
+    }
+    if (target === "main") {
+      setAnswer(transcript);
+    } else {
+      setFollowUpAnswer(transcript);
+    }
+    setTip("语音转写成功，你可以继续补充或直接提交。");
+  };
+
+  const startAutoListening = async (target: InterviewTarget) => {
     const status = target === "main" ? "listening" : "followup_listening";
     setInterviewStatus(status);
-
-    if (!SpeechRecognitionConstructor) {
-      setTip("麦克风无法使用，你可以直接手动输入回答。");
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setTip("当前浏览器不支持麦克风录音，请手动输入回答。");
       return;
     }
-
-    const recognition = new SpeechRecognitionConstructor();
-    recognitionRef.current = recognition;
-    recognitionStoppingRef.current = false;
-    recognition.lang = currentBank?.id === "english" ? "en-US" : "zh-CN";
-    recognition.interimResults = true;
-    recognition.continuous = false;
-    recognition.onstart = () => {
-      setTip("");
-      setInterviewStatus(status);
-    };
-    recognition.onend = () => {
-      if (recognitionStoppingRef.current) {
-        recognitionStoppingRef.current = false;
-        recognitionRef.current = null;
-        return;
-      }
-      recognitionRef.current = null;
-    };
-    recognition.onerror = () => {
-      recognitionRef.current = null;
-      setInterviewStatus(status);
-      setTip("麦克风无法使用，你可以直接手动输入回答。");
-    };
-    recognition.onresult = (event: SpeechRecognitionEventLike) => {
-      const transcript = event.results[event.resultIndex]?.[0]?.transcript ?? event.results[0]?.[0]?.transcript ?? "";
-      if (!transcript) return;
-      if (target === "main") {
-        setAnswer(transcript);
-      } else {
-        setFollowUpAnswer(transcript);
-      }
-    };
-
     try {
-      recognition.start();
-    } catch {
-      recognitionRef.current = null;
-      setTip("麦克风无法使用，你可以直接手动输入回答。");
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+      recordingTargetRef.current = target;
+      recorder.ondataavailable = (event: BlobEvent) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+      recorder.onstop = async () => {
+        const chunks = audioChunksRef.current;
+        audioChunksRef.current = [];
+        mediaRecorderRef.current = null;
+        audioStreamRef.current?.getTracks().forEach((track) => track.stop());
+        audioStreamRef.current = null;
+        if (chunks.length === 0) {
+          setTip("没有录到有效音频，请重试或手动输入。");
+          return;
+        }
+        const audioBlob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+        try {
+          setTip("录音完成，正在转写...");
+          await transcribeAudioBlob(audioBlob, recordingTargetRef.current);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "转写失败，请手动输入回答。";
+          setTip(message);
+        }
+      };
+      recorder.start();
+      setTip("正在录音，请点击“停止录音并转写”结束。");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
+      if (message.toLowerCase().includes("permission")) {
+        setTip("浏览器未允许麦克风权限，请允许后重试。");
+      } else {
+        setTip("麦克风无法使用，请检查设备后重试，或手动输入回答。");
+      }
     }
   };
 
@@ -702,7 +692,7 @@ function InterviewPageContent() {
       return;
     }
 
-    stopRecognition();
+    stopAudioRecording();
     setInterviewStatus("analyzing");
     setTip("AI 正在分析你的回答...");
 
@@ -770,7 +760,7 @@ function InterviewPageContent() {
       return;
     }
 
-    stopRecognition();
+    stopAudioRecording();
     setInterviewStatus("analyzing");
     setTip("AI 正在分析你的追问回答...");
 
@@ -812,7 +802,7 @@ function InterviewPageContent() {
       return;
     }
 
-    stopRecognition();
+    stopAudioRecording();
     stopCamera();
     setSessionQuestions(selectedQuestions);
     setStarted(true);
@@ -845,7 +835,7 @@ function InterviewPageContent() {
       return;
     }
 
-    stopRecognition();
+    stopAudioRecording();
     setIndex(nextIndex);
     setAnswer("");
     setFollowUpAnswer("");
@@ -857,7 +847,7 @@ function InterviewPageContent() {
 
   const handleReplayPrompt = () => {
     if (!currentPrompt) return;
-    stopRecognition();
+    stopAudioRecording();
     startQuestionFlow(currentTarget, currentPrompt);
   };
 
@@ -874,9 +864,9 @@ function InterviewPageContent() {
   const mainButtonLabel = !started
     ? "开始模拟面试"
     : interviewStatus === "followup_listening"
-      ? "回答完了，提交追问"
+      ? "停止录音并转写"
       : interviewStatus === "listening"
-        ? "回答完了，提交"
+        ? "停止录音并转写"
         : isLastQuestion && interviewStatus === "completed"
           ? "生成面试报告"
           : "下一题";
@@ -1028,7 +1018,7 @@ function InterviewPageContent() {
             ) : interviewStatus === "listening" ? (
               <button
                 className="rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-2 font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={submitMainAnswer}
+                onClick={stopAudioRecording}
                 disabled={!currentQuestion}
               >
                 {mainButtonLabel}
@@ -1036,13 +1026,16 @@ function InterviewPageContent() {
             ) : interviewStatus === "followup_listening" ? (
               <button
                 className="rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-2 font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={submitFollowUpAnswer}
+                onClick={stopAudioRecording}
                 disabled={!currentQuestion}
               >
                 {mainButtonLabel}
               </button>
             ) : null}
           </div>
+          {started && (interviewStatus === "listening" || interviewStatus === "followup_listening") ? (
+            <p className="mt-2 text-xs text-slate-400">转写完成后，请点击下方“提交当前回答”按钮进入判分。</p>
+          ) : null}
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
 
           <div className="mt-4">
@@ -1054,6 +1047,16 @@ function InterviewPageContent() {
               value={activeAnswer}
               onChange={(e) => setActiveAnswer(e.target.value)}
             />
+            {started && (interviewStatus === "listening" || interviewStatus === "followup_listening") ? (
+              <button
+                type="button"
+                className="mt-3 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={isFollowupStage ? submitFollowUpAnswer : submitMainAnswer}
+                disabled={!currentQuestion || !activeAnswer.trim()}
+              >
+                提交当前回答
+              </button>
+            ) : null}
           </div>
 
           <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur">
