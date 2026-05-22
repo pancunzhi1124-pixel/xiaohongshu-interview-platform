@@ -20,7 +20,7 @@ export default function HeroAnnouncementsPanel() {
         {latestAnnouncements.map((item) => (
           <Link
             key={item.id}
-            href="/announcements"
+            href={`/announcements/${item.id}`}
             className="block rounded-lg px-3 py-3 transition hover:bg-white/10"
           >
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">

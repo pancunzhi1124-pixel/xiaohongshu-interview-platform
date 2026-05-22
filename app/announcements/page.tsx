@@ -65,26 +65,18 @@ export default function AnnouncementsPage() {
                   {announcementFileTypeLabels[item.fileType]}
                 </span>
               </div>
-              <h2 className="mt-3 text-xl font-semibold">{item.title}</h2>
+              <h2 className="mt-3 text-xl font-semibold">
+                <Link href={`/announcements/${item.id}`} className="transition hover:text-cyan-300 focus-visible:text-cyan-300">
+                  {item.title}
+                </Link>
+              </h2>
               <p className="mt-2 text-sm leading-6 text-slate-300">{item.description}</p>
-              <p className="mt-3 text-sm text-slate-300">附件：{item.fileName}</p>
-              {item.isAvailable ? (
-                <a
-                  href={item.fileUrl}
-                  download
-                  className="mt-4 inline-flex rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-400"
-                >
-                  下载附件
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="mt-4 inline-flex cursor-not-allowed rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-400"
-                >
-                  附件待上传
-                </button>
-              )}
+              <Link
+                href={`/announcements/${item.id}`}
+                className="mt-4 inline-flex text-sm font-medium text-cyan-200 transition hover:text-cyan-300"
+              >
+                查看详情 →
+              </Link>
             </article>
           ))}
         </section>
