@@ -589,9 +589,14 @@ function InterviewPageContent() {
       method: "POST",
       body: formData,
     });
-    const data = (await response.json()) as { text?: string; error?: string };
+    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string };
     if (!response.ok) {
-      throw new Error(data.error ?? "转写失败，请稍后重试。");
+      const lines = [
+        `转写失败：${data.error ?? "Unknown error"}`,
+        data.status !== undefined ? `状态码：${data.status}` : "",
+        data.detail ? `详情：${data.detail}` : "",
+      ].filter((line) => Boolean(line));
+      throw new Error(lines.join("\n"));
     }
     const transcript = (data.text ?? "").trim();
     if (!transcript) {
