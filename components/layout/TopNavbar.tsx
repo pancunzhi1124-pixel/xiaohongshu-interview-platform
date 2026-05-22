@@ -1,12 +1,12 @@
 import Link from "next/link";
+import BankDropdownMenu from "@/components/layout/BankDropdownMenu";
 
 const navItems = [
   { label: "首页", href: "/" },
-  { label: "浏览题库", href: "/#banks" },
   { label: "模拟面试", href: "/interview" },
   { label: "更新公告", href: "/announcements" },
   { label: "使用说明", href: "/#usage-guide" },
-];
+] as const;
 
 export default function TopNavbar() {
   return (
@@ -18,6 +18,18 @@ export default function TopNavbar() {
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-5 text-sm text-slate-200 md:flex lg:gap-7">
+          <Link href="/" className="transition hover:text-cyan-300">
+            首页
+          </Link>
+          <div className="group relative">
+            <Link href="/banks" className="inline-flex items-center gap-1 transition hover:text-cyan-300">
+              浏览题库
+              <span aria-hidden className="text-cyan-300/80">
+                ▾
+              </span>
+            </Link>
+            <BankDropdownMenu />
+          </div>
           {navItems.map((item) => (
             <Link key={item.label} href={item.href} className="transition hover:text-cyan-300">
               {item.label}
@@ -27,7 +39,7 @@ export default function TopNavbar() {
 
         <div className="ml-auto flex items-center gap-2">
           <Link
-            href="/#banks"
+            href="/banks"
             className="rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-xs font-semibold text-slate-100 transition hover:border-cyan-300/60 hover:text-cyan-200 md:text-sm"
           >
             浏览题库
@@ -41,6 +53,12 @@ export default function TopNavbar() {
         </div>
       </div>
       <nav className="mx-auto flex max-w-6xl items-center gap-4 overflow-x-auto px-6 pb-3 text-xs text-slate-300 md:hidden md:px-10">
+        <Link href="/" className="whitespace-nowrap transition hover:text-cyan-300">
+          首页
+        </Link>
+        <Link href="/banks" className="whitespace-nowrap transition hover:text-cyan-300">
+          浏览题库
+        </Link>
         {navItems.map((item) => (
           <Link key={item.label} href={item.href} className="whitespace-nowrap transition hover:text-cyan-300">
             {item.label}
