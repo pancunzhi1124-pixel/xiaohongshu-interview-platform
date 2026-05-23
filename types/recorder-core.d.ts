@@ -1,28 +1,27 @@
 declare module "recorder-core" {
-  type OpenSuccess = () => void;
-  type OpenFail = (message: string, isUserNotAllow: boolean) => void;
-  type StopSuccess = (blob: Blob) => void;
-  type StopFail = (message: string) => void;
-
-  export type RecorderOptions = {
-    type: "wav";
-    sampleRate: number;
-    bitRate: number;
+  export type RecorderFactoryOptions = {
+    type?: string;
+    sampleRate?: number;
+    bitRate?: number;
+    numChannels?: number;
     onProcess?: () => void;
   };
 
-  export type RecorderInstance = {
-    open: (success: OpenSuccess, fail: OpenFail) => void;
+  export type RecorderCoreInstance = {
+    open: (
+      onSuccess: () => void,
+      onError: (message: string, isUserNotAllow?: boolean) => void
+    ) => void;
     start: () => void;
-    stop: (success: StopSuccess, fail: StopFail) => void;
+    stop: (
+      onSuccess: (blob: Blob, duration: number) => void,
+      onError: (message: string) => void
+    ) => void;
     close: () => void;
   };
 
-  export default function Recorder(options: RecorderOptions): RecorderInstance;
-
-  namespace Recorder {
-    export type RecorderInstance = import("recorder-core").RecorderInstance;
-  }
+  const Recorder: (options: RecorderFactoryOptions) => RecorderCoreInstance;
+  export default Recorder;
 }
 
-declare module "recorder-core/src/engine/wav";
+declare module "recorder-core/src/engine/wav" {}
