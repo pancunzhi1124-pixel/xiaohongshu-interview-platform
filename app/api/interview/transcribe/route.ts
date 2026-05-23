@@ -61,6 +61,9 @@ type OssConfig = {
   endpoint: string;
   secure: boolean;
 };
+type VerifyAudioUrlResult =
+  | { ok: true; contentType?: string; contentLength?: number }
+  | { ok: false; detail: string; status?: number };
 
 function getProvider(): TranscribeProvider {
   const provider = (process.env.ASR_PROVIDER?.trim() || "dashscope").toLowerCase();
@@ -115,6 +118,14 @@ function sanitizeDetail(detail: string): string {
     .replace(/("accessKeyId"\s*:\s*")[^"]+("?)/gi, "$1[REDACTED]$2")
     .replace(/("accessKeySecret"\s*:\s*")[^"]+("?)/gi, "$1[REDACTED]$2")
     .replace(/("Authorization"\s*:\s*")([^"]+)("?)/gi, "$1[REDACTED]$3");
+}
+
+function redactUrlSensitiveParams(input: string): string {
+  return input
+    .replace(/([?&]OSSAccessKeyId=)[^&\s"]+/gi, "$1[REDACTED]")
+    .replace(/([?&]Signature=)[^&\s"]+/gi, "$1[REDACTED]")
+    .replace(/([?&]Expires=)[^&\s"]+/gi, "$1[REDACTED]")
+    .replace(/([?&]security-token=)[^&\s"]+/gi, "$1[REDACTED]");
 }
 
 function extractOrderId(payload: RaasrUploadResponse): string {
@@ -239,10 +250,20 @@ function buildOssSignedGetUrl(config: OssConfig, objectKey: string, expiresInSec
 }
 
 async function uploadAudioToOss(config: OssConfig, objectKey: string, audioBuffer: Buffer): Promise<{ ok: true } | { ok: false; detail: string; status?: number }> {
+  return uploadAudioToOssWithAcl(config, objectKey, audioBuffer, "private");
+}
+
+async function uploadAudioToOssWithAcl(
+  config: OssConfig,
+  objectKey: string,
+  audioBuffer: Buffer,
+  acl: "private" | "public-read",
+): Promise<{ ok: true } | { ok: false; detail: string; status?: number }> {
   const protocol = config.secure ? "https" : "http";
   const date = new Date().toUTCString();
   const contentType = "audio/wav";
-  const stringToSign = `PUT\n\n${contentType}\n${date}\n/${config.bucket}/${objectKey}`;
+  const canonicalizedOssHeaders = `x-oss-object-acl:${acl}\n`;
+  const stringToSign = `PUT\n\n${contentType}\n${date}\n${canonicalizedOssHeaders}/${config.bucket}/${objectKey}`;
   const signature = signOssV1(config.accessKeySecret, stringToSign);
   const authorization = `OSS ${config.accessKeyId}:${signature}`;
   const url = `${protocol}://${config.bucket}.${config.endpoint}/${encodeURI(objectKey)}`;
@@ -253,6 +274,7 @@ async function uploadAudioToOss(config: OssConfig, objectKey: string, audioBuffe
       Date: date,
       "Content-Type": contentType,
       Authorization: authorization,
+      "x-oss-object-acl": acl,
     },
     body: toStrictArrayBuffer(audioBuffer),
   });
@@ -260,6 +282,34 @@ async function uploadAudioToOss(config: OssConfig, objectKey: string, audioBuffe
   if (response.ok) return { ok: true };
   const text = sanitizeDetail(await response.text());
   return { ok: false, detail: text || "OSS upload failed", status: response.status };
+}
+
+function buildOssPublicObjectUrl(config: OssConfig, objectKey: string): string {
+  const protocol = config.secure ? "https" : "http";
+  return `${protocol}://${config.bucket}.${config.endpoint}/${encodeURI(objectKey)}`;
+}
+
+async function verifyAudioUrl(audioUrl: string): Promise<VerifyAudioUrlResult> {
+  try {
+    const response = await fetch(audioUrl, { method: "GET", headers: { Range: "bytes=0-63" } });
+    if (!response.ok) {
+      return { ok: false, detail: `GET failed (${response.status}) for ${redactUrlSensitiveParams(audioUrl)}`, status: response.status };
+    }
+    const contentType = response.headers.get("content-type") || undefined;
+    const contentLengthHeader = response.headers.get("content-length");
+    const contentLength = contentLengthHeader ? Number(contentLengthHeader) : undefined;
+    if (contentLength !== undefined && Number.isFinite(contentLength) && contentLength <= 44) {
+      return { ok: false, detail: `content-length too small (${contentLength}) for ${redactUrlSensitiveParams(audioUrl)}`, status: response.status };
+    }
+    const data = Buffer.from(await response.arrayBuffer());
+    if (data.length < 12 || !isValidWavHeader(data)) {
+      return { ok: false, detail: `invalid wav header for ${redactUrlSensitiveParams(audioUrl)}`, status: response.status };
+    }
+    return { ok: true, contentType, contentLength };
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "Unknown verify error";
+    return { ok: false, detail: sanitizeDetail(detail) };
+  }
 }
 
 async function deleteOssObject(config: OssConfig, objectKey: string): Promise<void> {
@@ -358,14 +408,14 @@ async function transcribeByDashscope(audioBuffer: Buffer, model: string): Promis
   const objectKey = buildOssObjectKey();
 
   try {
-    const uploadResult = await uploadAudioToOss(ossConfig, objectKey, audioBuffer);
+    const uploadResult = await uploadAudioToOssWithAcl(ossConfig, objectKey, audioBuffer, "public-read");
     if (!uploadResult.ok) {
       return {
         ok: false,
         status: 502,
         body: {
           error: "OSS audio upload failed",
-          detail: sanitizeDetail(uploadResult.detail),
+          detail: `${sanitizeDetail(uploadResult.detail)}${uploadResult.status === 403 || uploadResult.status === 400 ? " 上传 public-read 临时对象失败。请确认 bucket 未阻止对象级 public-read ACL，或改回 signed URL 方案。" : ""}`.trim(),
           provider: "dashscope",
           model,
           stage: "oss_upload",
@@ -375,6 +425,24 @@ async function transcribeByDashscope(audioBuffer: Buffer, model: string): Promis
     }
 
     const signedOssUrl = buildOssSignedGetUrl(ossConfig, objectKey, OSS_SIGNED_URL_EXPIRES_SECONDS);
+    const publicOssUrl = buildOssPublicObjectUrl(ossConfig, objectKey);
+    const verifyResult = await verifyAudioUrl(publicOssUrl);
+    if (!verifyResult.ok) {
+      return {
+        ok: false,
+        status: 502,
+        body: {
+          error: "OSS signed audio URL is not accessible",
+          detail: sanitizeDetail(verifyResult.detail),
+          provider: "dashscope",
+          model,
+          stage: "oss_verify",
+          status: verifyResult.status,
+        },
+      };
+    }
+
+    const dashscopeFileUrl = publicOssUrl || signedOssUrl;
     const createResponse = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -384,7 +452,7 @@ async function transcribeByDashscope(audioBuffer: Buffer, model: string): Promis
       },
       body: JSON.stringify({
         model,
-        input: { file_urls: [signedOssUrl] },
+        input: { file_urls: [dashscopeFileUrl] },
         parameters: { language_hints: ["zh", "en"] },
       }),
     });
@@ -439,6 +507,35 @@ async function transcribeByDashscope(audioBuffer: Buffer, model: string): Promis
       if (taskStatus === "SUCCEEDED") {
         const transcript = (await extractDashscopeTaskText(taskPayload)).trim();
         if (!transcript) {
+          const outputObj = output && typeof output === "object" && !Array.isArray(output) ? (output as JsonObject) : null;
+          let hasNoValidFileCode = false;
+          if (outputObj && Array.isArray(outputObj.results)) {
+            for (const resultItem of outputObj.results) {
+              if (!resultItem || typeof resultItem !== "object" || Array.isArray(resultItem)) continue;
+              const code = (resultItem as JsonObject).code;
+              const message = (resultItem as JsonObject).message;
+              if ((typeof code === "string" && code.toUpperCase().includes("NO_VALID_FILE")) || (typeof message === "string" && message.toUpperCase().includes("NO_VALID_FILE"))) {
+                hasNoValidFileCode = true;
+                break;
+              }
+            }
+          }
+
+          if (hasNoValidFileCode) {
+            return {
+              ok: false,
+              status: 502,
+              body: {
+                error: "DashScope accepted task but no valid audio file was processed",
+                detail: `DashScope 返回 SUCCESS_WITH_NO_VALID_FILE，说明 file_urls 指向的音频文件无法被识别或无法被访问。请检查 OSS 临时对象权限、URL 可访问性、音频格式。${sanitizeDetail(` payload=${JSON.stringify(taskPayload)}`)}`,
+                provider: "dashscope",
+                model,
+                stage: "query",
+                status: 502,
+              },
+            };
+          }
+
           return {
             ok: false,
             status: 502,
