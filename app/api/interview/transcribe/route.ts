@@ -1,51 +1,49 @@
 export const runtime = "nodejs";
 
-import crypto, { createHash, createHmac } from "node:crypto";
+import crypto from "node:crypto";
 
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
-type TranscribeProvider = "iflytek_raasr" | "iflytek" | "tencent" | "openai" | "aliyun";
+const POLL_MAX_ATTEMPTS = 15;
+const POLL_INTERVAL_MS = 2000;
+const POLL_MAX_TOTAL_MS = 30000;
 
-type TencentSentenceRecognitionResponse = {
-  Result?: string;
-  Text?: string;
-  FinalSentence?: string;
-  Sentence?: string;
-  Response?: { Error?: { Code?: string; Message?: string } };
-};
+type TranscribeProvider = "iflytek_raasr" | "tencent";
 
-type RaasrUploadResponse = Record<string, unknown> & {
+type RaasrUploadResponse = {
+  code?: string;
+  descInfo?: string;
+  content?: {
+    orderId?: string;
+  };
   data?: {
     orderId?: string;
-    order_id?: string;
   };
   orderId?: string;
-  order_id?: string;
 };
 
-function extractErrorDetail(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  return "Unknown error";
-}
+type JsonPrimitive = string | number | boolean | null;
+type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+type JsonObject = { [key: string]: JsonValue };
 
 function getProvider(): TranscribeProvider {
-  const provider = (process.env.TRANSCRIBE_PROVIDER ?? process.env.ASR_PROVIDER ?? "iflytek_raasr").toLowerCase();
-  if (provider === "openai" || provider === "aliyun" || provider === "tencent" || provider === "iflytek" || provider === "xfyun" || provider === "iflytek_raasr") {
-    if (provider === "xfyun" || provider === "iflytek") return "iflytek_raasr";
-    return provider;
-  }
-  return "iflytek_raasr";
+  const provider =
+    process.env.ASR_PROVIDER?.trim() ||
+    process.env.TRANSCRIBE_PROVIDER?.trim() ||
+    "iflytek_raasr";
+  return provider === "tencent" ? "tencent" : "iflytek_raasr";
 }
 
-function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_APP_ID" | "IFLYTEK_RAASR_APP_ID" | "IFLYTEK_RAASR_SECRET_KEY"): string {
+function requireIflytekEnv(name: "IFLYTEK_RAASR_APP_ID" | "IFLYTEK_RAASR_SECRET_KEY"): string {
   const value = process.env[name]?.trim();
-  if (!value) throw new Error(`${name} is not configured`);
+  if (!value) {
+    throw new Error(`${name} is not configured`);
+  }
   return value;
 }
 
 function isValidWavHeader(buffer: Buffer): boolean {
   if (buffer.length < 12) return false;
   const header = buffer.subarray(0, 12).toString("ascii");
-  console.log("audio header:", header);
   return header.includes("RIFF") && header.includes("WAVE");
 }
 
@@ -69,18 +67,98 @@ function toStrictArrayBuffer(input: Uint8Array): ArrayBuffer {
   return arrayBuffer;
 }
 
-async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): Promise<{ payload: RaasrUploadResponse; orderId: string }> {
-  const appId = requireEnv("IFLYTEK_RAASR_APP_ID");
-  const secretKey = requireEnv("IFLYTEK_RAASR_SECRET_KEY");
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function sanitizeDetail(detail: string): string {
+  return detail
+    .replace(/([?&]signa=)[^&\s"]+/gi, "$1[REDACTED]")
+    .replace(/("signa"\s*:\s*")[^"]+("?)/gi, "$1[REDACTED]$2")
+    .replace(/("secretKey"\s*:\s*")[^"]+("?)/gi, "$1[REDACTED]$2")
+    .replace(/("apiKey"\s*:\s*")[^"]+("?)/gi, "$1[REDACTED]$2");
+}
+
+function extractOrderId(payload: RaasrUploadResponse): string {
+  return payload.content?.orderId ?? payload.data?.orderId ?? payload.orderId ?? "";
+}
+
+function tryParseJson(text: string): JsonObject | null {
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as JsonObject;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function flattenText(value: JsonValue): string {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (value === null) return "";
+  if (Array.isArray(value)) {
+    return value.map(flattenText).filter((item) => item.trim()).join(" ");
+  }
+  return Object.values(value).map(flattenText).filter((item) => item.trim()).join(" ");
+}
+
+function extractTranscriptFromResult(payload: JsonObject): string {
+  const directCandidates: JsonValue[] = [
+    payload.text,
+    payload.result,
+    payload.data && typeof payload.data === "object" ? (payload.data as JsonObject).text : null,
+    payload.data && typeof payload.data === "object" ? (payload.data as JsonObject).result : null,
+    payload.content && typeof payload.content === "object" ? (payload.content as JsonObject).text : null,
+    payload.content && typeof payload.content === "object" ? (payload.content as JsonObject).result : null,
+  ];
+
+  for (const candidate of directCandidates) {
+    if (candidate === undefined) continue;
+    const text = flattenText(candidate).trim();
+    if (text) return text;
+  }
+
+  const content = payload.content;
+  if (content && typeof content === "object") {
+    const orderResult = (content as JsonObject).orderResult;
+    if (typeof orderResult === "string" && orderResult.trim()) {
+      const inner = tryParseJson(orderResult);
+      if (inner) {
+        const text = flattenText(inner).trim();
+        if (text) return text;
+      }
+      return orderResult.trim();
+    }
+  }
+
+  return "";
+}
+
+function isRaasrCompleted(payload: JsonObject): boolean {
+  const content = payload.content;
+  if (!content || typeof content !== "object") return false;
+  const orderInfo = (content as JsonObject).orderInfo;
+  if (!orderInfo || typeof orderInfo !== "object") return false;
+  const status = (orderInfo as JsonObject).status;
+  return status === 4 || status === "4";
+}
+
+async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string) {
+  const appId = requireIflytekEnv("IFLYTEK_RAASR_APP_ID");
+  const secretKey = requireIflytekEnv("IFLYTEK_RAASR_SECRET_KEY");
   const baseUrl = normalizeRaasrBaseUrl(process.env.IFLYTEK_RAASR_API_URL);
   const uploadUrl = `${baseUrl}/upload`;
+  const resultUrl = `${baseUrl}/getResult`;
 
   const ts = Math.floor(Date.now() / 1000).toString();
   const signa = createRaasrSigna(appId, secretKey, ts);
   const safeFileName = fileName?.trim() || `interview-${Date.now()}.wav`;
   const duration = Math.max(1, Math.round(audioBuffer.byteLength / 32000));
 
-  const params = new URLSearchParams({
+  const uploadParams = new URLSearchParams({
     appId,
     ts,
     signa,
@@ -89,110 +167,126 @@ async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): 
     duration: String(duration),
   });
 
-  console.log("RAASR baseUrl:", baseUrl);
-  console.log("RAASR uploadUrl:", uploadUrl);
-
-  const uploadUrlWithParams = `${uploadUrl}?${params.toString()}`;
-  const requestInit: RequestInit = {
+  const response = await fetch(`${uploadUrl}?${uploadParams.toString()}`, {
     method: "POST",
-    headers: new Headers({
+    headers: {
       "Content-Type": "application/json; charset=UTF-8",
       Chunked: "false",
-    }),
+    },
     body: toStrictArrayBuffer(audioBuffer),
-  };
+  });
 
-  const response = await fetch(uploadUrlWithParams, requestInit);
-  const rawText = await response.text();
-  let payload: RaasrUploadResponse = {};
-  try {
-    payload = JSON.parse(rawText) as RaasrUploadResponse;
-  } catch {
-    payload = { rawText };
-  }
+  const responseText = await response.text();
+  console.log("RAASR upload status:", response.status);
+  console.log("RAASR upload response:", sanitizeDetail(responseText));
 
   if (!response.ok) {
-    const detail = `HTTP ${response.status}: ${rawText}`;
-    throw new Error(
-      JSON.stringify({
+    return {
+      ok: false as const,
+      status: 502,
+      body: {
         error: "Iflytek RAASR upload failed",
-        detail,
+        detail: sanitizeDetail(responseText),
         provider: "iflytek_raasr",
         status: response.status,
         url: uploadUrl,
-      }),
-    );
+      },
+    };
   }
 
-  console.log("RAASR upload raw response:", JSON.stringify(payload));
-  const orderId = String(payload.data?.orderId ?? payload.orderId ?? payload.data?.order_id ?? payload.order_id ?? "");
+  const payload = JSON.parse(responseText) as RaasrUploadResponse;
+  const orderId = extractOrderId(payload);
 
-  // TODO: 根据讯飞文档“查询结果”章节，使用 orderId 查询转写结果。
-  return { payload, orderId };
-}
+  if (!orderId) {
+    return {
+      ok: false as const,
+      status: 502,
+      body: {
+        error: "Iflytek RAASR upload succeeded but no orderId returned",
+        detail: sanitizeDetail(responseText),
+        provider: "iflytek_raasr",
+        stage: "upload",
+      },
+    };
+  }
 
-async function transcribeByTencent(wavBuffer: Buffer): Promise<string> {
-  const secretId = requireEnv("TENCENT_SECRET_ID");
-  const secretKey = requireEnv("TENCENT_SECRET_KEY");
-  requireEnv("TENCENT_APP_ID");
+  const startedAt = Date.now();
+  for (let attempt = 0; attempt < POLL_MAX_ATTEMPTS; attempt += 1) {
+    if (Date.now() - startedAt >= POLL_MAX_TOTAL_MS) break;
 
-  const region = process.env.TENCENT_ASR_REGION ?? "ap-beijing";
-  const engine = process.env.TENCENT_ASR_ENGINE ?? "16k_zh";
+    const pollTs = Math.floor(Date.now() / 1000).toString();
+    const pollSigna = createRaasrSigna(appId, secretKey, pollTs);
+    const query = new URLSearchParams({ appId, ts: pollTs, signa: pollSigna, orderId });
+    const resultResponse = await fetch(`${resultUrl}?${query.toString()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "multipart/form-data;",
+      },
+    });
 
-  const payload = {
-    EngSerViceType: engine,
-    SourceType: 1,
-    VoiceFormat: "wav",
-    Data: wavBuffer.toString("base64"),
-    DataLen: wavBuffer.length,
-    UsrAudioKey: `interview-${Date.now()}`,
-    ProjectId: 0,
-  };
+    const resultText = await resultResponse.text();
+    const safeResultText = sanitizeDetail(resultText);
+    if (!resultResponse.ok) {
+      return {
+        ok: false as const,
+        status: 502,
+        body: {
+          error: "Iflytek RAASR result query failed",
+          detail: safeResultText,
+          provider: "iflytek_raasr",
+          stage: "query",
+          status: resultResponse.status,
+          url: resultUrl,
+          orderId,
+        },
+      };
+    }
 
-  const endpoint = "asr.tencentcloudapi.com";
-  const service = "asr";
-  const version = "2019-06-14";
-  const action = "SentenceRecognition";
-  const timestamp = Math.floor(Date.now() / 1000);
-  const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
-  const payloadString = JSON.stringify(payload);
-  const hashedPayload = createHash("sha256").update(payloadString).digest("hex");
-  const canonicalRequest = `POST\n/\n\ncontent-type:application/json; charset=utf-8\nhost:${endpoint}\n\ncontent-type;host\n${hashedPayload}`;
-  const credentialScope = `${date}/${service}/tc3_request`;
-  const stringToSign = `TC3-HMAC-SHA256\n${timestamp}\n${credentialScope}\n${createHash("sha256").update(canonicalRequest).digest("hex")}`;
-  const secretDate = createHmac("sha256", `TC3${secretKey}`).update(date).digest();
-  const secretService = createHmac("sha256", secretDate).update(service).digest();
-  const secretSigning = createHmac("sha256", secretService).update("tc3_request").digest();
-  const signature = createHmac("sha256", secretSigning).update(stringToSign).digest("hex");
-  const authorization = `TC3-HMAC-SHA256 Credential=${secretId}/${credentialScope}, SignedHeaders=content-type;host, Signature=${signature}`;
+    const resultPayload = tryParseJson(resultText);
+    if (!resultPayload) {
+      return {
+        ok: false as const,
+        status: 502,
+        body: {
+          error: "Iflytek RAASR result parse failed",
+          detail: safeResultText,
+          provider: "iflytek_raasr",
+          stage: "query",
+          orderId,
+        },
+      };
+    }
 
-  const response = await fetch(`https://${endpoint}`, {
-    method: "POST",
-    headers: {
-      Authorization: authorization,
-      "Content-Type": "application/json; charset=utf-8",
-      Host: endpoint,
-      "X-TC-Action": action,
-      "X-TC-Timestamp": String(timestamp),
-      "X-TC-Version": version,
-      "X-TC-Region": region,
+    if (isRaasrCompleted(resultPayload)) {
+      const transcript = extractTranscriptFromResult(resultPayload).trim();
+      if (transcript) {
+        return {
+          ok: true as const,
+          status: 200,
+          body: {
+            text: transcript,
+            provider: "iflytek_raasr",
+            orderId,
+          },
+        };
+      }
+    }
+
+    if (attempt < POLL_MAX_ATTEMPTS - 1) {
+      await sleep(POLL_INTERVAL_MS);
+    }
+  }
+
+  return {
+    ok: false as const,
+    status: 202,
+    body: {
+      error: "Iflytek RAASR result not ready",
+      detail: "文件已上传成功，但转写结果尚未完成，请稍后重试。",
+      provider: "iflytek_raasr",
+      orderId,
     },
-    body: payloadString,
-  });
-
-  const result = (await response.json()) as TencentSentenceRecognitionResponse;
-  const errorCode = result.Response?.Error?.Code;
-  const errorMessage = result.Response?.Error?.Message;
-  if (!response.ok || errorCode) {
-    throw new Error(errorMessage ?? "Tencent ASR request failed");
-  }
-
-  const transcript = result.Result ?? result.Text ?? result.FinalSentence ?? result.Sentence ?? "";
-  if (!transcript.trim()) {
-    throw new Error("Tencent ASR returned empty transcript");
-  }
-
-  return transcript.trim();
+  };
 }
 
 export async function POST(request: Request) {
@@ -205,13 +299,6 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing audio file" }, { status: 400 });
     }
 
-    console.log("ASR provider:", provider);
-    console.log("IFLYTEK_RAASR_APP_ID configured:", Boolean(process.env.IFLYTEK_RAASR_APP_ID?.trim()));
-    console.log("IFLYTEK_RAASR_SECRET_KEY configured:", Boolean(process.env.IFLYTEK_RAASR_SECRET_KEY?.trim()));
-    console.log("uploaded audio size:", audio.size);
-    console.log("uploaded audio type:", audio.type);
-    console.log("uploaded audio name:", audio.name);
-
     if (audio.size > MAX_AUDIO_SIZE_BYTES) {
       return Response.json({ error: "Audio file is too large", detail: "请缩短录音时间，建议每段控制在 15 秒以内。" }, { status: 413 });
     }
@@ -221,41 +308,14 @@ export async function POST(request: Request) {
       return Response.json({ error: "Invalid WAV audio", detail: "上传的音频不是标准 WAV。请检查前端 recorder-core 配置。" }, { status: 400 });
     }
 
-    if (provider === "iflytek_raasr") {
-      const { payload, orderId } = await transcribeByIflytekRaasr(audioBuffer, audio.name);
-      if (orderId) {
-        return Response.json({ text: "", provider: "iflytek_raasr", orderId });
-      }
-      return Response.json({ text: "", provider: "iflytek_raasr", stage: "upload", raw: payload });
+    if (provider !== "iflytek_raasr") {
+      return Response.json({ error: `Unsupported provider: ${provider}`, provider }, { status: 400 });
     }
 
-    if (provider === "tencent") {
-      const text = await transcribeByTencent(audioBuffer);
-      return Response.json({ text, provider: "tencent" });
-    }
-
-    return Response.json({ error: `Unsupported provider: ${provider}` }, { status: 400 });
+    const result = await transcribeByIflytekRaasr(audioBuffer, audio.name);
+    return Response.json(result.body, { status: result.status });
   } catch (error) {
-    if (provider === "iflytek_raasr") {
-      return Response.json(
-        (() => {
-          const detail = extractErrorDetail(error);
-          try {
-            const parsed = JSON.parse(detail) as { error?: string; detail?: string; provider?: string; status?: number; url?: string };
-            return {
-              error: parsed.error ?? "Iflytek RAASR upload failed",
-              detail: parsed.detail ?? detail,
-              provider: parsed.provider ?? "iflytek_raasr",
-              status: parsed.status,
-              url: parsed.url,
-            };
-          } catch {
-            return { error: "Iflytek RAASR transcription failed", detail, provider: "iflytek_raasr" };
-          }
-        })(),
-        { status: 502 },
-      );
-    }
-    return Response.json({ error: "ASR transcription failed", detail: extractErrorDetail(error), provider }, { status: 502 });
+    const detail = error instanceof Error ? error.message : "Unknown error";
+    return Response.json({ error: "Iflytek RAASR transcription failed", detail: sanitizeDetail(detail), provider: "iflytek_raasr" }, { status: 502 });
   }
 }
