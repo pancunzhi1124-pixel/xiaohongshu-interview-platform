@@ -1,49 +1,8 @@
 export const runtime = "nodejs";
 
-import { execFile } from "node:child_process";
 import { createHash, createHmac } from "node:crypto";
-import { access, chmod, readFile, unlink, writeFile } from "node:fs/promises";
-import { createRequire } from "node:module";
-import os from "node:os";
-import path from "node:path";
-import { promisify } from "node:util";
 
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
-const execFileAsync = promisify(execFile);
-
-const require = createRequire(import.meta.url);
-
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function resolveFfmpegPath(): Promise<string> {
-  const staticPath = require("ffmpeg-static") as string | null;
-
-  const candidates = [
-    process.env.FFMPEG_PATH,
-    staticPath,
-    path.join(process.cwd(), "node_modules", "ffmpeg-static", "ffmpeg"),
-    path.join("/var/task", "node_modules", "ffmpeg-static", "ffmpeg"),
-  ].filter((item): item is string => Boolean(item));
-
-  console.log("ffmpeg path candidates:", candidates);
-
-  for (const candidate of candidates) {
-    if (await fileExists(candidate)) {
-      await chmod(candidate, 0o755).catch(() => {});
-      console.log("ffmpeg selected path:", candidate);
-      return candidate;
-    }
-  }
-
-  throw new Error(`FFmpeg binary not found. Candidates: ${candidates.join(", ")}`);
-}
 
 type TranscribeProvider = "tencent" | "openai" | "aliyun";
 
@@ -52,10 +11,8 @@ type TencentSentenceRecognitionResponse = {
   Text?: string;
   FinalSentence?: string;
   Sentence?: string;
-  result?: string;
-  RequestId?: string;
+  Response?: { Error?: { Code?: string; Message?: string } };
 };
-type TencentErrorResponse = { Response?: { Error?: { Code?: string; Message?: string } } };
 
 function extractErrorDetail(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -74,34 +31,26 @@ function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_
   return value;
 }
 
-async function convertToWav(ffmpegPath: string, inputPath: string, outputPath: string): Promise<void> {
-  const result = await execFileAsync(
-    ffmpegPath,
-    ["-y", "-i", inputPath, "-ac", "1", "-ar", "16000", "-acodec", "pcm_s16le", outputPath],
-    { timeout: 30000 },
-  );
-
-  console.log("ffmpeg stdout:", result.stdout);
-  console.log("ffmpeg stderr:", result.stderr);
+function isValidWavHeader(buffer: Buffer): boolean {
+  if (buffer.length < 12) return false;
+  const header = buffer.subarray(0, 12).toString("ascii");
+  console.log("uploaded wav header:", header);
+  return header.includes("RIFF") && header.includes("WAVE");
 }
 
 async function transcribeByTencent(wavBuffer: Buffer): Promise<string> {
-  console.log("TENCENT_SECRET_ID configured:", Boolean(process.env.TENCENT_SECRET_ID));
-  console.log("TENCENT_SECRET_KEY configured:", Boolean(process.env.TENCENT_SECRET_KEY));
-  console.log("TENCENT_APP_ID configured:", Boolean(process.env.TENCENT_APP_ID));
-
   const secretId = requireEnv("TENCENT_SECRET_ID");
   const secretKey = requireEnv("TENCENT_SECRET_KEY");
   requireEnv("TENCENT_APP_ID");
+
   const region = process.env.TENCENT_ASR_REGION ?? "ap-beijing";
   const engine = process.env.TENCENT_ASR_ENGINE ?? "16k_zh";
 
-  const audioData = wavBuffer.toString("base64");
   const payload = {
     EngSerViceType: engine,
     SourceType: 1,
     VoiceFormat: "wav",
-    Data: audioData,
+    Data: wavBuffer.toString("base64"),
     DataLen: wavBuffer.length,
     UsrAudioKey: `interview-${Date.now()}`,
     ProjectId: 0,
@@ -138,114 +87,76 @@ async function transcribeByTencent(wavBuffer: Buffer): Promise<string> {
     body: payloadString,
   });
 
-  const result = (await response.json()) as TencentSentenceRecognitionResponse & TencentErrorResponse;
+  const result = (await response.json()) as TencentSentenceRecognitionResponse;
   console.log("Tencent ASR raw response:", JSON.stringify(result));
 
   const errorCode = result.Response?.Error?.Code;
   const errorMessage = result.Response?.Error?.Message;
   if (!response.ok || errorCode) {
-    const error = new Error(errorMessage ?? "Tencent ASR request failed");
-    (error as Error & { code?: string }).code = errorCode ?? "UNKNOWN";
-    throw error;
+    throw new Error(errorMessage ?? "Tencent ASR request failed");
   }
 
-  const transcript = result.Result ?? result.Text ?? result.FinalSentence ?? result.Sentence ?? result.result ?? "";
-  const text = transcript.trim();
-  if (!text) {
-    const emptyTranscriptError = new Error("Tencent ASR returned empty transcript");
-    (emptyTranscriptError as Error & { code?: string }).code = "TENCENT_EMPTY_TRANSCRIPT";
-    throw emptyTranscriptError;
+  const transcript = result.Result ?? result.Text ?? result.FinalSentence ?? result.Sentence ?? "";
+  if (!transcript.trim()) {
+    throw new Error("Tencent ASR returned empty transcript");
   }
 
-  return text;
+  return transcript.trim();
 }
 
 export async function POST(request: Request) {
-  const provider = getProvider();
   console.log("TRANSCRIBE_PROVIDER:", process.env.TRANSCRIBE_PROVIDER);
+  const provider = getProvider();
+  if (provider !== "tencent") {
+    return Response.json({ error: `Unsupported provider: ${provider}`, detail: "当前仅支持腾讯云转写。" }, { status: 400 });
+  }
 
   try {
     const formData = await request.formData();
     const audio = formData.get("audio");
-    if (!(audio instanceof File)) return Response.json({ error: "Missing audio file" }, { status: 400 });
+    if (!(audio instanceof File)) {
+      return Response.json({ error: "Missing audio file" }, { status: 400 });
+    }
 
-    const inputPath = path.join(os.tmpdir(), `input-${Date.now()}.webm`);
-    const outputPath = path.join(os.tmpdir(), `output-${Date.now()}.wav`);
-
-    console.log("uploaded audio size:", audio.size);
-    console.log("uploaded audio type:", audio.type);
     console.log("uploaded audio name:", audio.name);
-    console.log("input path:", inputPath);
-    console.log("output path:", outputPath);
+    console.log("uploaded audio type:", audio.type);
+    console.log("uploaded audio size:", audio.size);
 
     if (audio.size > MAX_AUDIO_SIZE_BYTES) {
-      return Response.json({ error: "Audio file is too large", detail: "请缩短录音时间，建议控制在 60 秒以内。" }, { status: 413 });
+      return Response.json({ error: "Audio file is too large", detail: "请缩短录音时间，建议每段控制在 15 秒以内。" }, { status: 413 });
+    }
+
+    const audioBuffer = Buffer.from(await audio.arrayBuffer());
+    if (!isValidWavHeader(audioBuffer)) {
+      return Response.json(
+        {
+          error: "Invalid WAV audio",
+          detail: "上传的音频不是标准 WAV。请检查前端 recorder-core 配置。",
+        },
+        { status: 400 },
+      );
     }
 
     try {
-      await writeFile(inputPath, Buffer.from(await audio.arrayBuffer()));
-      const ffmpegPath = await resolveFfmpegPath();
-      await convertToWav(ffmpegPath, inputPath, outputPath);
-
-      const wavBuffer = await readFile(outputPath);
-      console.log("converted wav size:", wavBuffer.length);
-      console.log("converted wav header:", wavBuffer.subarray(0, 12).toString("ascii"));
-
-      const header = wavBuffer.subarray(0, 12).toString("ascii");
-      if (!header.includes("RIFF") || !header.includes("WAVE")) {
-        return Response.json(
-          { error: "Invalid converted WAV audio", detail: "ffmpeg did not generate a valid WAV file." },
-          { status: 500 },
-        );
-      }
-
-      if (provider !== "tencent") {
+      const text = await transcribeByTencent(audioBuffer);
+      return Response.json({ text });
+    } catch (error) {
+      const detail = extractErrorDetail(error);
+      if (detail === "Tencent ASR returned empty transcript") {
         return Response.json(
           {
-            error: `Transcription provider '${provider}' is not available`,
-            detail: "Only Tencent ASR is enabled in this deployment.",
+            error: "Tencent ASR returned empty transcript",
+            detail: "腾讯云已返回响应，但没有识别出文字。请确认 WAV 是否清晰、是否为 16k 单声道 PCM。",
           },
-          { status: 501 },
+          { status: 422 },
         );
       }
-
-      try {
-        const text = await transcribeByTencent(wavBuffer);
-        return Response.json({ text });
-      } catch (error: unknown) {
-        const detail = extractErrorDetail(error);
-        const code =
-          typeof error === "object" && error !== null && "code" in error && typeof (error as { code?: unknown }).code === "string"
-            ? (error as { code: string }).code
-            : "UNKNOWN";
-        if (code === "TENCENT_EMPTY_TRANSCRIPT") {
-          return Response.json(
-            { error: "Tencent ASR returned empty transcript", detail: "腾讯云未识别到有效语音，请靠近麦克风清晰说话。" },
-            { status: 422 },
-          );
-        }
-        const status = detail.includes("not configured") ? 500 : 502;
-        return Response.json({ error: detail.includes("not configured") ? detail : "Tencent ASR transcription failed", detail, code }, { status });
+      if (detail.includes("not configured")) {
+        return Response.json({ error: detail }, { status: 500 });
       }
-    } catch (error: unknown) {
-      console.error("ffmpeg conversion failed:", error);
-      const detail = error instanceof Error ? error.message : "Unknown ffmpeg error";
-      if (detail.startsWith("FFmpeg binary not found.")) {
-        return Response.json(
-          {
-            error: "FFmpeg binary not found",
-            detail:
-              "Netlify Function did not include ffmpeg-static binary. Please check netlify.toml included_files and dependencies.",
-          },
-          { status: 500 },
-        );
-      }
-      return Response.json({ error: "Audio conversion failed", detail }, { status: 500 });
-    } finally {
-      await unlink(inputPath).catch(() => {});
-      await unlink(outputPath).catch(() => {});
+      return Response.json({ error: "Tencent ASR transcription failed", detail }, { status: 502 });
     }
-  } catch (error: unknown) {
-    return Response.json({ error: "Tencent ASR transcription failed", detail: extractErrorDetail(error), code: "UNKNOWN" }, { status: 502 });
+  } catch (error) {
+    return Response.json({ error: "Tencent ASR transcription failed", detail: extractErrorDetail(error) }, { status: 502 });
   }
 }
