@@ -24,3 +24,8 @@
 
 - 本分支使用腾讯云 ASR 进行语音转写，环境变量更新后需要重新部署以生效。
 - 已保留现有 Vercel 部署能力（未删除或覆盖任何 Vercel 相关配置）。
+
+## ffmpeg 转码说明
+
+- 语音转写接口会先将前端上传的 `webm/opus` 录音写入 Netlify Serverless 的 `/tmp`，再调用 ffmpeg 转换为 `16k/单声道/wav`，最后发送给腾讯云 SentenceRecognition。
+- 若 Netlify 打包阶段出现 `ffmpeg-static` 相关问题，可在 Netlify 环境变量中设置 `FFMPEG_PATH=/var/task/node_modules/ffmpeg-static/ffmpeg`（或你实际的可执行路径），并重新部署。
