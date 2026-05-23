@@ -8,6 +8,7 @@ import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
 import SmartSelect from "@/components/ui/SmartSelect";
+import { calculateSpeechMetrics, type SpeechMetrics } from "@/lib/interview/speechMetrics";
 import RecorderCore from "recorder-core";
 import "recorder-core/src/engine/wav";
 
@@ -215,6 +216,7 @@ type ReportItem = {
   followUpAnswer?: string;
   score: number;
   feedback: string;
+  speechMetrics: SpeechMetrics;
 };
 type AudioDiagnostics = {
   durationSeconds: number;
@@ -222,6 +224,7 @@ type AudioDiagnostics = {
   chunkSizes: number[];
   mimeType: "audio/wav";
   uploadedForTranscription: boolean;
+  segmentDurationsMs?: number[];
 };
 type RecordingStatus = "未录音" | "录音中" | "录音完成" | "失败";
 type MicPermissionStatus = "已授权" | "未授权";
@@ -426,6 +429,7 @@ function InterviewPageContent() {
   const [lastRecordedBlob, setLastRecordedBlob] = useState<Blob | null>(null);
   const [lastRecordedUrl, setLastRecordedUrl] = useState("");
   const [audioDiagnostics, setAudioDiagnostics] = useState<AudioDiagnostics | null>(null);
+  const [questionDurationByKey, setQuestionDurationByKey] = useState<Record<string, number>>({});
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>("未录音");
   const [micPermissionStatus, setMicPermissionStatus] = useState<MicPermissionStatus>("未授权");
   const [transcriptionStatus, setTranscriptionStatus] = useState<TranscriptionStatus>("未开始");
@@ -781,6 +785,9 @@ function InterviewPageContent() {
     }
 
     const durationSeconds = recordingStartedAtRef.current ? Math.max(0, (Date.now() - recordingStartedAtRef.current) / 1000) : 0;
+    if (currentQuestion?.id) {
+      setQuestionDurationByKey((prev) => ({ ...prev, [currentQuestion.id]: Math.round(durationSeconds * 1000) }));
+    }
     recordingStartedAtRef.current = null;
     uploadedForTranscriptionRef.current = false;
     setAudioDiagnostics({ durationSeconds, chunkCount: 1, chunkSizes: [audioBlob.size], mimeType: "audio/wav", uploadedForTranscription: false });
@@ -878,6 +885,11 @@ function InterviewPageContent() {
       setTip("当前无法连接 AI 评估，已使用本地兜底分析。你仍然可以继续面试。");
     }
 
+    const metrics = calculateSpeechMetrics({
+      transcript: submittedAnswer,
+      totalDurationMs: questionDurationByKey[currentQuestion.id] ?? Math.round((audioDiagnostics?.durationSeconds ?? 0) * 1000),
+    });
+
     if (result.followUpNeeded && result.followUpQuestion) {
       setPendingEvaluation({ score: result.score, feedback: result.shortFeedback });
       setFollowUpQuestion(result.followUpQuestion);
@@ -894,6 +906,7 @@ function InterviewPageContent() {
         answer: submittedAnswer,
         score: result.score,
         feedback: result.shortFeedback,
+        speechMetrics: metrics,
       },
     ]);
     setPendingEvaluation(null);
@@ -916,6 +929,10 @@ function InterviewPageContent() {
 
     const evaluation = pendingEvaluation ?? { score: 5, feedback: "回答具备基础结构，建议补充更具体的行动与结果。" };
     const combinedAnswer = [answer.trim(), `追问回答：${submittedFollowUpAnswer}`].filter(Boolean).join("\n\n");
+    const metrics = calculateSpeechMetrics({
+      transcript: combinedAnswer,
+      totalDurationMs: questionDurationByKey[currentQuestion.id] ?? Math.round((audioDiagnostics?.durationSeconds ?? 0) * 1000),
+    });
 
     setReport((prev) => [
       ...prev,
@@ -925,6 +942,7 @@ function InterviewPageContent() {
         followUpAnswer: submittedFollowUpAnswer,
         score: evaluation.score,
         feedback: evaluation.feedback,
+        speechMetrics: metrics,
       },
     ]);
     setPendingEvaluation(null);
@@ -1018,6 +1036,11 @@ function InterviewPageContent() {
       : "下一题";
 
   const avgScore = report.length ? (report.reduce((acc, item) => acc + item.score, 0) / report.length).toFixed(1) : "0.0";
+  const avgSpeakingRate = report.length
+    ? (report.reduce((acc, item) => acc + item.speechMetrics.speakingRateCharPerMinute, 0) / report.length).toFixed(1)
+    : "0.0";
+  const totalFillerCount = report.reduce((acc, item) => acc + item.speechMetrics.fillerWordCount, 0);
+  const avgFluency = report.length ? (report.reduce((acc, item) => acc + item.speechMetrics.fluencyScore, 0) / report.length).toFixed(1) : "0.0";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 p-6 text-white">
@@ -1263,6 +1286,9 @@ function InterviewPageContent() {
               <p className="text-sm text-slate-300">综合得分</p>
               <p className="text-3xl font-bold text-white">{avgScore} / 10</p>
               <p className="text-sm text-slate-400">已完成：{report.length} / {sessionQuestions.length || activeQuestions.length} 题</p>
+              <p className="mt-2 text-sm text-slate-300">平均语速：{avgSpeakingRate} 字/分钟</p>
+              <p className="text-sm text-slate-300">总口头禅次数：{totalFillerCount}</p>
+              <p className="text-sm text-slate-300">平均表达流畅度：{avgFluency} / 10</p>
             </div>
             <ul className="mt-3 space-y-2 text-sm">
               {report.map((item, i) => (
@@ -1273,6 +1299,20 @@ function InterviewPageContent() {
                   <p className="mt-1 text-slate-300">得分：{item.score}</p>
                   {item.followUpAnswer ? <p className="mt-1 text-slate-300">追问回答已记录</p> : null}
                   <p className="mt-1 rounded-xl border border-purple-300/20 bg-purple-400/10 p-2 text-purple-200">建议：{item.feedback}</p>
+                  <p className="mt-1 text-slate-300">语速：{item.speechMetrics.speakingRateCharPerMinute} 字/分钟</p>
+                  <p className="mt-1 text-slate-300">
+                    口头禅：总数 {item.speechMetrics.fillerWordCount}
+                    {item.speechMetrics.fillerWords.length
+                      ? `（高频词：${item.speechMetrics.fillerWords.filter((word) => word.highFrequency).map((word) => `${word.word}(${word.count})`).join("、") || "无"}）`
+                      : "（高频词：无）"}
+                  </p>
+                  <p className="mt-1 text-slate-300">
+                    停顿：
+                    {item.speechMetrics.pauseSupport === "realtime"
+                      ? `${item.speechMetrics.pauseCount} 次，最长停顿 ${item.speechMetrics.maxPauseMs} ms`
+                      : "需要实时模式支持"}
+                  </p>
+                  <p className="mt-1 text-slate-300">表达流畅度：{item.speechMetrics.fluencyScore} / 10</p>
                 </li>
               ))}
             </ul>
