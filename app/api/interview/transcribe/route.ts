@@ -35,8 +35,15 @@ function sanitizeDetail(detail: string): string {
 
 function extractFinalText(payload: JsonObject): string[] {
   const texts: string[] = [];
+  const seen = new Set<string>();
+  const push = (v: JsonValue | undefined) => {
+    if (typeof v !== "string") return;
+    const normalized = v.trim();
+    if (!normalized || seen.has(normalized)) return;
+    seen.add(normalized);
+    texts.push(normalized);
+  };
   const output = payload.output;
-  const push = (v: JsonValue | undefined) => { if (typeof v === "string" && v.trim()) texts.push(v.trim()); };
   if (output && typeof output === "object" && !Array.isArray(output)) {
     const out = output as JsonObject;
     push(out.text);
@@ -59,6 +66,34 @@ function extractFinalText(payload: JsonObject): string[] {
     }
   }
   return texts;
+}
+
+function dedupeTexts(texts: string[]): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const text of texts) {
+    const normalized = text.trim();
+    if (!normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    result.push(normalized);
+  }
+  return result;
+}
+
+function extractEvent(payload: JsonObject): string {
+  if (!payload.header || typeof payload.header !== "object" || Array.isArray(payload.header)) return "";
+  const event = (payload.header as JsonObject).event;
+  return typeof event === "string" ? event : "";
+}
+
+function hasSentenceEnd(payload: JsonObject): boolean {
+  const output = payload.output;
+  if (!output || typeof output !== "object" || Array.isArray(output)) return false;
+  const out = output as JsonObject;
+  const sentence = out.sentence;
+  if (!sentence || typeof sentence !== "object" || Array.isArray(sentence)) return false;
+  const s = sentence as JsonObject;
+  return Boolean(s.end_time || s.sentence_end || s.is_end || s.sentenceEnd);
 }
 
 async function transcribeByDashScopeRealtime(audioBuffer: Buffer): Promise<ProviderResult> {
@@ -84,6 +119,30 @@ async function transcribeByDashScopeRealtime(audioBuffer: Buffer): Promise<Provi
       headers: { Authorization: `Bearer ${apiKey}` },
     });
     const finalTexts: string[] = [];
+    let lastDashscopeMessage = "";
+    let taskStarted = false;
+    let taskFinished = false;
+    let senderFinished = false;
+    const taskId = `asr-${crypto.randomUUID()}`;
+
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const sendJson = (payload: JsonObject) => {
+      if (ws.readyState !== WebSocket.OPEN) throw new Error("websocket is not open");
+      ws.send(JSON.stringify(payload));
+    };
+    const finishTask = () => {
+      sendJson({ header: { action: "finish-task", task_id: taskId, streaming: "duplex" }, payload: { input: {} } });
+    };
+    const sendAudioFrames = async () => {
+      const frameBytes = 320;
+      for (let offset = 0; offset < pcmBuffer.length; offset += frameBytes) {
+        if (ws.readyState !== WebSocket.OPEN) throw new Error("connection closed while sending audio frames");
+        const frame = pcmBuffer.subarray(offset, Math.min(pcmBuffer.length, offset + frameBytes));
+        ws.send(frame, { binary: true });
+        await sleep(20);
+      }
+      finishTask();
+    };
     let settled = false;
     const fail = (detail: string, stage: string) => {
       if (settled) return;
@@ -99,27 +158,44 @@ async function transcribeByDashScopeRealtime(audioBuffer: Buffer): Promise<Provi
     }, QUERY_TIMEOUT_MS);
 
     ws.on("open", () => {
-      ws.send(JSON.stringify({ header: { action: "run-task", task_id: `asr-${Date.now()}` }, payload: { task_group: "audio", task: "asr", function: "recognition", model }, parameters: { format: "pcm", sample_rate: TARGET_SAMPLE_RATE, language_hints: ["zh", "en"] } }));
-      const frameBytes = TARGET_SAMPLE_RATE * 2 * 0.02;
-      for (let offset = 0; offset < pcmBuffer.length; offset += frameBytes) {
-        ws.send(pcmBuffer.subarray(offset, Math.min(pcmBuffer.length, offset + frameBytes)), { binary: true });
-      }
-      ws.send(JSON.stringify({ header: { action: "finish-task", task_id: `asr-${Date.now()}` } }));
+      sendJson({
+        header: { action: "run-task", task_id: taskId, streaming: "duplex" },
+        payload: {
+          task_group: "audio",
+          task: "asr",
+          function: "recognition",
+          model,
+          parameters: { format: "pcm", sample_rate: TARGET_SAMPLE_RATE, language_hints: ["zh", "en"] },
+          input: {},
+        },
+      });
     });
 
     ws.on("message", (data) => {
       const text = typeof data === "string" ? data : data.toString("utf-8");
       try {
         const payload = JSON.parse(text) as JsonObject;
-        extractFinalText(payload).forEach((t) => finalTexts.push(t));
-        const event = (payload.header && typeof payload.header === "object" ? (payload.header as JsonObject).event : "") as string | undefined;
+        lastDashscopeMessage = sanitizeDetail(JSON.stringify(payload));
+        const extracted = extractFinalText(payload);
+        if (extractEvent(payload) === "result-generated" || hasSentenceEnd(payload)) finalTexts.push(...extracted);
+        const event = extractEvent(payload);
+        if (event === "task-started" && !taskStarted) {
+          taskStarted = true;
+          if (!senderFinished) {
+            senderFinished = true;
+            void sendAudioFrames().catch((error) => fail(error instanceof Error ? error.message : "audio frame send failed", "stream"));
+          }
+        }
+        if (event === "task-failed") fail(lastDashscopeMessage || "DashScope task failed", "query");
         if (event === "task-finished") {
+          taskFinished = true;
+          finalTexts.push(...extracted);
           if (settled) return;
           settled = true;
           clearTimeout(timer);
-          const merged = finalTexts.join(" ").trim();
+          const merged = dedupeTexts(finalTexts).join(" ").trim();
           if (!merged) {
-            resolve({ ok: false, status: 422, body: { error: "DashScope realtime transcription failed", detail: "未识别到语音内容", provider: "dashscope_realtime", model, stage: "query" } });
+            resolve({ ok: false, status: 422, body: { error: "DashScope realtime transcript is empty", detail: "任务完成但未提取到有效文本，请确认录音中有人声且音量正常。", provider: "dashscope_realtime", model, stage: "query" } });
           } else {
             resolve({ ok: true, status: 200, body: { text: merged, provider: "dashscope_realtime", model } });
           }
@@ -130,12 +206,12 @@ async function transcribeByDashScopeRealtime(audioBuffer: Buffer): Promise<Provi
       }
     });
 
-    ws.on("error", (error) => fail(error.message || "websocket error", "connect"));
+    ws.on("error", (error) => fail(`websocket error: ${error.message || "unknown"}`, "connect"));
     ws.on("close", () => {
-      if (settled) return;
+      if (settled || taskFinished) return;
       clearTimeout(timer);
-      const merged = finalTexts.join(" ").trim();
-      if (!merged) fail("connection closed before final result", "query");
+      const merged = dedupeTexts(finalTexts).join(" ").trim();
+      if (!merged) fail(`connection closed before final result; lastMessage=${lastDashscopeMessage || "[none]"}`, "query");
       else {
         settled = true;
         resolve({ ok: true, status: 200, body: { text: merged, provider: "dashscope_realtime", model } });
