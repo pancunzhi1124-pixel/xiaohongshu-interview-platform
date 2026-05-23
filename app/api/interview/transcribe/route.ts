@@ -39,6 +39,34 @@ function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_
   return value;
 }
 
+function isNearlySilentWav(audioBuffer: Buffer): boolean {
+  const header = audioBuffer.subarray(0, 12).toString("ascii");
+  if (!header.includes("RIFF") || !header.includes("WAVE")) {
+    return false;
+  }
+  const dataChunkOffset = audioBuffer.indexOf(Buffer.from("data", "ascii"));
+  if (dataChunkOffset < 0 || dataChunkOffset + 8 >= audioBuffer.length) {
+    return false;
+  }
+  const dataStart = dataChunkOffset + 8;
+  const dataLength = Math.min(audioBuffer.readUInt32LE(dataChunkOffset + 4), audioBuffer.length - dataStart);
+  if (dataLength < 2) {
+    return true;
+  }
+  let sumSquares = 0;
+  let sampleCount = 0;
+  for (let i = dataStart; i + 1 < dataStart + dataLength; i += 2) {
+    const sample = audioBuffer.readInt16LE(i) / 32768;
+    sumSquares += sample * sample;
+    sampleCount += 1;
+  }
+  if (sampleCount === 0) {
+    return true;
+  }
+  const rms = Math.sqrt(sumSquares / sampleCount);
+  return rms < 0.003;
+}
+
 async function transcribeByTencent(audio: File): Promise<string> {
   console.log("TENCENT_SECRET_ID configured:", Boolean(process.env.TENCENT_SECRET_ID));
   console.log("TENCENT_SECRET_KEY configured:", Boolean(process.env.TENCENT_SECRET_KEY));
@@ -51,6 +79,11 @@ async function transcribeByTencent(audio: File): Promise<string> {
   const engine = process.env.TENCENT_ASR_ENGINE ?? "16k_zh";
 
   const audioBuffer = Buffer.from(await audio.arrayBuffer());
+  if (isNearlySilentWav(audioBuffer)) {
+    const silentError = new Error("Silent audio");
+    (silentError as Error & { code?: string }).code = "SILENT_AUDIO";
+    throw silentError;
+  }
   const header = audioBuffer.subarray(0, 12).toString("ascii");
   console.log("audio header:", header);
   if (!header.includes("RIFF") || !header.includes("WAVE")) {
@@ -143,6 +176,8 @@ export async function POST(request: Request) {
     console.log("audio size:", audio.size);
     console.log("audio type:", audio.type);
     console.log("audio name:", audio.name);
+    const audioBuffer = Buffer.from(await audio.arrayBuffer());
+    console.log("audio header:", audioBuffer.subarray(0, 12).toString("ascii"));
 
     if (audio.size > MAX_AUDIO_SIZE_BYTES) {
       return Response.json(
@@ -168,10 +203,20 @@ export async function POST(request: Request) {
           return Response.json(
             {
               error: "Invalid WAV audio",
-              detail: "上传的音频不是标准 WAV 文件，请修复前端录音编码。",
+              detail: "上传的音频不是标准 WAV，腾讯云无法识别。",
               code,
             },
             { status: 400 },
+          );
+        }
+        if (code === "SILENT_AUDIO") {
+          return Response.json(
+            {
+              error: "Silent audio",
+              detail: "录音文件接近静音，请检查浏览器麦克风权限或前端录音编码。",
+              code,
+            },
+            { status: 422 },
           );
         }
         if (code === "TENCENT_EMPTY_TRANSCRIPT") {

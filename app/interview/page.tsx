@@ -191,6 +191,13 @@ type ReportItem = {
   score: number;
   feedback: string;
 };
+type AudioDiagnostics = {
+  durationSeconds: number;
+  sizeBytes: number;
+  mimeType: string;
+  isWavMime: boolean;
+  hasRiffWaveHeader: boolean;
+};
 
 type EvaluationResponse = {
   score: number;
@@ -388,6 +395,9 @@ function InterviewPageContent() {
   const [tip, setTip] = useState("");
   const [cameraReady, setCameraReady] = useState(false);
   const [bankQuestions, setBankQuestions] = useState<InterviewQuestion[]>([]);
+  const [lastRecordedBlob, setLastRecordedBlob] = useState<Blob | null>(null);
+  const [lastRecordedUrl, setLastRecordedUrl] = useState("");
+  const [audioDiagnostics, setAudioDiagnostics] = useState<AudioDiagnostics | null>(null);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
@@ -409,6 +419,14 @@ function InterviewPageContent() {
       setQuestionCount(nextCount);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    return () => {
+      if (lastRecordedUrl) {
+        URL.revokeObjectURL(lastRecordedUrl);
+      }
+    };
+  }, [lastRecordedUrl]);
 
   const normalizedBankId = useMemo(() => normalizeStructuredBankId(bankId), [bankId]);
   const currentBank = useMemo(() => interviewBanks.find((x) => x.id === normalizedBankId) ?? interviewBanks[0], [normalizedBankId]);
@@ -600,11 +618,14 @@ function InterviewPageContent() {
     });
     const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string };
     if (!response.ok) {
+      if (data.error === "Silent audio") {
+        throw new Error("录音文件接近静音，请确认浏览器已允许麦克风，并点击“试听录音”检查是否能听到声音。");
+      }
       if (data.error === "Invalid WAV audio") {
         throw new Error("当前录音格式不是标准 WAV，请刷新页面后重试。");
       }
       if (data.error === "Tencent ASR returned empty transcript") {
-        throw new Error("未识别到有效语音，请靠近麦克风，录制 5 秒以上清晰普通话后重试。");
+        throw new Error("腾讯云未识别到有效语音，请先点击“试听录音”确认录音是否有声音。");
       }
       const lines = [
         `转写失败：${data.error ?? "Unknown error"}`,
@@ -722,6 +743,21 @@ function InterviewPageContent() {
       return;
     }
     const audioBlob = encodeWav(chunks, recordingSampleRateRef.current);
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const header = new TextDecoder("ascii").decode(arrayBuffer.slice(0, 12));
+    const durationSeconds = chunks.reduce((sum, item) => sum + item.length, 0) / recordingSampleRateRef.current;
+    setAudioDiagnostics({
+      durationSeconds,
+      sizeBytes: audioBlob.size,
+      mimeType: audioBlob.type || "unknown",
+      isWavMime: audioBlob.type === "audio/wav",
+      hasRiffWaveHeader: header.includes("RIFF") && header.includes("WAVE"),
+    });
+    if (lastRecordedUrl) {
+      URL.revokeObjectURL(lastRecordedUrl);
+    }
+    setLastRecordedBlob(audioBlob);
+    setLastRecordedUrl(URL.createObjectURL(audioBlob));
     try {
       setTip("录音完成，正在转写...");
       await transcribeAudioBlob(audioBlob, recordingTargetRef.current);
@@ -1111,6 +1147,28 @@ function InterviewPageContent() {
           </div>
           {started && (interviewStatus === "listening" || interviewStatus === "followup_listening") ? (
             <p className="mt-2 text-xs text-slate-400">转写完成后，请点击下方“提交当前回答”按钮进入判分。</p>
+          ) : null}
+          {lastRecordedBlob ? (
+            <button
+              type="button"
+              className="mt-3 rounded-xl border border-cyan-300/50 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-500/20"
+              onClick={() => {
+                if (!lastRecordedUrl) return;
+                const audio = new Audio(lastRecordedUrl);
+                void audio.play();
+              }}
+            >
+              试听录音
+            </button>
+          ) : null}
+          {audioDiagnostics ? (
+            <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-cyan-100/90 whitespace-pre-line">
+              {`录音时长：${audioDiagnostics.durationSeconds.toFixed(2)} 秒
+音频大小：${(audioDiagnostics.sizeBytes / 1024).toFixed(2)} KB
+音频类型：${audioDiagnostics.mimeType}
+是否为 WAV：${audioDiagnostics.isWavMime ? "是" : "否"}
+WAV Header(RIFF/WAVE)：${audioDiagnostics.hasRiffWaveHeader ? "是" : "否"}`}
+            </div>
           ) : null}
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
 
