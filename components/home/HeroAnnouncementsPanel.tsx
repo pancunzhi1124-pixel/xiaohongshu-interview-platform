@@ -1,12 +1,6 @@
-import Link from "next/link";
-import { announcements, announcementCategoryLabels, announcementFileTypeLabels } from "@/data/announcements";
 import { externalInfoLinks } from "@/data/external-links";
 
-const latestAnnouncements = [...announcements]
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  .slice(0, 4);
-
-const quickLinks = [externalInfoLinks.campusRecruitment, externalInfoLinks.examAndEnterprise];
+const infoItems = [externalInfoLinks.campusRecruitment, externalInfoLinks.examAndEnterprise];
 
 export default function HeroAnnouncementsPanel() {
   return (
@@ -14,56 +8,32 @@ export default function HeroAnnouncementsPanel() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-cyan-300">更新公告</p>
-          <p className="mt-1 text-xs text-slate-300">各地区考试信息 / 高校校园招聘 / 附件下载</p>
+          <p className="mt-1 text-xs text-slate-300">仅保留两个真实信息库入口</p>
         </div>
         <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-cyan-300" />
       </div>
 
-      <p className="mt-4 rounded-xl border border-cyan-300/20 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
-        每日更新，节假日不更新
-      </p>
-      <div className="mt-3 space-y-2">
-        {quickLinks.map((item) => (
+      <div className="mt-4 space-y-3">
+        {infoItems.map((item) => (
           <a
             key={item.title}
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="block rounded-xl border border-cyan-300/20 bg-white/5 px-3 py-2 text-xs text-slate-100 transition hover:shadow-[0_0_24px_rgba(34,211,238,0.22)]"
+            className="block rounded-2xl border border-cyan-300/20 bg-white/5 p-4 transition hover:shadow-[0_0_24px_rgba(34,211,238,0.22)]"
           >
-            {item.shortTitle}
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-2 py-0.5 text-xs text-cyan-100">
+              {item.tag}
+            </span>
+            <p className="mt-3 text-sm font-semibold text-white">{item.title}</p>
+            <p className="mt-1 text-xs leading-6 text-slate-300">{item.description}</p>
+            <p className="mt-2 text-xs text-cyan-100">{item.updateNote}</p>
+            <span className="mt-3 inline-flex rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 px-3 py-1.5 text-xs font-medium text-white transition hover:opacity-90">
+              {item.buttonText}库
+            </span>
           </a>
         ))}
       </div>
-
-      <div className="mt-4 divide-y divide-white/10">
-        {latestAnnouncements.map((item) => (
-          <Link
-            key={item.id}
-            href={`/announcements/${item.id}`}
-            className="block rounded-lg px-3 py-3 transition hover:bg-white/10"
-          >
-            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-300">
-              <span className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-2 py-0.5 text-cyan-200">
-                {announcementCategoryLabels[item.category]}
-              </span>
-              <span>{item.date}</span>
-              <span className="rounded-full border border-violet-300/30 bg-violet-400/10 px-2 py-0.5 text-violet-200">
-                {announcementFileTypeLabels[item.fileType]}
-              </span>
-            </div>
-            <p className="mt-2 text-sm font-semibold text-white">{item.title}</p>
-            <p className="mt-1 text-xs leading-6 text-slate-300">{item.description}</p>
-          </Link>
-        ))}
-      </div>
-
-      <Link
-        href="/announcements"
-        className="mt-4 inline-flex rounded-xl border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-slate-100 transition hover:bg-white/20"
-      >
-        查看全部公告 →
-      </Link>
     </aside>
   );
 }
