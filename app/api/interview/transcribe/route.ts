@@ -42,7 +42,7 @@ async function transcribeByTencent(audio: File): Promise<string> {
 
   const secretId = requireEnv("TENCENT_SECRET_ID");
   const secretKey = requireEnv("TENCENT_SECRET_KEY");
-  const appId = requireEnv("TENCENT_APP_ID");
+  requireEnv("TENCENT_APP_ID");
   const region = process.env.TENCENT_ASR_REGION ?? "ap-beijing";
   const engine = process.env.TENCENT_ASR_ENGINE ?? "16k_zh";
 
@@ -50,25 +50,13 @@ async function transcribeByTencent(audio: File): Promise<string> {
   const audioData = buffer.toString("base64");
 
   const payload = {
-    ProjectId: 0,
-    SubServiceType: 2,
     EngSerViceType: engine,
     SourceType: 1,
     VoiceFormat: "wav",
-    UsrAudioKey: `interview-${Date.now()}`,
     Data: audioData,
     DataLen: buffer.byteLength,
-    FilterDirty: 0,
-    FilterModal: 0,
-    FilterPunc: 0,
-    ConvertNumMode: 1,
-    WordInfo: 0,
-    ReinforceHotword: 0,
-    SentenceMaxLength: 120,
-    HotwordId: "",
-    CustomizationId: "",
-    VocabularyId: "",
-    Appid: Number(appId),
+    UsrAudioKey: `interview-${Date.now()}`,
+    ProjectId: 0,
   };
 
   const endpoint = "asr.tencentcloudapi.com";
