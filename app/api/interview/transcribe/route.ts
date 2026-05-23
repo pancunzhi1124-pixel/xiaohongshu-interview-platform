@@ -4,7 +4,7 @@ import { createHash, createHmac } from "node:crypto";
 
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
 
-type TranscribeProvider = "tencent" | "openai" | "aliyun";
+type TranscribeProvider = "xfyun" | "tencent" | "openai" | "aliyun";
 
 type TencentSentenceRecognitionResponse = {
   Result?: string;
@@ -20,9 +20,9 @@ function extractErrorDetail(error: unknown): string {
 }
 
 function getProvider(): TranscribeProvider {
-  const provider = process.env.TRANSCRIBE_PROVIDER ?? "tencent";
-  if (provider === "openai" || provider === "aliyun" || provider === "tencent") return provider;
-  return "tencent";
+  const provider = process.env.TRANSCRIBE_PROVIDER ?? "xfyun";
+  if (provider === "openai" || provider === "aliyun" || provider === "tencent" || provider === "xfyun") return provider;
+  return "xfyun";
 }
 
 function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_APP_ID"): string {
@@ -107,8 +107,8 @@ async function transcribeByTencent(wavBuffer: Buffer): Promise<string> {
 export async function POST(request: Request) {
   console.log("TRANSCRIBE_PROVIDER:", process.env.TRANSCRIBE_PROVIDER);
   const provider = getProvider();
-  if (provider !== "tencent") {
-    return Response.json({ error: `Unsupported provider: ${provider}`, detail: "当前仅支持腾讯云转写。" }, { status: 400 });
+  if (provider !== "xfyun") {
+    return Response.json({ error: `Unsupported provider: ${provider}`, detail: "当前主方案为讯飞实时听写，请使用实时录音入口。" }, { status: 400 });
   }
 
   try {
@@ -137,25 +137,10 @@ export async function POST(request: Request) {
       );
     }
 
-    try {
-      const text = await transcribeByTencent(audioBuffer);
-      return Response.json({ text });
-    } catch (error) {
-      const detail = extractErrorDetail(error);
-      if (detail === "Tencent ASR returned empty transcript") {
-        return Response.json(
-          {
-            error: "Tencent ASR returned empty transcript",
-            detail: "腾讯云已返回响应，但没有识别出文字。请确认 WAV 是否清晰、是否为 16k 单声道 PCM。",
-          },
-          { status: 422 },
-        );
-      }
-      if (detail.includes("not configured")) {
-        return Response.json({ error: detail }, { status: 500 });
-      }
-      return Response.json({ error: "Tencent ASR transcription failed", detail }, { status: 502 });
-    }
+    return Response.json(
+      { error: "Deprecated endpoint", detail: "该接口已下线。请使用讯飞实时听写流程（开始录音后边听边识别）。" },
+      { status: 410 },
+    );
   } catch (error) {
     return Response.json({ error: "Tencent ASR transcription failed", detail: extractErrorDetail(error) }, { status: 502 });
   }

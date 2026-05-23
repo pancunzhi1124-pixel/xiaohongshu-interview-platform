@@ -435,9 +435,25 @@ function InterviewPageContent() {
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const isRecordingRef = useRef(false);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const xfyunSocketRef = useRef<WebSocket | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const processorRef = useRef<ScriptProcessorNode | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const uploadedForTranscriptionRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
+  const segmentCacheRef = useRef<Record<string, string>>({});
+
+  const appendTranscript = (target: InterviewTarget, deltaText: string) => {
+    const text = deltaText.trim();
+    if (!text) return;
+    if (target === "main") {
+      setAnswer((prev) => `${prev}${prev ? "\n" : ""}${text}`);
+    } else {
+      setFollowUpAnswer((prev) => `${prev}${prev ? "\n" : ""}${text}`);
+    }
+  };
 
   useEffect(() => {
     if (queryBankId) setBankId(queryBankId);
@@ -602,6 +618,16 @@ function InterviewPageContent() {
     }
     recorderRef.current = null;
     isRecordingRef.current = false;
+    xfyunSocketRef.current?.close();
+    xfyunSocketRef.current = null;
+    processorRef.current?.disconnect();
+    sourceNodeRef.current?.disconnect();
+    audioContextRef.current?.close().catch(() => null);
+    processorRef.current = null;
+    sourceNodeRef.current = null;
+    audioContextRef.current = null;
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
   };
 
   const stopCamera = () => {
@@ -716,15 +742,11 @@ function InterviewPageContent() {
     setLastRecordedUrl("");
     setAudioDiagnostics(null);
     setTip("");
-    if (target === "main") {
-      setAnswer("");
-    } else {
-      setFollowUpAnswer("");
-    }
     recordingStartedAtRef.current = Date.now();
 
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
       const recorder = createRecorder({
         type: "wav",
         sampleRate: 16000,
@@ -739,11 +761,55 @@ function InterviewPageContent() {
         );
       });
       recorder.start();
+      const authRes = await fetch("/api/interview/xfyun-auth");
+      const authData = (await authRes.json()) as { wsUrl?: string; appId?: string; error?: string; detail?: string };
+      if (!authRes.ok || !authData.wsUrl || !authData.appId) {
+        throw new Error(authData.detail ?? authData.error ?? "讯飞鉴权失败");
+      }
+      segmentCacheRef.current = {};
+      const socket = new WebSocket(authData.wsUrl);
+      xfyunSocketRef.current = socket;
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data) as { code?: number; data?: { result?: { ws?: Array<{ cw?: Array<{ w?: string }>; bg?: number; rg?: number[]; pg?: string }> } }; message?: string };
+        if (data.code && data.code !== 0) {
+          setTip(`讯飞识别异常：${data.message ?? "unknown error"}`);
+          return;
+        }
+        const words = data.data?.result?.ws ?? [];
+        const text = words.map((x) => x.cw?.[0]?.w ?? "").join("").trim();
+        if (!text) return;
+        const key = `${words[0]?.bg ?? 0}-${words[words.length - 1]?.rg?.[1] ?? 0}`;
+        if (segmentCacheRef.current[key] === text) return;
+        segmentCacheRef.current[key] = text;
+        appendTranscript(target, text);
+      };
+      socket.onopen = () => {
+        socket.send(JSON.stringify({ common: { app_id: authData.appId }, business: { language: "zh_cn", domain: "iat", accent: "mandarin", dwa: "wpgs" }, data: { status: 0, format: "audio/L16;rate=16000", encoding: "raw", audio: "" } }));
+      };
+      const audioContext = new AudioContext({ sampleRate: 16000 });
+      audioContextRef.current = audioContext;
+      const sourceNode = audioContext.createMediaStreamSource(stream);
+      sourceNodeRef.current = sourceNode;
+      const processor = audioContext.createScriptProcessor(4096, 1, 1);
+      processorRef.current = processor;
+      processor.onaudioprocess = (e) => {
+        if (!xfyunSocketRef.current || xfyunSocketRef.current.readyState !== WebSocket.OPEN) return;
+        const channelData = e.inputBuffer.getChannelData(0);
+        const pcm = new Int16Array(channelData.length);
+        for (let i = 0; i < channelData.length; i += 1) {
+          const s = Math.max(-1, Math.min(1, channelData[i]));
+          pcm[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
+        }
+        const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(pcm.buffer)));
+        xfyunSocketRef.current.send(JSON.stringify({ data: { status: 1, format: "audio/L16;rate=16000", encoding: "raw", audio: audioBase64 } }));
+      };
+      sourceNode.connect(processor);
+      processor.connect(audioContext.destination);
       recorderRef.current = recorder;
       recordingTargetRef.current = target;
       isRecordingRef.current = true;
       recordingTimerRef.current = setInterval(() => setRecordingSeconds((prev) => prev + 1), 1000);
-      setTip("正在录音，请点击“停止录音并转写”结束。");
+      setTip("正在录音并实时转写，请点击“停止录音并转写”结束。");
     } catch (error) {
       isRecordingRef.current = false;
       const message = error instanceof Error ? error.message : "";
@@ -780,20 +846,15 @@ function InterviewPageContent() {
     setLastRecordedUrl(URL.createObjectURL(audioBlob));
 
     try {
-      setTip("录音完成，正在转写...");
-      const texts: string[] = [];
-      const response = await fetch("/api/interview/transcribe", { method: "POST", body: (() => { const f = new FormData(); f.append("audio", new File([audioBlob], "interview-answer-1.wav", { type: "audio/wav" })); return f; })() });
-      const data = (await response.json()) as { text?: string; error?: string; detail?: string };
-      if (!response.ok) throw new Error(data.detail ?? data.error ?? "转写失败");
-      texts.push((data.text ?? "").trim());
-      const finalText = texts.filter(Boolean).join("，");
-      if (recordingTargetRef.current === "main") setAnswer(finalText);
-      else setFollowUpAnswer(finalText);
-      setTip("转写完成，请确认文字后提交。");
+      const socket = xfyunSocketRef.current;
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ data: { status: 2, format: "audio/L16;rate=16000", encoding: "raw", audio: "" } }));
+      }
+      setTip("录音已停止，实时转写结果已追加到文本框，可手动修改后提交。");
       uploadedForTranscriptionRef.current = true;
       setAudioDiagnostics((prev) => (prev ? { ...prev, uploadedForTranscription: true } : prev));
     } catch (error) {
-      const message = error instanceof Error ? error.message : "转写失败，请手动输入回答。";
+      const message = error instanceof Error ? error.message : "转写结束异常，请手动输入回答。";
       setTip(message);
     }
   };
