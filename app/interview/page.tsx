@@ -10,6 +10,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import SmartSelect from "@/components/ui/SmartSelect";
 import RecorderCore from "recorder-core";
 import "recorder-core/src/engine/wav";
+import { useRealtimeAsr } from "@/hooks/useRealtimeAsr";
 
 type RecorderCoreInstance = {
   open: (
@@ -429,6 +430,7 @@ function InterviewPageContent() {
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>("未录音");
   const [micPermissionStatus, setMicPermissionStatus] = useState<MicPermissionStatus>("未授权");
   const [transcriptionStatus, setTranscriptionStatus] = useState<TranscriptionStatus>("未开始");
+  const [realtimeHint, setRealtimeHint] = useState("");
   const [transcriptionError, setTranscriptionError] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -442,6 +444,13 @@ function InterviewPageContent() {
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const uploadedForTranscriptionRef = useRef(false);
+  const realtimeTargetRef = useRef<InterviewTarget>("main");
+
+  const realtimeAsr = useRealtimeAsr({
+    onError: (message) => {
+      setRealtimeHint(message || "实时字幕不可用，可使用录音转写模式");
+    },
+  });
   const recordingStartedAtRef = useRef<number | null>(null);
 
   const appendTranscript = (target: InterviewTarget, deltaText: string) => {
@@ -631,6 +640,7 @@ function InterviewPageContent() {
     setTip("");
     setTranscriptionStatus("未开始");
     setTranscriptionError("");
+    setRealtimeHint("");
   };
 
   const stopCamera = () => {
@@ -801,6 +811,34 @@ function InterviewPageContent() {
       setTip(`语音转写失败：${detail}`);
       setRecordingStatus("失败");
     }
+  };
+
+  const handleStartRealtimeAnswer = async (target: InterviewTarget) => {
+    realtimeTargetRef.current = target;
+    setRealtimeHint("");
+    await realtimeAsr.start();
+    if (realtimeAsr.status === "failed") {
+      setRealtimeHint("实时字幕不可用，可使用录音转写模式");
+    }
+  };
+
+  const handleStopRealtimeAndSubmit = () => {
+    const transcript = realtimeAsr.stopAndCommit();
+    if (!transcript) {
+      setRealtimeHint("未识别到有效实时字幕，请改用录音转写模式或手动输入。");
+      return;
+    }
+    if (realtimeTargetRef.current === "main") {
+      setAnswer((prev) => (prev.trim() ? `${prev}\n${transcript}` : transcript));
+    } else {
+      setFollowUpAnswer((prev) => (prev.trim() ? `${prev}\n${transcript}` : transcript));
+    }
+    setRealtimeHint("实时字幕已写入回答框，请确认后提交评分。");
+  };
+
+  const handleCancelRealtimeAnswer = () => {
+    realtimeAsr.cancel();
+    setRealtimeHint("已取消实时回答。");
   };
 
   const openCamera = async () => {
@@ -1190,6 +1228,32 @@ function InterviewPageContent() {
                 >
                   重新录音
                 </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-violet-300/40 bg-violet-500/10 px-4 py-2 text-sm text-violet-100 transition hover:bg-violet-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => {
+                    void handleStartRealtimeAnswer(currentTarget);
+                  }}
+                  disabled={!currentQuestion || realtimeAsr.status === "connecting" || realtimeAsr.status === "listening"}
+                >
+                  开始实时回答
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={handleStopRealtimeAndSubmit}
+                  disabled={realtimeAsr.status !== "listening" && realtimeAsr.status !== "reconnecting"}
+                >
+                  结束回答并提交
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-rose-300/40 bg-rose-500/10 px-4 py-2 text-sm text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={handleCancelRealtimeAnswer}
+                  disabled={realtimeAsr.status === "disconnected"}
+                >
+                  取消实时回答
+                </button>
               </>
             ) : null}
           </div>
@@ -1233,6 +1297,14 @@ function InterviewPageContent() {
 转写状态：${transcriptionStatus}
 失败原因：${transcriptionError || "-"}`}
           </div>
+          {started ? (
+            <div className="mt-3 rounded-xl border border-violet-300/20 bg-violet-500/10 p-3 text-xs whitespace-pre-line">
+              <p className="text-violet-100">实时字幕状态：{realtimeAsr.status}</p>
+              <p className="mt-1 text-violet-200/70">interimTranscript：{realtimeAsr.interimTranscript || "-"}</p>
+              <p className="mt-1 text-violet-100">finalTranscript：{realtimeAsr.finalTranscript || "-"}</p>
+            </div>
+          ) : null}
+          {realtimeHint ? <p className="mt-2 text-sm text-violet-200">{realtimeHint}</p> : null}
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
 
           <div className="mt-4">
