@@ -8,8 +8,33 @@ import AnimatedBackground from "@/components/ui/AnimatedBackground";
 import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
 import SmartSelect from "@/components/ui/SmartSelect";
-import Recorder from "recorder-core";
+import RecorderCore from "recorder-core";
 import "recorder-core/src/engine/wav";
+
+type RecorderCoreInstance = {
+  open: (
+    onSuccess: () => void,
+    onError: (message: string, isUserNotAllow?: boolean) => void
+  ) => void;
+  start: () => void;
+  stop: (
+    onSuccess: (blob: Blob, duration: number) => void,
+    onError: (message: string) => void
+  ) => void;
+  close: () => void;
+};
+
+type RecorderFactoryOptions = {
+  type: "wav";
+  sampleRate: number;
+  bitRate: number;
+  numChannels?: number;
+  onProcess?: () => void;
+};
+
+type RecorderFactory = (options: RecorderFactoryOptions) => RecorderCoreInstance;
+
+const createRecorder = RecorderCore as unknown as RecorderFactory;
 
 type PublicInterviewModeKey =
   | "structured-mixed"
@@ -403,7 +428,7 @@ function InterviewPageContent() {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
-  const recorderRef = useRef<Recorder.RecorderInstance | null>(null);
+  const recorderRef = useRef<RecorderCoreInstance | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const recordingTargetRef = useRef<InterviewTarget>("main");
   const zeroGainNodeRef = useRef<GainNode | null>(null);
@@ -700,10 +725,11 @@ function InterviewPageContent() {
 
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = Recorder({
+      const recorder = createRecorder({
         type: "wav",
         sampleRate: 16000,
         bitRate: 16,
+        numChannels: 1,
         onProcess: () => {},
       });
       await new Promise<void>((resolve, reject) => {
