@@ -17,6 +17,7 @@
    - `TENCENT_APP_ID=腾讯云 APPID`
    - `TENCENT_ASR_REGION=ap-beijing`
    - `TENCENT_ASR_ENGINE=16k_zh`
+   - （如启用讯飞 RAASR）`IFLYTEK_RAASR_API_URL=https://raasr.xfyun.cn/v2/api`
 10. 点击 **Deploy** 开始部署。
 11. 部署成功后，Netlify 会提供一个免费的 `.netlify.app` 域名用于访问。
 
@@ -24,6 +25,7 @@
 
 - 本分支使用腾讯云 ASR 进行语音转写，环境变量更新后需要重新部署以生效。
 - 已保留现有 Vercel 部署能力（未删除或覆盖任何 Vercel 相关配置）。
+- `IFLYTEK_RAASR_API_URL` 必须填写基础地址 `https://raasr.xfyun.cn/v2/api`，不要填写 `https://raasr.xfyun.cn/v2/api/upload` 或 `https://raasr.xfyun.cn/v2/api/xxx`。
 
 ## ffmpeg 转码说明
 

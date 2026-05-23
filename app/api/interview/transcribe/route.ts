@@ -55,6 +55,14 @@ function createRaasrSigna(appId: string, secretKey: string, ts: string): string 
   return crypto.createHmac("sha1", secretKey).update(md5).digest("base64");
 }
 
+function normalizeRaasrBaseUrl(input?: string): string {
+  const raw = input?.trim() || "https://raasr.xfyun.cn/v2/api";
+  return raw
+    .replace(/\/+$/, "")
+    .replace(/\/upload$/, "")
+    .replace(/\/xxx$/, "");
+}
+
 function toStrictArrayBuffer(input: Uint8Array): ArrayBuffer {
   const arrayBuffer = new ArrayBuffer(input.byteLength);
   new Uint8Array(arrayBuffer).set(input);
@@ -64,8 +72,8 @@ function toStrictArrayBuffer(input: Uint8Array): ArrayBuffer {
 async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): Promise<{ payload: RaasrUploadResponse; orderId: string }> {
   const appId = requireEnv("IFLYTEK_RAASR_APP_ID");
   const secretKey = requireEnv("IFLYTEK_RAASR_SECRET_KEY");
-  const baseUrl = process.env.IFLYTEK_RAASR_API_URL?.trim() || "https://raasr.xfyun.cn/v2/api";
-  const uploadUrl = `${baseUrl.replace(/\/$/, "")}/upload`;
+  const baseUrl = normalizeRaasrBaseUrl(process.env.IFLYTEK_RAASR_API_URL);
+  const uploadUrl = `${baseUrl}/upload`;
 
   const ts = Math.floor(Date.now() / 1000).toString();
   const signa = createRaasrSigna(appId, secretKey, ts);
@@ -82,8 +90,7 @@ async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): 
   });
 
   console.log("RAASR baseUrl:", baseUrl);
-  console.log("RAASR upload URL:", uploadUrl);
-  console.log("RAASR upload URL with params without signa:", `${uploadUrl}?appId=${appId}&ts=${ts}&fileName=${safeFileName}&fileSize=${audioBuffer.byteLength}&duration=${duration}`);
+  console.log("RAASR uploadUrl:", uploadUrl);
 
   const uploadUrlWithParams = `${uploadUrl}?${params.toString()}`;
   const requestInit: RequestInit = {
@@ -106,13 +113,15 @@ async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): 
 
   if (!response.ok) {
     const detail = `HTTP ${response.status}: ${rawText}`;
-    throw new Error(JSON.stringify({
-      error: "Iflytek RAASR upload failed",
-      detail,
-      provider: "iflytek_raasr",
-      status: response.status,
-      url: uploadUrl,
-    }));
+    throw new Error(
+      JSON.stringify({
+        error: "Iflytek RAASR upload failed",
+        detail,
+        provider: "iflytek_raasr",
+        status: response.status,
+        url: uploadUrl,
+      }),
+    );
   }
 
   console.log("RAASR upload raw response:", JSON.stringify(payload));
