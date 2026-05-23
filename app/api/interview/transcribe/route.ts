@@ -1,11 +1,8 @@
 export const runtime = "nodejs";
 
-import { createHash, createHmac } from "node:crypto";
+import crypto, { createHash, createHmac } from "node:crypto";
 
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
-const RAASR_POLL_INTERVAL_MS = 2000;
-const RAASR_MAX_WAIT_MS = 90000;
-
 type TranscribeProvider = "iflytek_raasr" | "iflytek" | "tencent" | "openai" | "aliyun";
 
 type TencentSentenceRecognitionResponse = {
@@ -16,27 +13,14 @@ type TencentSentenceRecognitionResponse = {
   Response?: { Error?: { Code?: string; Message?: string } };
 };
 
-type RaasrApiResponse<T> = {
-  ok: number;
-  err_no?: number;
-  failed?: string;
-  data?: T;
+type RaasrUploadResponse = Record<string, unknown> & {
+  data?: {
+    orderId?: string;
+    order_id?: string;
+  };
+  orderId?: string;
+  order_id?: string;
 };
-
-type RaasrPrepareData = {
-  taskid?: string;
-};
-
-type RaasrProgressData = {
-  status?: number;
-  desc?: string;
-};
-
-type RaasrResultSegment = {
-  onebest?: string;
-};
-
-type RaasrResultData = string | RaasrResultSegment[];
 
 function extractErrorDetail(error: unknown): string {
   if (error instanceof Error) return error.message;
@@ -52,7 +36,7 @@ function getProvider(): TranscribeProvider {
   return "iflytek_raasr";
 }
 
-function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_APP_ID" | "IFLYTEK_RAASR_APP_ID" | "IFLYTEK_RAASR_SECRET_KEY" | "IFLYTEK_RAASR_API_URL"): string {
+function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_APP_ID" | "IFLYTEK_RAASR_APP_ID" | "IFLYTEK_RAASR_SECRET_KEY"): string {
   const value = process.env[name]?.trim();
   if (!value) throw new Error(`${name} is not configured`);
   return value;
@@ -61,15 +45,14 @@ function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_
 function isValidWavHeader(buffer: Buffer): boolean {
   if (buffer.length < 12) return false;
   const header = buffer.subarray(0, 12).toString("ascii");
-  console.log("uploaded wav header:", header);
+  console.log("audio header:", header);
   return header.includes("RIFF") && header.includes("WAVE");
 }
 
-function buildRaasrAuth(secretKey: string, appId: string): { ts: string; signa: string } {
-  const ts = Math.floor(Date.now() / 1000).toString();
-  const md5 = createHash("md5").update(appId + ts).digest("hex");
-  const signa = createHmac("sha1", secretKey).update(md5).digest("base64");
-  return { ts, signa };
+function createRaasrSigna(appId: string, secretKey: string, ts: string): string {
+  const baseString = appId + ts;
+  const md5 = crypto.createHash("md5").update(baseString).digest("hex");
+  return crypto.createHmac("sha1", secretKey).update(md5).digest("base64");
 }
 
 function toStrictArrayBuffer(input: Uint8Array): ArrayBuffer {
@@ -78,83 +61,65 @@ function toStrictArrayBuffer(input: Uint8Array): ArrayBuffer {
   return arrayBuffer;
 }
 
-async function raasrRequest<T>(apiUrl: string, path: string, params: URLSearchParams, body?: Buffer): Promise<RaasrApiResponse<T>> {
-  const url = `${apiUrl}${path}?${params.toString()}`;
-  const requestInit: RequestInit = {
-    method: "POST",
-    headers: body ? { "Content-Type": "application/octet-stream" } : undefined,
-  };
-
-  if (body) {
-    const bodyArrayBuffer = toStrictArrayBuffer(body);
-    requestInit.body = bodyArrayBuffer;
-  }
-
-  const response = await fetch(url, requestInit);
-  const payload = (await response.json()) as RaasrApiResponse<T>;
-  if (!response.ok || payload.ok !== 0) {
-    throw new Error(payload.failed ?? `HTTP ${response.status}`);
-  }
-  return payload;
-}
-
-async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): Promise<string> {
+async function transcribeByIflytekRaasr(audioBuffer: Buffer, fileName: string): Promise<{ payload: RaasrUploadResponse; orderId: string }> {
   const appId = requireEnv("IFLYTEK_RAASR_APP_ID");
   const secretKey = requireEnv("IFLYTEK_RAASR_SECRET_KEY");
-  const apiUrl = requireEnv("IFLYTEK_RAASR_API_URL").replace(/\/$/, "");
-  const { ts, signa } = buildRaasrAuth(secretKey, appId);
+  const baseUrl = process.env.IFLYTEK_RAASR_API_URL?.trim() || "https://raasr.xfyun.cn/v2/api";
+  const uploadUrl = `${baseUrl.replace(/\/$/, "")}/upload`;
 
-  const common = new URLSearchParams({ appId, signa, ts });
-  const prepareParams = new URLSearchParams(common);
-  prepareParams.set("fileName", fileName || `interview-${Date.now()}.wav`);
-  prepareParams.set("fileSize", String(audioBuffer.length));
-  prepareParams.set("duration", "200");
+  const ts = Math.floor(Date.now() / 1000).toString();
+  const signa = createRaasrSigna(appId, secretKey, ts);
+  const safeFileName = fileName?.trim() || `interview-${Date.now()}.wav`;
+  const duration = Math.max(1, Math.round(audioBuffer.byteLength / 32000));
 
-  const prepare = await raasrRequest<RaasrPrepareData>(apiUrl, "/prepare", prepareParams);
-  const taskId = prepare.data?.taskid?.toString().trim();
-  if (!taskId) throw new Error("Iflytek RAASR missing task id");
+  const params = new URLSearchParams({
+    appId,
+    ts,
+    signa,
+    fileName: safeFileName,
+    fileSize: String(audioBuffer.byteLength),
+    duration: String(duration),
+  });
 
-  const uploadParams = new URLSearchParams(common);
-  uploadParams.set("taskId", taskId);
-  await raasrRequest<Record<string, never>>(apiUrl, "/upload", uploadParams, audioBuffer);
+  console.log("RAASR baseUrl:", baseUrl);
+  console.log("RAASR upload URL:", uploadUrl);
+  console.log("RAASR upload URL with params without signa:", `${uploadUrl}?appId=${appId}&ts=${ts}&fileName=${safeFileName}&fileSize=${audioBuffer.byteLength}&duration=${duration}`);
 
-  const mergeParams = new URLSearchParams(common);
-  mergeParams.set("taskId", taskId);
-  await raasrRequest<Record<string, never>>(apiUrl, "/merge", mergeParams);
+  const uploadUrlWithParams = `${uploadUrl}?${params.toString()}`;
+  const requestInit: RequestInit = {
+    method: "POST",
+    headers: new Headers({
+      "Content-Type": "application/json; charset=UTF-8",
+      Chunked: "false",
+    }),
+    body: toStrictArrayBuffer(audioBuffer),
+  };
 
-  const startedAt = Date.now();
-  while (Date.now() - startedAt < RAASR_MAX_WAIT_MS) {
-    const progressParams = new URLSearchParams(common);
-    progressParams.set("taskId", taskId);
-    const progress = await raasrRequest<RaasrProgressData>(apiUrl, "/getProgress", progressParams);
-    const status = Number(progress.data?.status ?? -1);
-    if (status === 9) break;
-    if (status < 0) {
-      throw new Error(progress.data?.desc ?? "Iflytek RAASR progress failed");
-    }
-    await new Promise<void>((resolve) => setTimeout(resolve, RAASR_POLL_INTERVAL_MS));
+  const response = await fetch(uploadUrlWithParams, requestInit);
+  const rawText = await response.text();
+  let payload: RaasrUploadResponse = {};
+  try {
+    payload = JSON.parse(rawText) as RaasrUploadResponse;
+  } catch {
+    payload = { rawText };
   }
 
-  const resultParams = new URLSearchParams(common);
-  resultParams.set("taskId", taskId);
-  const result = await raasrRequest<RaasrResultData>(apiUrl, "/getResult", resultParams);
-  const data = result.data;
-
-  if (typeof data === "string") {
-    const text = data.trim();
-    if (text) return text;
+  if (!response.ok) {
+    const detail = `HTTP ${response.status}: ${rawText}`;
+    throw new Error(JSON.stringify({
+      error: "Iflytek RAASR upload failed",
+      detail,
+      provider: "iflytek_raasr",
+      status: response.status,
+      url: uploadUrl,
+    }));
   }
 
-  if (Array.isArray(data)) {
-    const merged = data
-      .map((item) => item.onebest?.trim() ?? "")
-      .filter((item) => item.length > 0)
-      .join("\n")
-      .trim();
-    if (merged) return merged;
-  }
+  console.log("RAASR upload raw response:", JSON.stringify(payload));
+  const orderId = String(payload.data?.orderId ?? payload.orderId ?? payload.data?.order_id ?? payload.order_id ?? "");
 
-  throw new Error("Iflytek RAASR returned empty transcript");
+  // TODO: 根据讯飞文档“查询结果”章节，使用 orderId 查询转写结果。
+  return { payload, orderId };
 }
 
 async function transcribeByTencent(wavBuffer: Buffer): Promise<string> {
@@ -248,8 +213,11 @@ export async function POST(request: Request) {
     }
 
     if (provider === "iflytek_raasr") {
-      const text = await transcribeByIflytekRaasr(audioBuffer, audio.name);
-      return Response.json({ text, provider: "iflytek_raasr" });
+      const { payload, orderId } = await transcribeByIflytekRaasr(audioBuffer, audio.name);
+      if (orderId) {
+        return Response.json({ text: "", provider: "iflytek_raasr", orderId });
+      }
+      return Response.json({ text: "", provider: "iflytek_raasr", stage: "upload", raw: payload });
     }
 
     if (provider === "tencent") {
@@ -261,7 +229,21 @@ export async function POST(request: Request) {
   } catch (error) {
     if (provider === "iflytek_raasr") {
       return Response.json(
-        { error: "Iflytek RAASR transcription failed", detail: extractErrorDetail(error), provider: "iflytek_raasr" },
+        (() => {
+          const detail = extractErrorDetail(error);
+          try {
+            const parsed = JSON.parse(detail) as { error?: string; detail?: string; provider?: string; status?: number; url?: string };
+            return {
+              error: parsed.error ?? "Iflytek RAASR upload failed",
+              detail: parsed.detail ?? detail,
+              provider: parsed.provider ?? "iflytek_raasr",
+              status: parsed.status,
+              url: parsed.url,
+            };
+          } catch {
+            return { error: "Iflytek RAASR transcription failed", detail, provider: "iflytek_raasr" };
+          }
+        })(),
         { status: 502 },
       );
     }

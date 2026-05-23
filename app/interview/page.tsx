@@ -675,7 +675,7 @@ function InterviewPageContent() {
       method: "POST",
       body: formData,
     });
-    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string };
+    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string; orderId?: string; provider?: string };
     if (!response.ok) {
       if (data.error === "Silent audio") {
         throw new Error("录音文件接近静音，请确认浏览器已允许麦克风，并点击“试听录音”检查是否能听到声音。");
@@ -694,6 +694,10 @@ function InterviewPageContent() {
       throw new Error(lines.join("\n"));
     }
     const transcript = (data.text ?? "").trim();
+    if (!transcript && data.orderId) {
+      setTip(`文件上传成功，订单号：${data.orderId}。请继续接入查询结果接口。`);
+      return;
+    }
     if (!transcript) {
       throw new Error("未识别到语音内容，请重试或手动输入。");
     }
