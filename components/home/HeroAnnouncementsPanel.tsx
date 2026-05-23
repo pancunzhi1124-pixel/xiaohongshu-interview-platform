@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { announcements, announcementCategoryLabels, announcementFileTypeLabels } from "@/data/announcements";
+import { externalInfoLinks } from "@/data/external-links";
 
 const latestAnnouncements = [...announcements]
   .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
   .slice(0, 4);
+
+const quickLinks = [externalInfoLinks.campusRecruitment, externalInfoLinks.examAndEnterprise];
 
 export default function HeroAnnouncementsPanel() {
   return (
@@ -14,6 +17,23 @@ export default function HeroAnnouncementsPanel() {
           <p className="mt-1 text-xs text-slate-300">各地区考试信息 / 高校校园招聘 / 附件下载</p>
         </div>
         <span className="mt-1 inline-block h-2.5 w-2.5 rounded-full bg-cyan-300" />
+      </div>
+
+      <p className="mt-4 rounded-xl border border-cyan-300/20 bg-cyan-500/10 px-3 py-2 text-xs text-cyan-100">
+        每日更新，节假日不更新
+      </p>
+      <div className="mt-3 space-y-2">
+        {quickLinks.map((item) => (
+          <a
+            key={item.title}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block rounded-xl border border-cyan-300/20 bg-white/5 px-3 py-2 text-xs text-slate-100 transition hover:shadow-[0_0_24px_rgba(34,211,238,0.22)]"
+          >
+            {item.shortTitle}
+          </a>
+        ))}
       </div>
 
       <div className="mt-4 divide-y divide-white/10">
