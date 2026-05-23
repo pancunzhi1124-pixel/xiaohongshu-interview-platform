@@ -1313,13 +1313,16 @@ function InterviewPageContent() {
           </div>
           {tip ? <p className="mt-2 text-sm text-amber-300 whitespace-pre-line">{tip}</p> : null}
           {started ? (
-            <div className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-500/10 p-3 text-xs text-emerald-100 whitespace-pre-line">
-              {`实时字幕状态：${realtimeAsr.status}
+            <details className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-500/10 p-3 text-xs text-emerald-100">
+              <summary className="cursor-pointer select-none">实时字幕调试信息（可展开）</summary>
+              <div className="mt-2 whitespace-pre-line">
+                {`实时字幕状态：${realtimeAsr.status}
 云端/浏览器支持：${realtimeAsr.isSupported ? "支持浏览器实时字幕" : "当前浏览器不支持实时字幕"}
 最终字幕：${realtimeAsr.finalTranscript || "-"}
 实时字幕（未定稿）：${realtimeAsr.interimTranscript || "-"}
 错误信息：${realtimeAsr.error || "-"}`}
-            </div>
+              </div>
+            </details>
           ) : null}
 
           <div className="mt-4">
