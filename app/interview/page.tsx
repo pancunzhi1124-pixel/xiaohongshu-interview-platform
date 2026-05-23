@@ -600,6 +600,12 @@ function InterviewPageContent() {
     });
     const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string };
     if (!response.ok) {
+      if (data.error === "Invalid WAV audio") {
+        throw new Error("当前录音格式不是标准 WAV，请刷新页面后重试。");
+      }
+      if (data.error === "Tencent ASR returned empty transcript") {
+        throw new Error("未识别到有效语音，请靠近麦克风，录制 5 秒以上清晰普通话后重试。");
+      }
       const lines = [
         `转写失败：${data.error ?? "Unknown error"}`,
         data.status !== undefined ? `状态码：${data.status}` : "",
@@ -667,7 +673,21 @@ function InterviewPageContent() {
       }
       offset += chunk.length;
     });
-    const buffer = new ArrayBuffer(44 + pcmData.length * 2);
+    const targetSampleRate = 16000;
+    const targetLength = Math.max(1, Math.round((pcmData.length * targetSampleRate) / sampleRate));
+    const resampledPcmData = new Int16Array(targetLength);
+    const sourceStep = sampleRate / targetSampleRate;
+    for (let i = 0; i < targetLength; i += 1) {
+      const start = Math.floor(i * sourceStep);
+      const end = Math.min(pcmData.length, Math.max(start + 1, Math.floor((i + 1) * sourceStep)));
+      let sum = 0;
+      for (let j = start; j < end; j += 1) {
+        sum += pcmData[j] ?? 0;
+      }
+      resampledPcmData[i] = Math.max(-32768, Math.min(32767, Math.round(sum / (end - start))));
+    }
+
+    const buffer = new ArrayBuffer(44 + resampledPcmData.length * 2);
     const view = new DataView(buffer);
     const writeString = (position: number, value: string) => {
       for (let i = 0; i < value.length; i += 1) {
@@ -675,19 +695,19 @@ function InterviewPageContent() {
       }
     };
     writeString(0, "RIFF");
-    view.setUint32(4, 36 + pcmData.length * 2, true);
+    view.setUint32(4, 36 + resampledPcmData.length * 2, true);
     writeString(8, "WAVE");
     writeString(12, "fmt ");
     view.setUint32(16, 16, true);
     view.setUint16(20, 1, true);
     view.setUint16(22, 1, true);
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true);
+    view.setUint32(24, targetSampleRate, true);
+    view.setUint32(28, targetSampleRate * 2, true);
     view.setUint16(32, 2, true);
     view.setUint16(34, 16, true);
     writeString(36, "data");
-    view.setUint32(40, pcmData.length * 2, true);
-    pcmData.forEach((sample, index) => {
+    view.setUint32(40, resampledPcmData.length * 2, true);
+    resampledPcmData.forEach((sample, index) => {
       view.setInt16(44 + index * 2, sample, true);
     });
     return new Blob([view], { type: "audio/wav" });
