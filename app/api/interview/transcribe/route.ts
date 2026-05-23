@@ -8,6 +8,10 @@ type TranscribeProvider = "tencent" | "openai" | "aliyun";
 
 type TencentSentenceRecognitionResponse = {
   Result?: string;
+  Text?: string;
+  FinalSentence?: string;
+  Sentence?: string;
+  result?: string;
   RequestId?: string;
 };
 type TencentErrorResponse = { Response?: { Error?: { Code?: string; Message?: string } } };
@@ -46,15 +50,23 @@ async function transcribeByTencent(audio: File): Promise<string> {
   const region = process.env.TENCENT_ASR_REGION ?? "ap-beijing";
   const engine = process.env.TENCENT_ASR_ENGINE ?? "16k_zh";
 
-  const buffer = Buffer.from(await audio.arrayBuffer());
-  const audioData = buffer.toString("base64");
+  const audioBuffer = Buffer.from(await audio.arrayBuffer());
+  const header = audioBuffer.subarray(0, 12).toString("ascii");
+  console.log("audio header:", header);
+  if (!header.includes("RIFF") || !header.includes("WAVE")) {
+    const invalidWavError = new Error("Invalid WAV audio");
+    (invalidWavError as Error & { code?: string }).code = "INVALID_WAV_AUDIO";
+    throw invalidWavError;
+  }
+
+  const audioData = audioBuffer.toString("base64");
 
   const payload = {
     EngSerViceType: engine,
     SourceType: 1,
     VoiceFormat: "wav",
     Data: audioData,
-    DataLen: buffer.byteLength,
+    DataLen: audioBuffer.length,
     UsrAudioKey: `interview-${Date.now()}`,
     ProjectId: 0,
   };
@@ -91,6 +103,7 @@ async function transcribeByTencent(audio: File): Promise<string> {
   });
 
   const result = (await response.json()) as TencentSentenceRecognitionResponse & TencentErrorResponse;
+  console.log("Tencent ASR raw response:", JSON.stringify(result));
   const errorCode = result.Response?.Error?.Code;
   const errorMessage = result.Response?.Error?.Message;
   if (!response.ok || errorCode) {
@@ -99,9 +112,18 @@ async function transcribeByTencent(audio: File): Promise<string> {
     throw error;
   }
 
-  const text = typeof result.Result === "string" ? result.Result.trim() : "";
+  const transcript =
+    result.Result
+    ?? result.Text
+    ?? result.FinalSentence
+    ?? result.Sentence
+    ?? result.result
+    ?? "";
+  const text = transcript.trim();
   if (!text) {
-    throw new Error("腾讯云未返回有效转写文本");
+    const emptyTranscriptError = new Error("Tencent ASR returned empty transcript");
+    (emptyTranscriptError as Error & { code?: string }).code = "TENCENT_EMPTY_TRANSCRIPT";
+    throw emptyTranscriptError;
   }
 
   return text;
@@ -142,6 +164,26 @@ export async function POST(request: Request) {
           typeof error === "object" && error !== null && "code" in error && typeof (error as { code?: unknown }).code === "string"
             ? (error as { code: string }).code
             : "UNKNOWN";
+        if (code === "INVALID_WAV_AUDIO") {
+          return Response.json(
+            {
+              error: "Invalid WAV audio",
+              detail: "上传的音频不是标准 WAV 文件，请修复前端录音编码。",
+              code,
+            },
+            { status: 400 },
+          );
+        }
+        if (code === "TENCENT_EMPTY_TRANSCRIPT") {
+          return Response.json(
+            {
+              error: "Tencent ASR returned empty transcript",
+              detail: "腾讯云已返回响应，但未识别到有效文字。请检查音频是否为标准 wav、是否有清晰人声。",
+              code,
+            },
+            { status: 422 },
+          );
+        }
         const status = detail.includes("not configured") ? 500 : 502;
         return Response.json(
           {
