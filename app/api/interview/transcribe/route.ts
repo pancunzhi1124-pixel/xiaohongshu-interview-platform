@@ -2,14 +2,48 @@ export const runtime = "nodejs";
 
 import { execFile } from "node:child_process";
 import { createHash, createHmac } from "node:crypto";
-import { chmod, readFile, unlink, writeFile } from "node:fs/promises";
+import { access, chmod, readFile, unlink, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import ffmpegPath from "ffmpeg-static";
 
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
 const execFileAsync = promisify(execFile);
+
+const require = createRequire(import.meta.url);
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveFfmpegPath(): Promise<string> {
+  const staticPath = require("ffmpeg-static") as string | null;
+
+  const candidates = [
+    process.env.FFMPEG_PATH,
+    staticPath,
+    path.join(process.cwd(), "node_modules", "ffmpeg-static", "ffmpeg"),
+    path.join("/var/task", "node_modules", "ffmpeg-static", "ffmpeg"),
+  ].filter((item): item is string => Boolean(item));
+
+  console.log("ffmpeg path candidates:", candidates);
+
+  for (const candidate of candidates) {
+    if (await fileExists(candidate)) {
+      await chmod(candidate, 0o755).catch(() => {});
+      console.log("ffmpeg selected path:", candidate);
+      return candidate;
+    }
+  }
+
+  throw new Error(`FFmpeg binary not found. Candidates: ${candidates.join(", ")}`);
+}
 
 type TranscribeProvider = "tencent" | "openai" | "aliyun";
 
@@ -40,13 +74,7 @@ function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_
   return value;
 }
 
-async function convertToWav(inputPath: string, outputPath: string): Promise<void> {
-  if (!ffmpegPath) {
-    throw new Error("ffmpeg-static did not provide a binary path.");
-  }
-
-  await chmod(ffmpegPath, 0o755).catch(() => {});
-
+async function convertToWav(ffmpegPath: string, inputPath: string, outputPath: string): Promise<void> {
   const result = await execFileAsync(
     ffmpegPath,
     ["-y", "-i", inputPath, "-ac", "1", "-ar", "16000", "-acodec", "pcm_s16le", outputPath],
@@ -141,17 +169,9 @@ export async function POST(request: Request) {
     const audio = formData.get("audio");
     if (!(audio instanceof File)) return Response.json({ error: "Missing audio file" }, { status: 400 });
 
-    if (!ffmpegPath) {
-      return Response.json(
-        { error: "FFmpeg is not available", detail: "ffmpeg-static did not provide a binary path." },
-        { status: 500 },
-      );
-    }
-
     const inputPath = path.join(os.tmpdir(), `input-${Date.now()}.webm`);
     const outputPath = path.join(os.tmpdir(), `output-${Date.now()}.wav`);
 
-    console.log("ffmpeg path:", ffmpegPath);
     console.log("uploaded audio size:", audio.size);
     console.log("uploaded audio type:", audio.type);
     console.log("uploaded audio name:", audio.name);
@@ -164,7 +184,8 @@ export async function POST(request: Request) {
 
     try {
       await writeFile(inputPath, Buffer.from(await audio.arrayBuffer()));
-      await convertToWav(inputPath, outputPath);
+      const ffmpegPath = await resolveFfmpegPath();
+      await convertToWav(ffmpegPath, inputPath, outputPath);
 
       const wavBuffer = await readFile(outputPath);
       console.log("converted wav size:", wavBuffer.length);
@@ -208,10 +229,18 @@ export async function POST(request: Request) {
       }
     } catch (error: unknown) {
       console.error("ffmpeg conversion failed:", error);
-      return Response.json(
-        { error: "Audio conversion failed", detail: error instanceof Error ? error.message : "Unknown ffmpeg error" },
-        { status: 500 },
-      );
+      const detail = error instanceof Error ? error.message : "Unknown ffmpeg error";
+      if (detail.startsWith("FFmpeg binary not found.")) {
+        return Response.json(
+          {
+            error: "FFmpeg binary not found",
+            detail:
+              "Netlify Function did not include ffmpeg-static binary. Please check netlify.toml included_files and dependencies.",
+          },
+          { status: 500 },
+        );
+      }
+      return Response.json({ error: "Audio conversion failed", detail }, { status: 500 });
     } finally {
       await unlink(inputPath).catch(() => {});
       await unlink(outputPath).catch(() => {});

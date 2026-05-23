@@ -29,3 +29,15 @@
 
 - 语音转写接口会先将前端上传的 `webm/opus` 录音写入 Netlify Serverless 的 `/tmp`，再调用 ffmpeg 转换为 `16k/单声道/wav`，最后发送给腾讯云 SentenceRecognition。
 - 若 Netlify 打包阶段出现 `ffmpeg-static` 相关问题，可在 Netlify 环境变量中设置 `FFMPEG_PATH=/var/task/node_modules/ffmpeg-static/ffmpeg`（或你实际的可执行路径），并重新部署。
+
+## ffmpeg-static / Netlify 配置变更后的重部署要求
+
+如果你修改了 `ffmpeg-static` 依赖版本、`netlify.toml` 的 `[functions]` 配置（例如 `included_files` 或 `external_node_modules`），不要只点普通 Deploy。
+
+必须在 Netlify 执行：
+
+- **Deploys**
+- **Trigger deploy**
+- **Clear cache and deploy site**
+
+这样才能确保函数打包缓存被清空，`ffmpeg-static` 二进制被重新正确打入运行时。

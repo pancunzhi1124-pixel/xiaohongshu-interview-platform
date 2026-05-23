@@ -4,5 +4,9 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[functions]
+  external_node_modules = ["ffmpeg-static"]
+  included_files = ["node_modules/ffmpeg-static/ffmpeg"]
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
