@@ -74,11 +74,19 @@ function buildRaasrAuth(secretKey: string, appId: string): { ts: string; signa: 
 
 async function raasrRequest<T>(apiUrl: string, path: string, params: URLSearchParams, body?: Buffer): Promise<RaasrApiResponse<T>> {
   const url = `${apiUrl}${path}?${params.toString()}`;
-  const response = await fetch(url, {
+  const requestInit: RequestInit = {
     method: "POST",
     headers: body ? { "Content-Type": "application/octet-stream" } : undefined,
-    body,
-  });
+  };
+
+  if (body) {
+    const bodyArrayBuffer = body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength);
+    requestInit.body = new Blob([bodyArrayBuffer], {
+      type: "application/octet-stream",
+    });
+  }
+
+  const response = await fetch(url, requestInit);
   const payload = (await response.json()) as RaasrApiResponse<T>;
   if (!response.ok || payload.ok !== 0) {
     throw new Error(payload.failed ?? `HTTP ${response.status}`);
