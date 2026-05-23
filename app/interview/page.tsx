@@ -197,6 +197,9 @@ type AudioDiagnostics = {
   mimeType: string;
   isWavMime: boolean;
   hasRiffWaveHeader: boolean;
+  sampleRate: number;
+  channels: number;
+  encoding: "PCM16";
 };
 
 type EvaluationResponse = {
@@ -408,6 +411,10 @@ function InterviewPageContent() {
   const pcmChunksRef = useRef<Float32Array[]>([]);
   const recordingSampleRateRef = useRef<number>(16000);
   const recordingTargetRef = useRef<InterviewTarget>("main");
+  const zeroGainNodeRef = useRef<GainNode | null>(null);
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+  const isRecordingRef = useRef(false);
+  const recordingStartedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (queryBankId) setBankId(queryBankId);
@@ -563,14 +570,17 @@ function InterviewPageContent() {
   const stopAudioRecording = () => {
     processorNodeRef.current?.disconnect();
     sourceNodeRef.current?.disconnect();
+    zeroGainNodeRef.current?.disconnect();
     processorNodeRef.current = null;
     sourceNodeRef.current = null;
+    zeroGainNodeRef.current = null;
     audioStreamRef.current?.getTracks().forEach((track) => track.stop());
     audioStreamRef.current = null;
     if (audioContextRef.current) {
       void audioContextRef.current.close();
       audioContextRef.current = null;
     }
+    isRecordingRef.current = false;
   };
 
   const stopCamera = () => {
@@ -646,34 +656,101 @@ function InterviewPageContent() {
     setTip("语音转写成功，你可以继续补充或直接提交。");
   };
 
+  const downsampleBuffer = (buffer: Float32Array, inputSampleRate: number, outputSampleRate: number): Float32Array => {
+    if (outputSampleRate >= inputSampleRate) {
+      return buffer;
+    }
+    const sampleRateRatio = inputSampleRate / outputSampleRate;
+    const newLength = Math.round(buffer.length / sampleRateRatio);
+    const result = new Float32Array(newLength);
+    let offsetResult = 0;
+    let offsetBuffer = 0;
+    while (offsetResult < result.length) {
+      const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
+      let accum = 0;
+      let count = 0;
+      for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i += 1) {
+        accum += buffer[i] ?? 0;
+        count += 1;
+      }
+      result[offsetResult] = count > 0 ? accum / count : 0;
+      offsetResult += 1;
+      offsetBuffer = nextOffsetBuffer;
+    }
+    return result;
+  };
+
+  const mergePcmChunks = (chunks: Float32Array[]): Float32Array => {
+    const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+    const merged = new Float32Array(total);
+    let offset = 0;
+    chunks.forEach((chunk) => {
+      merged.set(chunk, offset);
+      offset += chunk.length;
+    });
+    return merged;
+  };
+
   const startAutoListening = async (target: InterviewTarget) => {
+    if (isRecordingRef.current) {
+      return;
+    }
     const status = target === "main" ? "listening" : "followup_listening";
     setInterviewStatus(status);
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
       setTip("当前浏览器不支持麦克风录音，请手动输入回答。");
       return;
     }
+
+    stopAudioRecording();
+    if (previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current.currentTime = 0;
+      previewAudioRef.current = null;
+    }
+    pcmChunksRef.current = [];
+    if (lastRecordedUrl) {
+      URL.revokeObjectURL(lastRecordedUrl);
+    }
+    setLastRecordedBlob(null);
+    setLastRecordedUrl("");
+    setAudioDiagnostics(null);
+    setTip("");
+    if (target === "main") {
+      setAnswer("");
+    } else {
+      setFollowUpAnswer("");
+    }
+    recordingStartedAtRef.current = Date.now();
+    isRecordingRef.current = true;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
       const audioContext = new AudioContext();
       await audioContext.resume();
       const source = audioContext.createMediaStreamSource(stream);
       const processor = audioContext.createScriptProcessor(4096, 1, 1);
+      const zeroGain = audioContext.createGain();
+      zeroGain.gain.value = 0;
+
       audioStreamRef.current = stream;
       audioContextRef.current = audioContext;
       sourceNodeRef.current = source;
       processorNodeRef.current = processor;
-      pcmChunksRef.current = [];
+      zeroGainNodeRef.current = zeroGain;
       recordingSampleRateRef.current = audioContext.sampleRate;
       recordingTargetRef.current = target;
+
       processor.onaudioprocess = (event: AudioProcessingEvent) => {
         const channelData = event.inputBuffer.getChannelData(0);
         pcmChunksRef.current.push(new Float32Array(channelData));
       };
       source.connect(processor);
-      processor.connect(audioContext.destination);
+      processor.connect(zeroGain);
+      zeroGain.connect(audioContext.destination);
       setTip("正在录音，请点击“停止录音并转写”结束。");
     } catch (error) {
+      isRecordingRef.current = false;
       const message = error instanceof Error ? error.message : "";
       if (message.toLowerCase().includes("permission")) {
         setTip("浏览器未允许麦克风权限，请允许后重试。");
@@ -684,31 +761,17 @@ function InterviewPageContent() {
   };
 
   const encodeWav = (chunks: Float32Array[], sampleRate: number): Blob => {
-    const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
-    const pcmData = new Int16Array(totalLength);
-    let offset = 0;
-    chunks.forEach((chunk) => {
-      for (let i = 0; i < chunk.length; i += 1) {
-        const sample = Math.max(-1, Math.min(1, chunk[i] ?? 0));
-        pcmData[offset + i] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-      }
-      offset += chunk.length;
-    });
-    const targetSampleRate = 16000;
-    const targetLength = Math.max(1, Math.round((pcmData.length * targetSampleRate) / sampleRate));
-    const resampledPcmData = new Int16Array(targetLength);
-    const sourceStep = sampleRate / targetSampleRate;
-    for (let i = 0; i < targetLength; i += 1) {
-      const start = Math.floor(i * sourceStep);
-      const end = Math.min(pcmData.length, Math.max(start + 1, Math.floor((i + 1) * sourceStep)));
-      let sum = 0;
-      for (let j = start; j < end; j += 1) {
-        sum += pcmData[j] ?? 0;
-      }
-      resampledPcmData[i] = Math.max(-32768, Math.min(32767, Math.round(sum / (end - start))));
+    const merged = mergePcmChunks(chunks);
+    const downsampled = downsampleBuffer(merged, sampleRate, 16000);
+    const pcmData = new Int16Array(downsampled.length);
+    for (let i = 0; i < downsampled.length; i += 1) {
+      const sample = Math.max(-1, Math.min(1, downsampled[i] ?? 0));
+      const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
+      pcmData[i] = Math.round(int16);
     }
 
-    const buffer = new ArrayBuffer(44 + resampledPcmData.length * 2);
+    const targetSampleRate = 16000;
+    const buffer = new ArrayBuffer(44 + pcmData.length * 2);
     const view = new DataView(buffer);
     const writeString = (position: number, value: string) => {
       for (let i = 0; i < value.length; i += 1) {
@@ -716,7 +779,7 @@ function InterviewPageContent() {
       }
     };
     writeString(0, "RIFF");
-    view.setUint32(4, 36 + resampledPcmData.length * 2, true);
+    view.setUint32(4, 36 + pcmData.length * 2, true);
     writeString(8, "WAVE");
     writeString(12, "fmt ");
     view.setUint32(16, 16, true);
@@ -727,8 +790,8 @@ function InterviewPageContent() {
     view.setUint16(32, 2, true);
     view.setUint16(34, 16, true);
     writeString(36, "data");
-    view.setUint32(40, resampledPcmData.length * 2, true);
-    resampledPcmData.forEach((sample, index) => {
+    view.setUint32(40, pcmData.length * 2, true);
+    pcmData.forEach((sample, index) => {
       view.setInt16(44 + index * 2, sample, true);
     });
     return new Blob([view], { type: "audio/wav" });
@@ -745,13 +808,19 @@ function InterviewPageContent() {
     const audioBlob = encodeWav(chunks, recordingSampleRateRef.current);
     const arrayBuffer = await audioBlob.arrayBuffer();
     const header = new TextDecoder("ascii").decode(arrayBuffer.slice(0, 12));
-    const durationSeconds = chunks.reduce((sum, item) => sum + item.length, 0) / recordingSampleRateRef.current;
+    const durationSeconds = recordingStartedAtRef.current
+      ? Math.max(0, (Date.now() - recordingStartedAtRef.current) / 1000)
+      : chunks.reduce((sum, item) => sum + item.length, 0) / recordingSampleRateRef.current;
+    recordingStartedAtRef.current = null;
     setAudioDiagnostics({
       durationSeconds,
       sizeBytes: audioBlob.size,
       mimeType: audioBlob.type || "unknown",
       isWavMime: audioBlob.type === "audio/wav",
       hasRiffWaveHeader: header.includes("RIFF") && header.includes("WAVE"),
+      sampleRate: 16000,
+      channels: 1,
+      encoding: "PCM16",
     });
     if (lastRecordedUrl) {
       URL.revokeObjectURL(lastRecordedUrl);
@@ -1154,7 +1223,12 @@ function InterviewPageContent() {
               className="mt-3 rounded-xl border border-cyan-300/50 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-500/20"
               onClick={() => {
                 if (!lastRecordedUrl) return;
+                if (previewAudioRef.current) {
+                  previewAudioRef.current.pause();
+                  previewAudioRef.current.currentTime = 0;
+                }
                 const audio = new Audio(lastRecordedUrl);
+                previewAudioRef.current = audio;
                 void audio.play();
               }}
             >
@@ -1167,7 +1241,10 @@ function InterviewPageContent() {
 音频大小：${(audioDiagnostics.sizeBytes / 1024).toFixed(2)} KB
 音频类型：${audioDiagnostics.mimeType}
 是否为 WAV：${audioDiagnostics.isWavMime ? "是" : "否"}
-WAV Header(RIFF/WAVE)：${audioDiagnostics.hasRiffWaveHeader ? "是" : "否"}`}
+WAV Header(RIFF/WAVE)：${audioDiagnostics.hasRiffWaveHeader ? "是" : "否"}
+采样率：${audioDiagnostics.sampleRate}
+声道：${audioDiagnostics.channels}
+编码：${audioDiagnostics.encoding}`}
             </div>
           ) : null}
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
