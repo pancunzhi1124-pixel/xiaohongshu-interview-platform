@@ -678,7 +678,7 @@ function InterviewPageContent() {
       method: "POST",
       body: formData,
     });
-    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string; orderId?: string; provider?: string; stage?: string };
+    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string; orderId?: string; provider?: string; model?: string; stage?: string };
     setTranscriptionStatus("查询中");
     if (!response.ok) {
       if (data.error === "Silent audio") {
@@ -691,6 +691,7 @@ function InterviewPageContent() {
         `语音转写失败：${data.error ?? "Unknown error"}`,
         data.detail ? `详情：${data.detail}` : "",
         data.provider ? `当前服务：${data.provider}` : "",
+        data.model ? `模型：${data.model}` : "",
         data.stage ? `阶段：${data.stage}` : "",
         data.status !== undefined ? `状态码：${data.status}` : "",
       ].filter((line) => Boolean(line));
