@@ -215,7 +215,7 @@ async function transcribeByDashscope(audioBuffer: Buffer, model: string): Promis
   const endpoint = process.env.DASHSCOPE_ASR_URL?.trim() || DEFAULT_DASHSCOPE_URL;
   const formData = new FormData();
   formData.append("model", model);
-  formData.append("file", new Blob([audioBuffer], { type: "audio/wav" }), "interview.wav");
+  formData.append("file", new Blob([toStrictArrayBuffer(audioBuffer)], { type: "audio/wav" }), "interview.wav");
 
   try {
     const response = await fetch(endpoint, {
