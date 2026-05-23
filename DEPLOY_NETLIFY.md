@@ -11,35 +11,18 @@
 7. **Build command** 填写：`npm run build`。
 8. 如果 Netlify 自动识别 Next.js，就使用自动配置（其余保持默认）。
 9. 配置以下环境变量（用于 AI 模拟面试语音转写）：
-   - `TRANSCRIBE_PROVIDER=tencent`
-   - `TENCENT_SECRET_ID=腾讯云 SecretId`
-   - `TENCENT_SECRET_KEY=腾讯云 SecretKey`
-   - `TENCENT_APP_ID=腾讯云 APPID`
-   - `TENCENT_ASR_REGION=ap-beijing`
-   - `TENCENT_ASR_ENGINE=16k_zh`
-   - （如启用讯飞 RAASR）`IFLYTEK_RAASR_API_URL=https://raasr.xfyun.cn/v2/api`
+   - `ASR_PROVIDER=iflytek_raasr`
+   - `TRANSCRIBE_PROVIDER=iflytek_raasr`
+   - `IFLYTEK_RAASR_APP_ID=讯飞 APPID`
+   - `IFLYTEK_RAASR_SECRET_KEY=讯飞 SecretKey`
+   - `IFLYTEK_RAASR_API_URL=https://raasr.xfyun.cn/v2/api`
 10. 点击 **Deploy** 开始部署。
 11. 部署成功后，Netlify 会提供一个免费的 `.netlify.app` 域名用于访问。
 
 ## 说明
 
-- 本分支使用腾讯云 ASR 进行语音转写，环境变量更新后需要重新部署以生效。
-- 已保留现有 Vercel 部署能力（未删除或覆盖任何 Vercel 相关配置）。
-- `IFLYTEK_RAASR_API_URL` 必须填写基础地址 `https://raasr.xfyun.cn/v2/api`，不要填写 `https://raasr.xfyun.cn/v2/api/upload` 或 `https://raasr.xfyun.cn/v2/api/xxx`。
-
-## ffmpeg 转码说明
-
-- 语音转写接口会先将前端上传的 `webm/opus` 录音写入 Netlify Serverless 的 `/tmp`，再调用 ffmpeg 转换为 `16k/单声道/wav`，最后发送给腾讯云 SentenceRecognition。
-- 若 Netlify 打包阶段出现 `ffmpeg-static` 相关问题，可在 Netlify 环境变量中设置 `FFMPEG_PATH=/var/task/node_modules/ffmpeg-static/ffmpeg`（或你实际的可执行路径），并重新部署。
-
-## ffmpeg-static / Netlify 配置变更后的重部署要求
-
-如果你修改了 `ffmpeg-static` 依赖版本、`netlify.toml` 的 `[functions]` 配置（例如 `included_files` 或 `external_node_modules`），不要只点普通 Deploy。
-
-必须在 Netlify 执行：
-
-- **Deploys**
-- **Trigger deploy**
-- **Clear cache and deploy site**
-
-这样才能确保函数打包缓存被清空，`ffmpeg-static` 二进制被重新正确打入运行时。
+- 本分支默认只使用讯飞 RAASR（录音文件转写标准版）进行语音转写。
+- `IFLYTEK_RAASR_API_URL` 必须填写基础地址 `https://raasr.xfyun.cn/v2/api`。
+- 不要填写 `https://raasr.xfyun.cn/v2/api/upload`。
+- 不要填写 `https://raasr.xfyun.cn/v2/api/xxx`。
+- 环境变量更新后需要重新部署以生效。

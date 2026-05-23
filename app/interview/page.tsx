@@ -223,8 +223,9 @@ type AudioDiagnostics = {
   mimeType: "audio/wav";
   uploadedForTranscription: boolean;
 };
-type RecorderStatus = "未启动" | "启动中" | "录音中" | "停止中" | "失败";
-type MicPermissionStatus = "已授权" | "未授权" | "未知";
+type RecordingStatus = "未录音" | "录音中" | "录音完成" | "失败";
+type MicPermissionStatus = "已授权" | "未授权";
+type TranscriptionStatus = "未开始" | "上传中" | "查询中" | "完成" | "失败";
 
 type EvaluationResponse = {
   score: number;
@@ -425,10 +426,10 @@ function InterviewPageContent() {
   const [lastRecordedBlob, setLastRecordedBlob] = useState<Blob | null>(null);
   const [lastRecordedUrl, setLastRecordedUrl] = useState("");
   const [audioDiagnostics, setAudioDiagnostics] = useState<AudioDiagnostics | null>(null);
-  const [recorderStatus, setRecorderStatus] = useState<RecorderStatus>("未启动");
-  const [micPermissionStatus, setMicPermissionStatus] = useState<MicPermissionStatus>("未知");
-  const [recorderErrorName, setRecorderErrorName] = useState("");
-  const [recorderErrorMessage, setRecorderErrorMessage] = useState("");
+  const [recordingStatus, setRecordingStatus] = useState<RecordingStatus>("未录音");
+  const [micPermissionStatus, setMicPermissionStatus] = useState<MicPermissionStatus>("未授权");
+  const [transcriptionStatus, setTranscriptionStatus] = useState<TranscriptionStatus>("未开始");
+  const [transcriptionError, setTranscriptionError] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
@@ -608,7 +609,7 @@ function InterviewPageContent() {
     }
     recorderRef.current = null;
     isRecordingRef.current = false;
-    setRecorderStatus("未启动");
+    setRecordingStatus("未录音");
   };
 
   const clearRecordingArtifacts = () => {
@@ -628,8 +629,8 @@ function InterviewPageContent() {
     setLastRecordedUrl("");
     setAudioDiagnostics(null);
     setTip("");
-    setRecorderErrorName("");
-    setRecorderErrorMessage("");
+    setTranscriptionStatus("未开始");
+    setTranscriptionError("");
   };
 
   const stopCamera = () => {
@@ -668,6 +669,8 @@ function InterviewPageContent() {
   };
 
   const transcribeAudioBlob = async (audioBlob: Blob, target: InterviewTarget) => {
+    setTranscriptionStatus("上传中");
+    setTranscriptionError("");
     const file = new File([audioBlob], `interview-answer-${Date.now()}.wav`, { type: "audio/wav" });
     const formData = new FormData();
     formData.append("audio", file);
@@ -675,7 +678,8 @@ function InterviewPageContent() {
       method: "POST",
       body: formData,
     });
-    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string; orderId?: string; provider?: string };
+    const data = (await response.json()) as { text?: string; error?: string; status?: number; detail?: string; orderId?: string; provider?: string; stage?: string };
+    setTranscriptionStatus("查询中");
     if (!response.ok) {
       if (data.error === "Silent audio") {
         throw new Error("录音文件接近静音，请确认浏览器已允许麦克风，并点击“试听录音”检查是否能听到声音。");
@@ -683,22 +687,22 @@ function InterviewPageContent() {
       if (data.error === "Invalid WAV audio") {
         throw new Error("当前录音格式不是标准 WAV，请刷新页面后重试。");
       }
-      if (data.error === "Tencent ASR returned empty transcript") {
-        throw new Error("腾讯云未识别到有效语音，请先点击“试听录音”确认录音是否有声音。");
-      }
       const lines = [
-        `转写失败：${data.error ?? "Unknown error"}`,
-        data.status !== undefined ? `状态码：${data.status}` : "",
+        `语音转写失败：${data.error ?? "Unknown error"}`,
         data.detail ? `详情：${data.detail}` : "",
+        data.provider ? `当前服务：${data.provider}` : "",
+        data.stage ? `阶段：${data.stage}` : "",
+        data.status !== undefined ? `状态码：${data.status}` : "",
       ].filter((line) => Boolean(line));
-      throw new Error(lines.join("\n"));
+      const message = lines.join("\n");
+      setTranscriptionStatus("失败");
+      setTranscriptionError(message);
+      throw new Error(message);
     }
     const transcript = (data.text ?? "").trim();
-    if (!transcript && data.orderId) {
-      setTip(`文件上传成功，订单号：${data.orderId}。请继续接入查询结果接口。`);
-      return;
-    }
     if (!transcript) {
+      setTranscriptionStatus("失败");
+      setTranscriptionError("语音转写失败：未识别到语音内容，请重试或手动输入。");
       throw new Error("未识别到语音内容，请重试或手动输入。");
     }
     if (target === "main") {
@@ -706,6 +710,8 @@ function InterviewPageContent() {
     } else {
       setFollowUpAnswer((prev) => (prev.trim() ? `${prev}\n${transcript}` : transcript));
     }
+    setTranscriptionStatus("完成");
+    setTranscriptionError("");
     setTip("语音转写成功，你可以继续补充或直接提交。");
   };
 
@@ -729,7 +735,7 @@ function InterviewPageContent() {
       return;
     }
     clearRecordingArtifacts();
-    setRecorderStatus("启动中");
+    setRecordingStatus("未录音");
     try {
       const recorder = createRecorder({ type: "wav", sampleRate: 16000, bitRate: 16, numChannels: 1, onProcess: () => {} });
       await new Promise<void>((resolve, reject) => {
@@ -743,18 +749,18 @@ function InterviewPageContent() {
       recorderRef.current = recorder;
       recordingTargetRef.current = target;
       isRecordingRef.current = true;
-      setRecorderStatus("录音中");
+      setRecordingStatus("录音中");
       setMicPermissionStatus("已授权");
       recordingTimerRef.current = setInterval(() => setRecordingSeconds((prev) => prev + 1), 1000);
       setTip("录音中，请作答后点击“停止录音并转写”。");
       setInterviewStatus(target === "main" ? "idle" : "followup_asking");
     } catch (error) {
       isRecordingRef.current = false;
-      setRecorderStatus("失败");
+      setRecordingStatus("失败");
       setMicPermissionStatus("未授权");
       const message = error instanceof Error ? error.message : "录音器启动失败";
       setTip("麦克风启动失败，请检查浏览器权限或设备占用。");
-      setRecorderErrorMessage(message);
+      setTranscriptionError(message);
     }
   };
 
@@ -764,7 +770,7 @@ function InterviewPageContent() {
       setTip("没有正在进行的录音，请重新开始。");
       return;
     }
-    setRecorderStatus("停止中");
+
     const audioBlob = await exportChunk();
     stopAudioRecording();
 
@@ -784,14 +790,16 @@ function InterviewPageContent() {
     setLastRecordedUrl(URL.createObjectURL(audioBlob));
 
     try {
+      setTranscriptionStatus("上传中");
+      setTranscriptionError("");
       await transcribeAudioBlob(audioBlob, recordingTargetRef.current);
       uploadedForTranscriptionRef.current = true;
       setAudioDiagnostics((prev) => (prev ? { ...prev, uploadedForTranscription: true } : prev));
-      setRecorderStatus("未启动");
+      setRecordingStatus("未录音");
     } catch (error) {
       const detail = error instanceof Error ? error.message : "未知错误";
       setTip(`语音转写失败：${detail}`);
-      setRecorderStatus("失败");
+      setRecordingStatus("失败");
     }
   };
 
@@ -1220,10 +1228,10 @@ function InterviewPageContent() {
             </div>
           ) : null}
           <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200 whitespace-pre-line">
-            {`麦克风权限状态：${micPermissionStatus}
-录音器状态：${recorderStatus}
-错误名称：${recorderErrorName || "-"}
-错误详情：${recorderErrorMessage || "-"}`}
+            {`麦克风状态：${micPermissionStatus}
+录音状态：${recordingStatus}
+转写状态：${transcriptionStatus}
+失败原因：${transcriptionError || "-"}`}
           </div>
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
 
