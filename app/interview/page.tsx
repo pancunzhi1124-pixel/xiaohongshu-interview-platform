@@ -9,7 +9,6 @@ import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
 import SmartSelect from "@/components/ui/SmartSelect";
 import { calculateSpeechMetrics, type SpeechMetrics } from "@/lib/interview/speechMetrics";
-import { useRealtimeAsr } from "@/hooks/useRealtimeAsr";
 import RecorderCore from "recorder-core";
 import "recorder-core/src/engine/wav";
 
@@ -451,18 +450,6 @@ function InterviewPageContent() {
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const uploadedForTranscriptionRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
-  const realtimeTargetRef = useRef<InterviewTarget>("main");
-  const realtimeAsr = useRealtimeAsr();
-
-  const appendTranscript = (target: InterviewTarget, deltaText: string) => {
-    const text = deltaText.trim();
-    if (!text) return;
-    if (target === "main") {
-      setAnswer((prev) => `${prev}${prev ? "\n" : ""}${text}`);
-    } else {
-      setFollowUpAnswer((prev) => `${prev}${prev ? "\n" : ""}${text}`);
-    }
-  };
 
   useEffect(() => {
     if (queryBankId) setBankId(queryBankId);
@@ -817,26 +804,6 @@ function InterviewPageContent() {
     }
   };
 
-
-  const handleStartRealtimeAnswer = async () => {
-    realtimeTargetRef.current = currentTarget;
-    await realtimeAsr.start(currentTarget);
-  };
-
-  const handleStopRealtimeAnswer = async () => {
-    const finalText = (await realtimeAsr.stop()).trim();
-    if (!finalText) {
-      setTip("实时字幕未识别到有效内容，请手动输入。");
-      return;
-    }
-    appendTranscript(realtimeTargetRef.current, finalText);
-    setTip("实时字幕已填入回答框，你可以继续补充或直接提交。");
-  };
-
-  const handleCancelRealtimeAnswer = () => {
-    realtimeAsr.cancel();
-    setTip("已取消实时回答，本次字幕不会写入回答框。");
-  };
 
   const openCamera = async () => {
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
@@ -1241,38 +1208,11 @@ function InterviewPageContent() {
                 >
                   重新录音
                 </button>
-                <button
-                  type="button"
-                  className="rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/20"
-                  onClick={() => {
-                    void handleStartRealtimeAnswer();
-                  }}
-                  disabled={!currentQuestion}
-                >
-                  开始实时回答
-                </button>
-                <button
-                  type="button"
-                  className="rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/20"
-                  onClick={() => {
-                    void handleStopRealtimeAnswer();
-                  }}
-                >
-                  结束实时回答并填入
-                </button>
-                <button
-                  type="button"
-                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
-                  onClick={handleCancelRealtimeAnswer}
-                >
-                  取消实时回答
-                </button>
-
               </>
             ) : null}
           </div>
           {started ? (
-            <p className="mt-2 text-xs text-slate-400">请点击“开始录音回答”后作答，录音结束后会上传转写；也可直接手动输入。</p>
+            <p className="mt-2 text-xs text-slate-400">请点击“开始录音回答”后作答，录音结束后会上传转写；也可以直接手动输入。</p>
           ) : null}
           {lastRecordedBlob ? (
             <button
@@ -1312,19 +1252,6 @@ function InterviewPageContent() {
 失败原因：${transcriptionError || "-"}`}
           </div>
           {tip ? <p className="mt-2 text-sm text-amber-300 whitespace-pre-line">{tip}</p> : null}
-          {started ? (
-            <details className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-500/10 p-3 text-xs text-emerald-100">
-              <summary className="cursor-pointer select-none">实时字幕调试信息（可展开）</summary>
-              <div className="mt-2 whitespace-pre-line">
-                {`实时字幕状态：${realtimeAsr.status}
-云端/浏览器支持：${realtimeAsr.isSupported ? "支持浏览器实时字幕" : "当前浏览器不支持实时字幕"}
-最终字幕：${realtimeAsr.finalTranscript || "-"}
-实时字幕（未定稿）：${realtimeAsr.interimTranscript || "-"}
-错误信息：${realtimeAsr.error || "-"}`}
-              </div>
-            </details>
-          ) : null}
-
           <div className="mt-4">
             <label className="block text-sm font-medium text-slate-200">{textareaTitle}</label>
             <p className="mt-1 text-xs text-slate-400">{textareaHint}</p>
