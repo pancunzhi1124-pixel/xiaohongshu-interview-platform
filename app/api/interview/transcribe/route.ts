@@ -72,6 +72,12 @@ function buildRaasrAuth(secretKey: string, appId: string): { ts: string; signa: 
   return { ts, signa };
 }
 
+function toStrictArrayBuffer(input: Uint8Array): ArrayBuffer {
+  const arrayBuffer = new ArrayBuffer(input.byteLength);
+  new Uint8Array(arrayBuffer).set(input);
+  return arrayBuffer;
+}
+
 async function raasrRequest<T>(apiUrl: string, path: string, params: URLSearchParams, body?: Buffer): Promise<RaasrApiResponse<T>> {
   const url = `${apiUrl}${path}?${params.toString()}`;
   const requestInit: RequestInit = {
@@ -80,10 +86,8 @@ async function raasrRequest<T>(apiUrl: string, path: string, params: URLSearchPa
   };
 
   if (body) {
-    const bodyArrayBuffer = body.buffer.slice(body.byteOffset, body.byteOffset + body.byteLength);
-    requestInit.body = new Blob([bodyArrayBuffer], {
-      type: "application/octet-stream",
-    });
+    const bodyArrayBuffer = toStrictArrayBuffer(body);
+    requestInit.body = bodyArrayBuffer;
   }
 
   const response = await fetch(url, requestInit);
