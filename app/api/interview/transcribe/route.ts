@@ -4,7 +4,7 @@ import { createHash, createHmac } from "node:crypto";
 
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
 
-type TranscribeProvider = "xfyun" | "tencent" | "openai" | "aliyun";
+type TranscribeProvider = "iflytek" | "tencent" | "openai" | "aliyun";
 
 type TencentSentenceRecognitionResponse = {
   Result?: string;
@@ -20,9 +20,11 @@ function extractErrorDetail(error: unknown): string {
 }
 
 function getProvider(): TranscribeProvider {
-  const provider = process.env.TRANSCRIBE_PROVIDER ?? "xfyun";
-  if (provider === "openai" || provider === "aliyun" || provider === "tencent" || provider === "xfyun") return provider;
-  return "xfyun";
+  const provider = (process.env.TRANSCRIBE_PROVIDER ?? process.env.ASR_PROVIDER ?? "iflytek").toLowerCase();
+  if (provider === "openai" || provider === "aliyun" || provider === "tencent" || provider === "iflytek" || provider === "xfyun") {
+    return provider === "xfyun" ? "iflytek" : provider;
+  }
+  return "iflytek";
 }
 
 function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_APP_ID"): string {
@@ -107,8 +109,8 @@ async function transcribeByTencent(wavBuffer: Buffer): Promise<string> {
 export async function POST(request: Request) {
   console.log("TRANSCRIBE_PROVIDER:", process.env.TRANSCRIBE_PROVIDER);
   const provider = getProvider();
-  if (provider !== "xfyun") {
-    return Response.json({ error: `Unsupported provider: ${provider}`, detail: "当前主方案为讯飞实时听写，请使用实时录音入口。" }, { status: 400 });
+  if (provider === "iflytek") {
+    return Response.json({ error: "IFlyTek ASR not configured", detail: "语音转写失败，请检查 ASR 配置，或手动输入回答。" }, { status: 502 });
   }
 
   try {
@@ -137,11 +139,13 @@ export async function POST(request: Request) {
       );
     }
 
-    return Response.json(
-      { error: "Deprecated endpoint", detail: "该接口已下线。请使用讯飞实时听写流程（开始录音后边听边识别）。" },
-      { status: 410 },
-    );
+    if (provider === "tencent") {
+      const text = await transcribeByTencent(audioBuffer);
+      return Response.json({ text });
+    }
+
+    return Response.json({ error: `Unsupported provider: ${provider}` }, { status: 400 });
   } catch (error) {
-    return Response.json({ error: "Tencent ASR transcription failed", detail: extractErrorDetail(error) }, { status: 502 });
+    return Response.json({ error: "ASR transcription failed", detail: extractErrorDetail(error) }, { status: 502 });
   }
 }

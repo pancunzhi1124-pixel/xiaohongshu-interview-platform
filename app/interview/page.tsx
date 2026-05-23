@@ -203,11 +203,9 @@ const publicModeOptions: readonly PublicInterviewModeOption[] = [
 type InterviewStatus =
   | "idle"
   | "asking"
-  | "listening"
-  | "analyzing"
+    | "analyzing"
   | "followup_asking"
-  | "followup_listening"
-  | "completed";
+    | "completed";
 
 type InterviewTarget = "main" | "followup";
 
@@ -441,15 +439,9 @@ function InterviewPageContent() {
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const isRecordingRef = useRef(false);
   const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const xfyunSocketRef = useRef<WebSocket | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const processorRef = useRef<ScriptProcessorNode | null>(null);
-  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const uploadedForTranscriptionRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
-  const segmentCacheRef = useRef<Record<string, string>>({});
 
   const appendTranscript = (target: InterviewTarget, deltaText: string) => {
     const text = deltaText.trim();
@@ -502,7 +494,7 @@ function InterviewPageContent() {
     : `模式：${selectedMode.label}`;
   const activeQuestions = started ? sessionQuestions : questions;
   const currentQuestion = activeQuestions[index];
-  const currentTarget: InterviewTarget = interviewStatus === "followup_asking" || interviewStatus === "followup_listening" ? "followup" : "main";
+  const currentTarget: InterviewTarget = interviewStatus === "followup_asking" ? "followup" : "main";
   const isFollowupStage = currentTarget === "followup";
   const currentPrompt = isFollowupStage ? followUpQuestion : currentQuestion?.question ?? "";
   const isLastQuestion = index >= activeQuestions.length - 1;
@@ -578,14 +570,10 @@ function InterviewPageContent() {
     switch (interviewStatus) {
       case "asking":
         return "面试官提问中";
-      case "listening":
-        return "正在听你回答";
       case "analyzing":
         return "AI 分析中";
       case "followup_asking":
         return "追问中";
-      case "followup_listening":
-        return "请回答追问，我正在听...";
       case "completed":
         return "本题完成";
       default:
@@ -597,18 +585,14 @@ function InterviewPageContent() {
     switch (interviewStatus) {
       case "asking":
         return "面试官正在提问...";
-      case "listening":
-        return "请开始回答，我正在听...";
       case "analyzing":
         return "AI 正在分析你的回答...";
       case "followup_asking":
         return "面试官正在追问...";
-      case "followup_listening":
-        return "请回答追问，我正在听...";
       case "completed":
         return isLastQuestion ? "本题已完成，点击生成面试报告。" : "本题已完成，点击下一题继续。";
       default:
-        return "点击开始模拟面试后，系统会自动提问并开始听你回答。";
+        return "请先听题，然后点击“开始录音回答”，也可直接手动输入。";
     }
   }, [interviewStatus, isLastQuestion]);
 
@@ -624,16 +608,6 @@ function InterviewPageContent() {
     }
     recorderRef.current = null;
     isRecordingRef.current = false;
-    xfyunSocketRef.current?.close();
-    xfyunSocketRef.current = null;
-    processorRef.current?.disconnect();
-    sourceNodeRef.current?.disconnect();
-    audioContextRef.current?.close().catch(() => null);
-    processorRef.current = null;
-    sourceNodeRef.current = null;
-    audioContextRef.current = null;
-    streamRef.current?.getTracks().forEach((track) => track.stop());
-    streamRef.current = null;
     setRecorderStatus("未启动");
   };
 
@@ -656,26 +630,6 @@ function InterviewPageContent() {
     setTip("");
     setRecorderErrorName("");
     setRecorderErrorMessage("");
-  };
-
-  const detectMicPermission = async () => {
-    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      setMicPermissionStatus("未知");
-      return;
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setMicPermissionStatus("已授权");
-      stream.getTracks().forEach((track) => track.stop());
-      console.log("mic open success");
-    } catch (error) {
-      setMicPermissionStatus("未授权");
-      const name = error instanceof DOMException ? error.name : "UnknownError";
-      const message = error instanceof Error ? error.message : "unknown microphone permission error";
-      setRecorderErrorName(name);
-      setRecorderErrorMessage(message);
-      console.error("microphone or recorder failed:", error);
-    }
   };
 
   const stopCamera = () => {
@@ -744,9 +698,9 @@ function InterviewPageContent() {
       throw new Error("未识别到语音内容，请重试或手动输入。");
     }
     if (target === "main") {
-      setAnswer(transcript);
+      setAnswer((prev) => (prev.trim() ? `${prev}\n${transcript}` : transcript));
     } else {
-      setFollowUpAnswer(transcript);
+      setFollowUpAnswer((prev) => (prev.trim() ? `${prev}\n${transcript}` : transcript));
     }
     setTip("语音转写成功，你可以继续补充或直接提交。");
   };
@@ -764,114 +718,39 @@ function InterviewPageContent() {
     });
   };
 
-  const startAutoListening = async (target: InterviewTarget) => {
-    console.log("startRecording called");
-    console.log("isRecording before start:", isRecordingRef.current);
-    console.log("recorder exists:", Boolean(recorderRef.current));
-    if (isRecordingRef.current) {
-      return;
-    }
-    const status = target === "main" ? "listening" : "followup_listening";
-    setInterviewStatus(status);
+  const startRecording = async (target: InterviewTarget) => {
+    if (isRecordingRef.current) return;
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-      setTip("当前浏览器不支持麦克风录音，请手动输入回答。");
+      setTip("麦克风启动失败，请检查浏览器权限或设备占用。");
       return;
     }
-
     clearRecordingArtifacts();
     setRecorderStatus("启动中");
-
     try {
-      const recorder = createRecorder({
-        type: "wav",
-        sampleRate: 16000,
-        bitRate: 16,
-        numChannels: 1,
-        onProcess: () => {},
-      });
+      const recorder = createRecorder({ type: "wav", sampleRate: 16000, bitRate: 16, numChannels: 1, onProcess: () => {} });
       await new Promise<void>((resolve, reject) => {
-        recorder.open(
-          () => resolve(),
-          (message, isUserNotAllow) => {
-            const error = new Error(message || "录音器启动失败");
-            error.name = isUserNotAllow ? "NotAllowedError" : "RecorderOpenError";
-            reject(error);
-          },
-        );
+        recorder.open(() => resolve(), (message, isUserNotAllow) => {
+          const error = new Error(message || "录音器启动失败");
+          error.name = isUserNotAllow ? "NotAllowedError" : "RecorderOpenError";
+          reject(error);
+        });
       });
-      console.log("mic open success");
       recorder.start();
-      console.log("recorder start success");
-      const authRes = await fetch("/api/interview/xfyun-auth");
-      const authData = (await authRes.json()) as { wsUrl?: string; appId?: string; error?: string; detail?: string };
-      if (!authRes.ok || !authData.wsUrl || !authData.appId) {
-        throw new Error(authData.detail ?? authData.error ?? "讯飞鉴权失败");
-      }
-      segmentCacheRef.current = {};
-      const socket = new WebSocket(authData.wsUrl);
-      xfyunSocketRef.current = socket;
-      socket.onmessage = (event) => {
-        const data = JSON.parse(event.data) as { code?: number; data?: { result?: { ws?: Array<{ cw?: Array<{ w?: string }>; bg?: number; rg?: number[]; pg?: string }> } }; message?: string };
-        if (data.code && data.code !== 0) {
-          setTip(`讯飞识别异常：${data.message ?? "unknown error"}`);
-          return;
-        }
-        const words = data.data?.result?.ws ?? [];
-        const text = words.map((x) => x.cw?.[0]?.w ?? "").join("").trim();
-        if (!text) return;
-        const key = `${words[0]?.bg ?? 0}-${words[words.length - 1]?.rg?.[1] ?? 0}`;
-        if (segmentCacheRef.current[key] === text) return;
-        segmentCacheRef.current[key] = text;
-        appendTranscript(target, text);
-      };
-      socket.onopen = () => {
-        socket.send(JSON.stringify({ common: { app_id: authData.appId }, business: { language: "zh_cn", domain: "iat", accent: "mandarin", dwa: "wpgs" }, data: { status: 0, format: "audio/L16;rate=16000", encoding: "raw", audio: "" } }));
-      };
-      const audioContext = new AudioContext({ sampleRate: 16000 });
-      audioContextRef.current = audioContext;
-      const stream = recorder as unknown as { stream?: MediaStream };
-      if (!stream.stream) {
-        throw new Error("录音器未返回可用音频流");
-      }
-      streamRef.current = stream.stream;
-      const sourceNode = audioContext.createMediaStreamSource(stream.stream);
-      sourceNodeRef.current = sourceNode;
-      const processor = audioContext.createScriptProcessor(4096, 1, 1);
-      processorRef.current = processor;
-      processor.onaudioprocess = (e) => {
-        if (!xfyunSocketRef.current || xfyunSocketRef.current.readyState !== WebSocket.OPEN) return;
-        const channelData = e.inputBuffer.getChannelData(0);
-        const pcm = new Int16Array(channelData.length);
-        for (let i = 0; i < channelData.length; i += 1) {
-          const s = Math.max(-1, Math.min(1, channelData[i]));
-          pcm[i] = s < 0 ? s * 0x8000 : s * 0x7fff;
-        }
-        const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(pcm.buffer)));
-        xfyunSocketRef.current.send(JSON.stringify({ data: { status: 1, format: "audio/L16;rate=16000", encoding: "raw", audio: audioBase64 } }));
-      };
-      sourceNode.connect(processor);
-      processor.connect(audioContext.destination);
       recorderRef.current = recorder;
       recordingTargetRef.current = target;
       isRecordingRef.current = true;
       setRecorderStatus("录音中");
       setMicPermissionStatus("已授权");
       recordingTimerRef.current = setInterval(() => setRecordingSeconds((prev) => prev + 1), 1000);
-      setTip("正在录音并实时转写，请点击“停止录音并转写”结束。");
+      setTip("录音中，请作答后点击“停止录音并转写”。");
+      setInterviewStatus(target === "main" ? "idle" : "followup_asking");
     } catch (error) {
       isRecordingRef.current = false;
       setRecorderStatus("失败");
-      const name = error instanceof DOMException ? error.name : error instanceof Error ? error.name : "UnknownError";
+      setMicPermissionStatus("未授权");
       const message = error instanceof Error ? error.message : "录音器启动失败";
-      setRecorderErrorName(name);
+      setTip("麦克风启动失败，请检查浏览器权限或设备占用。");
       setRecorderErrorMessage(message);
-      if (name === "NotAllowedError") {
-        setMicPermissionStatus("未授权");
-        setTip("浏览器未授权麦克风。");
-      } else {
-        setTip(`录音器启动失败：${message}`);
-      }
-      console.error("microphone or recorder failed:", error);
     }
   };
 
@@ -901,17 +780,12 @@ function InterviewPageContent() {
     setLastRecordedUrl(URL.createObjectURL(audioBlob));
 
     try {
-      const socket = xfyunSocketRef.current;
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ data: { status: 2, format: "audio/L16;rate=16000", encoding: "raw", audio: "" } }));
-      }
-      setTip("录音已停止，实时转写结果已追加到文本框，可手动修改后提交。");
+      await transcribeAudioBlob(audioBlob, recordingTargetRef.current);
       uploadedForTranscriptionRef.current = true;
       setAudioDiagnostics((prev) => (prev ? { ...prev, uploadedForTranscription: true } : prev));
       setRecorderStatus("未启动");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "转写结束异常，请手动输入回答。";
-      setTip(message);
+      setTip("语音转写失败，请检查 ASR 配置，或手动输入回答。");
       setRecorderStatus("失败");
     }
   };
@@ -942,7 +816,8 @@ function InterviewPageContent() {
     setTip("");
     setInterviewStatus(target === "main" ? "asking" : "followup_asking");
     speak(text, () => {
-      startAutoListening(target);
+      setInterviewStatus(target === "main" ? "idle" : "followup_asking");
+      setTip("请点击开始录音回答。若录音异常，可直接手动输入回答。");
     });
   };
 
@@ -1124,13 +999,9 @@ function InterviewPageContent() {
   const textareaHint = "如果语音识别不准确，可以直接编辑文字后再提交。";
   const mainButtonLabel = !started
     ? "开始模拟面试"
-    : interviewStatus === "followup_listening"
-      ? "停止录音并转写"
-      : interviewStatus === "listening"
-        ? "停止录音并转写"
-        : isLastQuestion && interviewStatus === "completed"
-          ? "生成面试报告"
-          : "下一题";
+    : isLastQuestion && interviewStatus === "completed"
+      ? "生成面试报告"
+      : "下一题";
 
   const avgScore = report.length ? (report.reduce((acc, item) => acc + item.score, 0) / report.length).toFixed(1) : "0.0";
 
@@ -1276,36 +1147,42 @@ function InterviewPageContent() {
               >
                 {mainButtonLabel}
               </button>
-            ) : interviewStatus === "listening" ? (
-              <button
-                className="rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-2 font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={stopRecordingAndTranscribe}
-                disabled={!currentQuestion}
-              >
-                {mainButtonLabel}
-              </button>
-            ) : interviewStatus === "followup_listening" ? (
-              <button
-                className="rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-2 font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-                onClick={stopRecordingAndTranscribe}
-                disabled={!currentQuestion}
-              >
-                {mainButtonLabel}
-              </button>
+            ) : null}
+            {started ? (
+              <>
+                <button
+                  type="button"
+                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
+                  onClick={() => {
+                    void startRecording(currentTarget);
+                  }}
+                  disabled={!currentQuestion || isRecordingRef.current}
+                >
+                  开始录音回答
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-cyan-300/40 bg-cyan-500/10 px-4 py-2 text-sm text-cyan-100 transition hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => {
+                    void stopRecordingAndTranscribe();
+                  }}
+                  disabled={!isRecordingRef.current}
+                >
+                  停止录音并转写
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
+                  onClick={clearRecordingArtifacts}
+                >
+                  重新录音
+                </button>
+              </>
             ) : null}
           </div>
-          {started && (interviewStatus === "listening" || interviewStatus === "followup_listening") ? (
-            <p className="mt-2 text-xs text-slate-400">请靠近麦克风，用普通话清晰作答。录音结束后系统会自动转写，转写文字可手动修改后再提交。</p>
+          {started ? (
+            <p className="mt-2 text-xs text-slate-400">请点击“开始录音回答”后作答，录音结束后会上传转写；也可直接手动输入。</p>
           ) : null}
-          <button
-            type="button"
-            className="mt-3 mr-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
-            onClick={() => {
-              void detectMicPermission();
-            }}
-          >
-            测试麦克风
-          </button>
           {lastRecordedBlob ? (
             <button
               type="button"
@@ -1354,7 +1231,7 @@ function InterviewPageContent() {
               value={activeAnswer}
               onChange={(e) => setActiveAnswer(e.target.value)}
             />
-            {started && (interviewStatus === "listening" || interviewStatus === "followup_listening") ? (
+            {started ? (
               <button
                 type="button"
                 className="mt-3 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
