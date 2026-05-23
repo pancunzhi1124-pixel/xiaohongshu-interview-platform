@@ -254,7 +254,7 @@ async function uploadAudioToOss(config: OssConfig, objectKey: string, audioBuffe
       "Content-Type": contentType,
       Authorization: authorization,
     },
-    body: audioBuffer,
+    body: toStrictArrayBuffer(audioBuffer),
   });
 
   if (response.ok) return { ok: true };
