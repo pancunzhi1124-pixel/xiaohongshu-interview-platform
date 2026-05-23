@@ -225,6 +225,8 @@ type AudioDiagnostics = {
   mimeType: "audio/wav";
   uploadedForTranscription: boolean;
 };
+type RecorderStatus = "未启动" | "启动中" | "录音中" | "停止中" | "失败";
+type MicPermissionStatus = "已授权" | "未授权" | "未知";
 
 type EvaluationResponse = {
   score: number;
@@ -425,6 +427,10 @@ function InterviewPageContent() {
   const [lastRecordedBlob, setLastRecordedBlob] = useState<Blob | null>(null);
   const [lastRecordedUrl, setLastRecordedUrl] = useState("");
   const [audioDiagnostics, setAudioDiagnostics] = useState<AudioDiagnostics | null>(null);
+  const [recorderStatus, setRecorderStatus] = useState<RecorderStatus>("未启动");
+  const [micPermissionStatus, setMicPermissionStatus] = useState<MicPermissionStatus>("未知");
+  const [recorderErrorName, setRecorderErrorName] = useState("");
+  const [recorderErrorMessage, setRecorderErrorMessage] = useState("");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
@@ -628,6 +634,48 @@ function InterviewPageContent() {
     audioContextRef.current = null;
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    setRecorderStatus("未启动");
+  };
+
+  const clearRecordingArtifacts = () => {
+    stopAudioRecording();
+    if (previewAudioRef.current) {
+      previewAudioRef.current.pause();
+      previewAudioRef.current.currentTime = 0;
+      previewAudioRef.current = null;
+    }
+    recordedChunksRef.current = [];
+    uploadedForTranscriptionRef.current = false;
+    recordingStartedAtRef.current = Date.now();
+    if (lastRecordedUrl) {
+      URL.revokeObjectURL(lastRecordedUrl);
+    }
+    setLastRecordedBlob(null);
+    setLastRecordedUrl("");
+    setAudioDiagnostics(null);
+    setTip("");
+    setRecorderErrorName("");
+    setRecorderErrorMessage("");
+  };
+
+  const detectMicPermission = async () => {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setMicPermissionStatus("未知");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setMicPermissionStatus("已授权");
+      stream.getTracks().forEach((track) => track.stop());
+      console.log("mic open success");
+    } catch (error) {
+      setMicPermissionStatus("未授权");
+      const name = error instanceof DOMException ? error.name : "UnknownError";
+      const message = error instanceof Error ? error.message : "unknown microphone permission error";
+      setRecorderErrorName(name);
+      setRecorderErrorMessage(message);
+      console.error("microphone or recorder failed:", error);
+    }
   };
 
   const stopCamera = () => {
@@ -717,6 +765,9 @@ function InterviewPageContent() {
   };
 
   const startAutoListening = async (target: InterviewTarget) => {
+    console.log("startRecording called");
+    console.log("isRecording before start:", isRecordingRef.current);
+    console.log("recorder exists:", Boolean(recorderRef.current));
     if (isRecordingRef.current) {
       return;
     }
@@ -727,26 +778,10 @@ function InterviewPageContent() {
       return;
     }
 
-    stopAudioRecording();
-    if (previewAudioRef.current) {
-      previewAudioRef.current.pause();
-      previewAudioRef.current.currentTime = 0;
-      previewAudioRef.current = null;
-    }
-    recordedChunksRef.current = [];
-    uploadedForTranscriptionRef.current = false;
-    if (lastRecordedUrl) {
-      URL.revokeObjectURL(lastRecordedUrl);
-    }
-    setLastRecordedBlob(null);
-    setLastRecordedUrl("");
-    setAudioDiagnostics(null);
-    setTip("");
-    recordingStartedAtRef.current = Date.now();
+    clearRecordingArtifacts();
+    setRecorderStatus("启动中");
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
       const recorder = createRecorder({
         type: "wav",
         sampleRate: 16000,
@@ -757,10 +792,16 @@ function InterviewPageContent() {
       await new Promise<void>((resolve, reject) => {
         recorder.open(
           () => resolve(),
-          (message) => reject(new Error(message)),
+          (message, isUserNotAllow) => {
+            const error = new Error(message || "录音器启动失败");
+            error.name = isUserNotAllow ? "NotAllowedError" : "RecorderOpenError";
+            reject(error);
+          },
         );
       });
+      console.log("mic open success");
       recorder.start();
+      console.log("recorder start success");
       const authRes = await fetch("/api/interview/xfyun-auth");
       const authData = (await authRes.json()) as { wsUrl?: string; appId?: string; error?: string; detail?: string };
       if (!authRes.ok || !authData.wsUrl || !authData.appId) {
@@ -788,7 +829,12 @@ function InterviewPageContent() {
       };
       const audioContext = new AudioContext({ sampleRate: 16000 });
       audioContextRef.current = audioContext;
-      const sourceNode = audioContext.createMediaStreamSource(stream);
+      const stream = recorder as unknown as { stream?: MediaStream };
+      if (!stream.stream) {
+        throw new Error("录音器未返回可用音频流");
+      }
+      streamRef.current = stream.stream;
+      const sourceNode = audioContext.createMediaStreamSource(stream.stream);
       sourceNodeRef.current = sourceNode;
       const processor = audioContext.createScriptProcessor(4096, 1, 1);
       processorRef.current = processor;
@@ -808,16 +854,24 @@ function InterviewPageContent() {
       recorderRef.current = recorder;
       recordingTargetRef.current = target;
       isRecordingRef.current = true;
+      setRecorderStatus("录音中");
+      setMicPermissionStatus("已授权");
       recordingTimerRef.current = setInterval(() => setRecordingSeconds((prev) => prev + 1), 1000);
       setTip("正在录音并实时转写，请点击“停止录音并转写”结束。");
     } catch (error) {
       isRecordingRef.current = false;
-      const message = error instanceof Error ? error.message : "";
-      if (message.toLowerCase().includes("permission")) {
-        setTip("浏览器未允许麦克风权限，请允许后重试。");
+      setRecorderStatus("失败");
+      const name = error instanceof DOMException ? error.name : error instanceof Error ? error.name : "UnknownError";
+      const message = error instanceof Error ? error.message : "录音器启动失败";
+      setRecorderErrorName(name);
+      setRecorderErrorMessage(message);
+      if (name === "NotAllowedError") {
+        setMicPermissionStatus("未授权");
+        setTip("浏览器未授权麦克风。");
       } else {
-        setTip("麦克风无法使用，请检查设备后重试，或手动输入回答。");
+        setTip(`录音器启动失败：${message}`);
       }
+      console.error("microphone or recorder failed:", error);
     }
   };
 
@@ -827,6 +881,7 @@ function InterviewPageContent() {
       setTip("没有正在进行的录音，请重新开始。");
       return;
     }
+    setRecorderStatus("停止中");
     const audioBlob = await exportChunk();
     stopAudioRecording();
 
@@ -853,9 +908,11 @@ function InterviewPageContent() {
       setTip("录音已停止，实时转写结果已追加到文本框，可手动修改后提交。");
       uploadedForTranscriptionRef.current = true;
       setAudioDiagnostics((prev) => (prev ? { ...prev, uploadedForTranscription: true } : prev));
+      setRecorderStatus("未启动");
     } catch (error) {
       const message = error instanceof Error ? error.message : "转写结束异常，请手动输入回答。";
       setTip(message);
+      setRecorderStatus("失败");
     }
   };
 
@@ -1240,6 +1297,15 @@ function InterviewPageContent() {
           {started && (interviewStatus === "listening" || interviewStatus === "followup_listening") ? (
             <p className="mt-2 text-xs text-slate-400">请靠近麦克风，用普通话清晰作答。录音结束后系统会自动转写，转写文字可手动修改后再提交。</p>
           ) : null}
+          <button
+            type="button"
+            className="mt-3 mr-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
+            onClick={() => {
+              void detectMicPermission();
+            }}
+          >
+            测试麦克风
+          </button>
           {lastRecordedBlob ? (
             <button
               type="button"
@@ -1271,6 +1337,12 @@ function InterviewPageContent() {
 是否已上传转写：${audioDiagnostics.uploadedForTranscription ? "是" : "否"}`}
             </div>
           ) : null}
+          <div className="mt-3 rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-slate-200 whitespace-pre-line">
+            {`麦克风权限状态：${micPermissionStatus}
+录音器状态：${recorderStatus}
+错误名称：${recorderErrorName || "-"}
+错误详情：${recorderErrorMessage || "-"}`}
+          </div>
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
 
           <div className="mt-4">
