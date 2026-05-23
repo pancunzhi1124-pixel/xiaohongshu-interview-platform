@@ -785,7 +785,8 @@ function InterviewPageContent() {
       setAudioDiagnostics((prev) => (prev ? { ...prev, uploadedForTranscription: true } : prev));
       setRecorderStatus("未启动");
     } catch (error) {
-      setTip("语音转写失败，请检查 ASR 配置，或手动输入回答。");
+      const detail = error instanceof Error ? error.message : "未知错误";
+      setTip(`语音转写失败：${detail}`);
       setRecorderStatus("失败");
     }
   };
