@@ -195,11 +195,7 @@ type AudioDiagnostics = {
   durationSeconds: number;
   sizeBytes: number;
   mimeType: string;
-  isWavMime: boolean;
-  hasRiffWaveHeader: boolean;
-  sampleRate: number;
-  channels: number;
-  encoding: "PCM16";
+  uploadedForTranscription: boolean;
 };
 
 type EvaluationResponse = {
@@ -405,15 +401,13 @@ function InterviewPageContent() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cameraStreamRef = useRef<MediaStream | null>(null);
   const audioStreamRef = useRef<MediaStream | null>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const processorNodeRef = useRef<ScriptProcessorNode | null>(null);
-  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const pcmChunksRef = useRef<Float32Array[]>([]);
-  const recordingSampleRateRef = useRef<number>(16000);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
   const recordingTargetRef = useRef<InterviewTarget>("main");
   const zeroGainNodeRef = useRef<GainNode | null>(null);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
   const isRecordingRef = useRef(false);
+  const uploadedForTranscriptionRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -568,18 +562,9 @@ function InterviewPageContent() {
   }, [interviewStatus, isLastQuestion]);
 
   const stopAudioRecording = () => {
-    processorNodeRef.current?.disconnect();
-    sourceNodeRef.current?.disconnect();
-    zeroGainNodeRef.current?.disconnect();
-    processorNodeRef.current = null;
-    sourceNodeRef.current = null;
-    zeroGainNodeRef.current = null;
+    mediaRecorderRef.current = null;
     audioStreamRef.current?.getTracks().forEach((track) => track.stop());
     audioStreamRef.current = null;
-    if (audioContextRef.current) {
-      void audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
     isRecordingRef.current = false;
   };
 
@@ -619,7 +604,7 @@ function InterviewPageContent() {
   };
 
   const transcribeAudioBlob = async (audioBlob: Blob, target: InterviewTarget) => {
-    const file = new File([audioBlob], "interview-answer.wav", { type: "audio/wav" });
+    const file = new File([audioBlob], "interview-answer.webm", { type: audioBlob.type || "audio/webm" });
     const formData = new FormData();
     formData.append("audio", file);
     const response = await fetch("/api/interview/transcribe", {
@@ -656,41 +641,6 @@ function InterviewPageContent() {
     setTip("语音转写成功，你可以继续补充或直接提交。");
   };
 
-  const downsampleBuffer = (buffer: Float32Array, inputSampleRate: number, outputSampleRate: number): Float32Array => {
-    if (outputSampleRate >= inputSampleRate) {
-      return buffer;
-    }
-    const sampleRateRatio = inputSampleRate / outputSampleRate;
-    const newLength = Math.round(buffer.length / sampleRateRatio);
-    const result = new Float32Array(newLength);
-    let offsetResult = 0;
-    let offsetBuffer = 0;
-    while (offsetResult < result.length) {
-      const nextOffsetBuffer = Math.round((offsetResult + 1) * sampleRateRatio);
-      let accum = 0;
-      let count = 0;
-      for (let i = offsetBuffer; i < nextOffsetBuffer && i < buffer.length; i += 1) {
-        accum += buffer[i] ?? 0;
-        count += 1;
-      }
-      result[offsetResult] = count > 0 ? accum / count : 0;
-      offsetResult += 1;
-      offsetBuffer = nextOffsetBuffer;
-    }
-    return result;
-  };
-
-  const mergePcmChunks = (chunks: Float32Array[]): Float32Array => {
-    const total = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
-    const merged = new Float32Array(total);
-    let offset = 0;
-    chunks.forEach((chunk) => {
-      merged.set(chunk, offset);
-      offset += chunk.length;
-    });
-    return merged;
-  };
-
   const startAutoListening = async (target: InterviewTarget) => {
     if (isRecordingRef.current) {
       return;
@@ -708,7 +658,8 @@ function InterviewPageContent() {
       previewAudioRef.current.currentTime = 0;
       previewAudioRef.current = null;
     }
-    pcmChunksRef.current = [];
+    recordedChunksRef.current = [];
+    uploadedForTranscriptionRef.current = false;
     if (lastRecordedUrl) {
       URL.revokeObjectURL(lastRecordedUrl);
     }
@@ -722,32 +673,24 @@ function InterviewPageContent() {
       setFollowUpAnswer("");
     }
     recordingStartedAtRef.current = Date.now();
-    isRecordingRef.current = true;
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
-      const audioContext = new AudioContext();
-      await audioContext.resume();
-      const source = audioContext.createMediaStreamSource(stream);
-      const processor = audioContext.createScriptProcessor(4096, 1, 1);
-      const zeroGain = audioContext.createGain();
-      zeroGain.gain.value = 0;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const preferredMimeType = "audio/webm;codecs=opus";
+      const hasPreferredMimeType = typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(preferredMimeType);
+      const recorder = hasPreferredMimeType ? new MediaRecorder(stream, { mimeType: preferredMimeType }) : new MediaRecorder(stream);
 
       audioStreamRef.current = stream;
-      audioContextRef.current = audioContext;
-      sourceNodeRef.current = source;
-      processorNodeRef.current = processor;
-      zeroGainNodeRef.current = zeroGain;
-      recordingSampleRateRef.current = audioContext.sampleRate;
+      mediaRecorderRef.current = recorder;
       recordingTargetRef.current = target;
+      isRecordingRef.current = true;
 
-      processor.onaudioprocess = (event: AudioProcessingEvent) => {
-        const channelData = event.inputBuffer.getChannelData(0);
-        pcmChunksRef.current.push(new Float32Array(channelData));
+      recorder.ondataavailable = (event: BlobEvent) => {
+        if (event.data && event.data.size > 0) {
+          recordedChunksRef.current.push(event.data);
+        }
       };
-      source.connect(processor);
-      processor.connect(zeroGain);
-      zeroGain.connect(audioContext.destination);
+      recorder.start();
       setTip("正在录音，请点击“停止录音并转写”结束。");
     } catch (error) {
       isRecordingRef.current = false;
@@ -760,76 +703,47 @@ function InterviewPageContent() {
     }
   };
 
-  const encodeWav = (chunks: Float32Array[], sampleRate: number): Blob => {
-    const merged = mergePcmChunks(chunks);
-    const downsampled = downsampleBuffer(merged, sampleRate, 16000);
-    const pcmData = new Int16Array(downsampled.length);
-    for (let i = 0; i < downsampled.length; i += 1) {
-      const sample = Math.max(-1, Math.min(1, downsampled[i] ?? 0));
-      const int16 = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-      pcmData[i] = Math.round(int16);
+  const stopRecordingAndTranscribe = async () => {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || recorder.state === "inactive") {
+      setTip("没有正在进行的录音，请重新开始。");
+      return;
     }
 
-    const targetSampleRate = 16000;
-    const buffer = new ArrayBuffer(44 + pcmData.length * 2);
-    const view = new DataView(buffer);
-    const writeString = (position: number, value: string) => {
-      for (let i = 0; i < value.length; i += 1) {
-        view.setUint8(position + i, value.charCodeAt(i));
-      }
-    };
-    writeString(0, "RIFF");
-    view.setUint32(4, 36 + pcmData.length * 2, true);
-    writeString(8, "WAVE");
-    writeString(12, "fmt ");
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true);
-    view.setUint16(22, 1, true);
-    view.setUint32(24, targetSampleRate, true);
-    view.setUint32(28, targetSampleRate * 2, true);
-    view.setUint16(32, 2, true);
-    view.setUint16(34, 16, true);
-    writeString(36, "data");
-    view.setUint32(40, pcmData.length * 2, true);
-    pcmData.forEach((sample, index) => {
-      view.setInt16(44 + index * 2, sample, true);
+    const audioBlob = await new Promise<Blob>((resolve) => {
+      recorder.onstop = () => {
+        const blobType = recorder.mimeType || "audio/webm";
+        resolve(new Blob(recordedChunksRef.current, { type: blobType }));
+      };
+      recorder.stop();
     });
-    return new Blob([view], { type: "audio/wav" });
-  };
-
-  const stopRecordingAndTranscribe = async () => {
-    const chunks = pcmChunksRef.current;
-    pcmChunksRef.current = [];
     stopAudioRecording();
-    if (chunks.length === 0) {
+
+    if (audioBlob.size === 0) {
       setTip("没有录到有效音频，请重试或手动输入。");
       return;
     }
-    const audioBlob = encodeWav(chunks, recordingSampleRateRef.current);
-    const arrayBuffer = await audioBlob.arrayBuffer();
-    const header = new TextDecoder("ascii").decode(arrayBuffer.slice(0, 12));
-    const durationSeconds = recordingStartedAtRef.current
-      ? Math.max(0, (Date.now() - recordingStartedAtRef.current) / 1000)
-      : chunks.reduce((sum, item) => sum + item.length, 0) / recordingSampleRateRef.current;
+
+    const durationSeconds = recordingStartedAtRef.current ? Math.max(0, (Date.now() - recordingStartedAtRef.current) / 1000) : 0;
     recordingStartedAtRef.current = null;
+    uploadedForTranscriptionRef.current = false;
     setAudioDiagnostics({
       durationSeconds,
       sizeBytes: audioBlob.size,
-      mimeType: audioBlob.type || "unknown",
-      isWavMime: audioBlob.type === "audio/wav",
-      hasRiffWaveHeader: header.includes("RIFF") && header.includes("WAVE"),
-      sampleRate: 16000,
-      channels: 1,
-      encoding: "PCM16",
+      mimeType: audioBlob.type || "audio/webm",
+      uploadedForTranscription: false,
     });
     if (lastRecordedUrl) {
       URL.revokeObjectURL(lastRecordedUrl);
     }
     setLastRecordedBlob(audioBlob);
     setLastRecordedUrl(URL.createObjectURL(audioBlob));
+
     try {
       setTip("录音完成，正在转写...");
       await transcribeAudioBlob(audioBlob, recordingTargetRef.current);
+      uploadedForTranscriptionRef.current = true;
+      setAudioDiagnostics((prev) => (prev ? { ...prev, uploadedForTranscription: true } : prev));
     } catch (error) {
       const message = error instanceof Error ? error.message : "转写失败，请手动输入回答。";
       setTip(message);
@@ -1240,11 +1154,7 @@ function InterviewPageContent() {
               {`录音时长：${audioDiagnostics.durationSeconds.toFixed(2)} 秒
 音频大小：${(audioDiagnostics.sizeBytes / 1024).toFixed(2)} KB
 音频类型：${audioDiagnostics.mimeType}
-是否为 WAV：${audioDiagnostics.isWavMime ? "是" : "否"}
-WAV Header(RIFF/WAVE)：${audioDiagnostics.hasRiffWaveHeader ? "是" : "否"}
-采样率：${audioDiagnostics.sampleRate}
-声道：${audioDiagnostics.channels}
-编码：${audioDiagnostics.encoding}`}
+是否已上传转写：${audioDiagnostics.uploadedForTranscription ? "是" : "否"}`}
             </div>
           ) : null}
           {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
