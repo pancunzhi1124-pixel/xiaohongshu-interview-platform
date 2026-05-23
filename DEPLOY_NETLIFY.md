@@ -10,11 +10,17 @@
 6. 在部署配置中将 **Production branch** 设为 `deploy-free-netlify`。
 7. **Build command** 填写：`npm run build`。
 8. 如果 Netlify 自动识别 Next.js，就使用自动配置（其余保持默认）。
-9. 当前没有必须的环境变量时，先不填写环境变量。
+9. 配置以下环境变量（用于 AI 模拟面试语音转写）：
+   - `TRANSCRIBE_PROVIDER=tencent`
+   - `TENCENT_SECRET_ID=腾讯云 SecretId`
+   - `TENCENT_SECRET_KEY=腾讯云 SecretKey`
+   - `TENCENT_APP_ID=腾讯云 APPID`
+   - `TENCENT_ASR_REGION=ap-beijing`
+   - `TENCENT_ASR_ENGINE=16k_zh`
 10. 点击 **Deploy** 开始部署。
 11. 部署成功后，Netlify 会提供一个免费的 `.netlify.app` 域名用于访问。
 
 ## 说明
 
-- 本分支仅增加 Netlify 部署配置，不修改题库与业务逻辑。
+- 本分支使用腾讯云 ASR 进行语音转写，环境变量更新后需要重新部署以生效。
 - 已保留现有 Vercel 部署能力（未删除或覆盖任何 Vercel 相关配置）。

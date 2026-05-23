@@ -1,10 +1,16 @@
 export const runtime = "nodejs";
 
+import { createHash, createHmac } from "node:crypto";
+
 const MAX_AUDIO_SIZE_BYTES = 4 * 1024 * 1024;
 
-type AliyunSuccessResponse = {
-  text?: string;
+type TranscribeProvider = "tencent" | "openai" | "aliyun";
+
+type TencentSentenceRecognitionResponse = {
+  Result?: string;
+  RequestId?: string;
 };
+type TencentErrorResponse = { Response?: { Error?: { Code?: string; Message?: string } } };
 
 function extractErrorDetail(error: unknown): string {
   if (error instanceof Error) {
@@ -13,13 +19,108 @@ function extractErrorDetail(error: unknown): string {
   return "Unknown error";
 }
 
-export async function POST(request: Request) {
-  console.log("DASHSCOPE_API_KEY configured:", Boolean(process.env.DASHSCOPE_API_KEY));
-
-  const apiKey = process.env.DASHSCOPE_API_KEY;
-  if (!apiKey) {
-    return Response.json({ error: "DASHSCOPE_API_KEY is not configured" }, { status: 500 });
+function getProvider(): TranscribeProvider {
+  const provider = process.env.TRANSCRIBE_PROVIDER ?? "tencent";
+  if (provider === "openai" || provider === "aliyun" || provider === "tencent") {
+    return provider;
   }
+  return "tencent";
+}
+
+function requireEnv(name: "TENCENT_SECRET_ID" | "TENCENT_SECRET_KEY" | "TENCENT_APP_ID"): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} is not configured`);
+  }
+  return value;
+}
+
+async function transcribeByTencent(audio: File): Promise<string> {
+  console.log("TENCENT_SECRET_ID configured:", Boolean(process.env.TENCENT_SECRET_ID));
+  console.log("TENCENT_SECRET_KEY configured:", Boolean(process.env.TENCENT_SECRET_KEY));
+  console.log("TENCENT_APP_ID configured:", Boolean(process.env.TENCENT_APP_ID));
+
+  const secretId = requireEnv("TENCENT_SECRET_ID");
+  const secretKey = requireEnv("TENCENT_SECRET_KEY");
+  const appId = requireEnv("TENCENT_APP_ID");
+  const region = process.env.TENCENT_ASR_REGION ?? "ap-beijing";
+  const engine = process.env.TENCENT_ASR_ENGINE ?? "16k_zh";
+
+  const buffer = Buffer.from(await audio.arrayBuffer());
+  const audioData = buffer.toString("base64");
+
+  const payload = {
+    ProjectId: 0,
+    SubServiceType: 2,
+    EngSerViceType: engine,
+    SourceType: 1,
+    VoiceFormat: "wav",
+    UsrAudioKey: `interview-${Date.now()}`,
+    Data: audioData,
+    DataLen: buffer.byteLength,
+    FilterDirty: 0,
+    FilterModal: 0,
+    FilterPunc: 0,
+    ConvertNumMode: 1,
+    WordInfo: 0,
+    ReinforceHotword: 0,
+    SentenceMaxLength: 120,
+    HotwordId: "",
+    CustomizationId: "",
+    VocabularyId: "",
+    Appid: Number(appId),
+  };
+
+  const endpoint = "asr.tencentcloudapi.com";
+  const service = "asr";
+  const version = "2019-06-14";
+  const action = "SentenceRecognition";
+  const timestamp = Math.floor(Date.now() / 1000);
+  const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
+  const payloadString = JSON.stringify(payload);
+  const hashedPayload = createHash("sha256").update(payloadString).digest("hex");
+  const canonicalRequest = `POST\n/\n\ncontent-type:application/json; charset=utf-8\nhost:${endpoint}\n\ncontent-type;host\n${hashedPayload}`;
+  const credentialScope = `${date}/${service}/tc3_request`;
+  const stringToSign = `TC3-HMAC-SHA256\n${timestamp}\n${credentialScope}\n${createHash("sha256").update(canonicalRequest).digest("hex")}`;
+  const secretDate = createHmac("sha256", `TC3${secretKey}`).update(date).digest();
+  const secretService = createHmac("sha256", secretDate).update(service).digest();
+  const secretSigning = createHmac("sha256", secretService).update("tc3_request").digest();
+  const signature = createHmac("sha256", secretSigning).update(stringToSign).digest("hex");
+  const authorization = `TC3-HMAC-SHA256 Credential=${secretId}/${credentialScope}, SignedHeaders=content-type;host, Signature=${signature}`;
+
+  const response = await fetch(`https://${endpoint}`, {
+    method: "POST",
+    headers: {
+      Authorization: authorization,
+      "Content-Type": "application/json; charset=utf-8",
+      Host: endpoint,
+      "X-TC-Action": action,
+      "X-TC-Timestamp": String(timestamp),
+      "X-TC-Version": version,
+      "X-TC-Region": region,
+    },
+    body: payloadString,
+  });
+
+  const result = (await response.json()) as TencentSentenceRecognitionResponse & TencentErrorResponse;
+  const errorCode = result.Response?.Error?.Code;
+  const errorMessage = result.Response?.Error?.Message;
+  if (!response.ok || errorCode) {
+    const error = new Error(errorMessage ?? "Tencent ASR request failed");
+    (error as Error & { code?: string }).code = errorCode ?? "UNKNOWN";
+    throw error;
+  }
+
+  const text = typeof result.Result === "string" ? result.Result.trim() : "";
+  if (!text) {
+    throw new Error("腾讯云未返回有效转写文本");
+  }
+
+  return text;
+}
+
+export async function POST(request: Request) {
+  const provider = getProvider();
 
   try {
     const formData = await request.formData();
@@ -43,71 +144,41 @@ export async function POST(request: Request) {
       );
     }
 
-    const aliyunFormData = new FormData();
-    aliyunFormData.append("file", audio);
-    aliyunFormData.append("model", process.env.BAILIAN_ASR_MODEL ?? "paraformer-realtime-v2");
+    if (provider === "tencent") {
+      try {
+        const text = await transcribeByTencent(audio);
+        return Response.json({ text });
+      } catch (error: unknown) {
+        const detail = extractErrorDetail(error);
+        const code =
+          typeof error === "object" && error !== null && "code" in error && typeof (error as { code?: unknown }).code === "string"
+            ? (error as { code: string }).code
+            : "UNKNOWN";
+        const status = detail.includes("not configured") ? 500 : 502;
+        return Response.json(
+          {
+            error: detail.includes("not configured") ? detail : "Tencent ASR transcription failed",
+            detail,
+            code,
+          },
+          { status },
+        );
+      }
+    }
 
-    const aliyunResponse = await fetch(
-      `${process.env.BAILIAN_BASE_URL ?? "https://dashscope.aliyuncs.com/compatible-mode/v1"}/audio/transcriptions`,
+    return Response.json(
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: aliyunFormData,
+        error: `Transcription provider '${provider}' is not available`,
+        detail: "Only Tencent ASR is enabled in this deployment.",
       },
+      { status: 501 },
     );
-
-    const responseText = await aliyunResponse.text();
-
-    if (!aliyunResponse.ok) {
-      console.error("Aliyun transcription failed:", {
-        status: aliyunResponse.status,
-        responseText,
-      });
-
-      return Response.json(
-        {
-          error: "Aliyun transcription failed",
-          status: aliyunResponse.status,
-          detail: responseText,
-        },
-        { status: 502 },
-      );
-    }
-
-    let transcription: AliyunSuccessResponse;
-    try {
-      transcription = JSON.parse(responseText) as AliyunSuccessResponse;
-    } catch {
-      return Response.json(
-        {
-          error: "Aliyun transcription failed",
-          status: aliyunResponse.status,
-          detail: responseText,
-        },
-        { status: 502 },
-      );
-    }
-
-    const text = typeof transcription.text === "string" ? transcription.text.trim() : "";
-    if (!text) {
-      return Response.json(
-        {
-          error: "Aliyun transcription failed",
-          status: aliyunResponse.status,
-          detail: responseText || "未返回文本",
-        },
-        { status: 502 },
-      );
-    }
-
-    return Response.json({ text });
   } catch (error: unknown) {
     return Response.json(
       {
-        error: "Aliyun transcription failed",
+        error: "Tencent ASR transcription failed",
         detail: extractErrorDetail(error),
+        code: "UNKNOWN",
       },
       { status: 502 },
     );
