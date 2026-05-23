@@ -224,6 +224,8 @@ type AudioDiagnostics = {
   chunkCount: number;
   chunkSizes: number[];
   mimeType: "audio/wav";
+  sampleRate: number;
+  channels: number;
   uploadedForTranscription: boolean;
   segmentDurationsMs?: number[];
 };
@@ -247,6 +249,7 @@ type StructuredQuestion = {
 };
 
 const allowedQuestionCounts = [3, 5, 8] as const;
+const DEFAULT_ASR_SAMPLE_RATE = Number(process.env.NEXT_PUBLIC_ASR_AUDIO_SAMPLE_RATE ?? "8000") || 8000;
 
 
 function shuffleQuestions<T>(items: T[]): T[] {
@@ -745,7 +748,7 @@ function InterviewPageContent() {
     clearRecordingArtifacts();
     setRecordingStatus("未录音");
     try {
-      const recorder = createRecorder({ type: "wav", sampleRate: 16000, bitRate: 16, numChannels: 1, onProcess: () => {} });
+      const recorder = createRecorder({ type: "wav", sampleRate: DEFAULT_ASR_SAMPLE_RATE, bitRate: 16, numChannels: 1, onProcess: () => {} });
       await new Promise<void>((resolve, reject) => {
         recorder.open(() => resolve(), (message, isUserNotAllow) => {
           const error = new Error(message || "录音器启动失败");
@@ -793,7 +796,7 @@ function InterviewPageContent() {
     }
     recordingStartedAtRef.current = null;
     uploadedForTranscriptionRef.current = false;
-    setAudioDiagnostics({ durationSeconds, chunkCount: 1, chunkSizes: [audioBlob.size], mimeType: "audio/wav", uploadedForTranscription: false });
+    setAudioDiagnostics({ durationSeconds, chunkCount: 1, chunkSizes: [audioBlob.size], mimeType: "audio/wav", sampleRate: DEFAULT_ASR_SAMPLE_RATE, channels: 1, uploadedForTranscription: false });
     if (lastRecordedUrl) {
       URL.revokeObjectURL(lastRecordedUrl);
     }
@@ -1296,8 +1299,8 @@ function InterviewPageContent() {
 分片数量：${audioDiagnostics.chunkCount}
 每段音频大小：${audioDiagnostics.chunkSizes.map((size) => `${(size / 1024).toFixed(2)} KB`).join(" / ")}
 音频格式：${audioDiagnostics.mimeType}
-采样率：16000
-声道：1
+采样率：${audioDiagnostics.sampleRate}
+声道：${audioDiagnostics.channels}
 编码：PCM16
 是否已上传转写：${audioDiagnostics.uploadedForTranscription ? "是" : "否"}`}
             </div>
