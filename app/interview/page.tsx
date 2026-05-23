@@ -9,6 +9,7 @@ import FloatingOrbs from "@/components/ui/FloatingOrbs";
 import GlassCard from "@/components/ui/GlassCard";
 import SmartSelect from "@/components/ui/SmartSelect";
 import { calculateSpeechMetrics, type SpeechMetrics } from "@/lib/interview/speechMetrics";
+import { useRealtimeAsr } from "@/hooks/useRealtimeAsr";
 import RecorderCore from "recorder-core";
 import "recorder-core/src/engine/wav";
 
@@ -447,6 +448,8 @@ function InterviewPageContent() {
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const uploadedForTranscriptionRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
+  const realtimeTargetRef = useRef<InterviewTarget>("main");
+  const realtimeAsr = useRealtimeAsr();
 
   const appendTranscript = (target: InterviewTarget, deltaText: string) => {
     const text = deltaText.trim();
@@ -809,6 +812,27 @@ function InterviewPageContent() {
       setTip(`语音转写失败：${detail}`);
       setRecordingStatus("失败");
     }
+  };
+
+
+  const handleStartRealtimeAnswer = async () => {
+    realtimeTargetRef.current = currentTarget;
+    await realtimeAsr.start(currentTarget);
+  };
+
+  const handleStopRealtimeAnswer = async () => {
+    const finalText = (await realtimeAsr.stop()).trim();
+    if (!finalText) {
+      setTip("实时字幕未识别到有效内容，请手动输入。");
+      return;
+    }
+    appendTranscript(realtimeTargetRef.current, finalText);
+    setTip("实时字幕已填入回答框，你可以继续补充或直接提交。");
+  };
+
+  const handleCancelRealtimeAnswer = () => {
+    realtimeAsr.cancel();
+    setTip("已取消实时回答，本次字幕不会写入回答框。");
   };
 
   const openCamera = async () => {
@@ -1214,6 +1238,33 @@ function InterviewPageContent() {
                 >
                   重新录音
                 </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/20"
+                  onClick={() => {
+                    void handleStartRealtimeAnswer();
+                  }}
+                  disabled={!currentQuestion}
+                >
+                  开始实时回答
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-emerald-300/40 bg-emerald-500/10 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/20"
+                  onClick={() => {
+                    void handleStopRealtimeAnswer();
+                  }}
+                >
+                  结束实时回答并填入
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
+                  onClick={handleCancelRealtimeAnswer}
+                >
+                  取消实时回答
+                </button>
+
               </>
             ) : null}
           </div>
@@ -1257,7 +1308,16 @@ function InterviewPageContent() {
 转写状态：${transcriptionStatus}
 失败原因：${transcriptionError || "-"}`}
           </div>
-          {tip ? <p className="mt-2 text-sm text-amber-300">{tip}</p> : null}
+          {tip ? <p className="mt-2 text-sm text-amber-300 whitespace-pre-line">{tip}</p> : null}
+          {started ? (
+            <div className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-500/10 p-3 text-xs text-emerald-100 whitespace-pre-line">
+              {`实时字幕状态：${realtimeAsr.status}
+云端/浏览器支持：${realtimeAsr.isSupported ? "支持浏览器实时字幕" : "当前浏览器不支持实时字幕"}
+最终字幕：${realtimeAsr.finalTranscript || "-"}
+实时字幕（未定稿）：${realtimeAsr.interimTranscript || "-"}
+错误信息：${realtimeAsr.error || "-"}`}
+            </div>
+          ) : null}
 
           <div className="mt-4">
             <label className="block text-sm font-medium text-slate-200">{textareaTitle}</label>
