@@ -15,6 +15,7 @@ export type InterviewQuestion = {
   expectedPoints: string[];
   scoringRubric: string;
   round: InterviewRound[];
+  imagePaths?: string[];
 };
 
 export type InterviewBank = {

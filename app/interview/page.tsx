@@ -245,6 +245,7 @@ type StructuredQuestion = {
   primaryType: string;
   difficulty: string;
   round?: string;
+  imagePaths?: string[];
 };
 
 const allowedQuestionCounts = [3, 5, 8] as const;
@@ -364,6 +365,7 @@ function mapStructuredToInterviewQuestion(items: StructuredQuestion[]): Intervie
     expectedPoints: ["观点清晰", "逻辑完整", "结合岗位场景"],
     scoringRubric: "重点考察答题结构、案例支撑和岗位匹配度。",
     round: [mapRoundToInterviewRound(item.round)],
+    imagePaths: item.imagePaths,
   }));
 }
 
@@ -1147,6 +1149,19 @@ function InterviewPageContent() {
             <p className="mt-3 text-sm text-slate-400">当前题目</p>
             <p className="mt-1 text-lg text-white md:text-xl">{currentPrompt || currentQuestion?.question || (currentBankQuestions.length > 0 ? "点击开始模拟面试后，将从当前题库抽取题目。" : "当前题库暂无可用题目，请返回题库检查数据。")}</p>
             {currentQuestion?.category ? <p className="mt-2 text-sm text-slate-400">题目类型：{currentQuestion.category}</p> : null}
+            {!isFollowupStage && currentQuestion?.imagePaths?.length ? (
+              <div className="mt-4 space-y-3">
+                {currentQuestion.imagePaths.map((src, imageIndex) => (
+                  <img
+                    key={`${currentQuestion.id}-${imageIndex}`}
+                    src={src}
+                    alt={`题目配图 ${imageIndex + 1}`}
+                    loading="lazy"
+                    className="w-full rounded-2xl border border-white/10 bg-white/5 object-contain"
+                  />
+                ))}
+              </div>
+            ) : null}
             {started && sessionQuestions.length === 0 && currentBankQuestions.length > 0 ? (
               <div className="mt-3 rounded-xl border border-amber-300/20 bg-amber-400/10 p-3 text-sm text-amber-200">
                 <p>当前筛选条件未抽到题目，已自动放宽条件，请重试。</p>
