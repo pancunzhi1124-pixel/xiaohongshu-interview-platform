@@ -3,7 +3,7 @@ import path from "node:path";
 import { pdfWorkRelationQuestions } from "./pdf-work-relation";
 
 export type ExamType = "national-civil-service" | "provincial-civil-service" | "public-institution" | "state-owned-enterprise";
-export const canonicalQuestionTypes = ["综合分析", "计划组织", "应急应变", "人际关系", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"] as const;
+export const canonicalQuestionTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"] as const;
 export type QuestionType = (typeof canonicalQuestionTypes)[number];
 
 export type StructuredInterviewQuestion = {
@@ -31,7 +31,7 @@ const primaryStructuredPoolPath = path.join(questionPoolDir, "structured-intervi
 const fallbackStructuredPoolPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
 
 const roundMap: Record<string, string> = { hr: "HR", business: "业务", manager: "主管", final: "终面", stress: "压力", english: "英文", all: "综合", general: "综合", unknown: "综合" };
-const legacyTypeMap: Record<string, QuestionType> = { 综合分析: "综合分析", 计划组织: "计划组织", 应急应变: "应急应变", 人际关系: "人际关系", 人际沟通: "人际沟通", 岗位认知: "岗位认知" };
+const legacyTypeMap: Record<string, QuestionType> = { 综合分析: "综合分析", 计划组织: "计划组织", 应急应变: "应急应变", 人际关系: "人际沟通", 人际沟通: "人际沟通", 岗位认知: "岗位认知" };
 
 function containsAny(text: string, keys: string[]) {
   return keys.some((k) => text.includes(k));
@@ -95,7 +95,7 @@ function classifyQuestionType(item: Record<string, unknown>, question: string): 
   if (containsAny(text, ["结肠癌", "纳米材料", "牙科", "护理", "医学", "患者", "理财产品", "普惠金融", "绿色金融", "营运资金", "区块链", "需求分析阶段", "自动重合闸", "电能损耗", "税收", "医保", "慢病", "职业病", "金融", "银行", "电网"])) return "专业岗题";
   if (containsAny(question, ["组织", "开展", "举办", "策划", "调研", "宣传", "培训", "座谈", "活动", "会议", "检查", "排查", "走访", "筹备", "安排", "接待", "推广", "宣讲"])) return "计划组织";
   if (containsAny(question, ["突发", "突然", "现场", "投诉", "举报", "舆情", "围观", "拍视频", "怎么办", "处理", "争执", "吵闹", "火灾", "停电", "事故", "泄漏", "晕倒", "情绪激动", "大吵大闹", "堵门", "应急"])) return "应急应变";
-  if (containsAny(question, ["同事", "领导", "群众", "小王", "小李", "小张", "老王", "老李", "老张", "沟通", "不配合", "不满", "批评", "误会", "矛盾", "分歧", "关系", "抱怨", "情绪低落"])) return "人际关系";
+  if (containsAny(question, ["同事", "领导", "群众", "小王", "小李", "小张", "老王", "老李", "老张", "沟通", "不配合", "不满", "批评", "误会", "矛盾", "分歧", "关系", "抱怨", "情绪低落"])) return "人际沟通";
   if (containsAny(question, ["岗位", "报考", "自我介绍", "优势", "职业规划", "新人", "入职", "适合", "匹配", "为什么选择", "为什么报考", "认识自己", "开展工作"])) return "岗位认知";
   return legacyTypeMap[rawType] ?? "综合分析";
 }
@@ -106,7 +106,7 @@ function normalizeAbilityTypes(item: Record<string, unknown>, primaryType: Quest
   const extra: string[] = [];
   if (primaryType === "计划组织") extra.push("组织协调");
   if (primaryType === "应急应变") extra.push("应急处置");
-  if (primaryType === "人际关系" || primaryType === "人际沟通" || primaryType === "现场模拟") extra.push("沟通协调");
+  if (primaryType === "人际沟通" || primaryType === "现场模拟") extra.push("沟通协调");
   if (primaryType === "岗位认知") extra.push("岗位匹配");
   if (primaryType === "材料分析") extra.push("信息提取", "逻辑分析");
   if (primaryType === "专业岗题") extra.push("专业素养");
