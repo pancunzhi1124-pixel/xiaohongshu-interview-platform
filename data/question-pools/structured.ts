@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { pdfWorkRelationQuestions } from "./pdf-work-relation";
+import { pdfWorkSimulationQuestions } from "./pdf-work-simulation";
 
 export type ExamType = "national-civil-service" | "provincial-civil-service" | "public-institution" | "state-owned-enterprise";
 export const canonicalQuestionTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"] as const;
@@ -190,9 +191,14 @@ async function readStructuredFile(filePath: string, answerOverrides: Record<stri
 export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
   const answerOverrides = await readAnswerOverrides();
   const pdfWorkRelation = normalizeStructuredQuestions(pdfWorkRelationQuestions, answerOverrides);
+  const pdfWorkSimulation = normalizeStructuredQuestions(pdfWorkSimulationQuestions, answerOverrides);
+  const mergedSupplements = [...pdfWorkRelation, ...pdfWorkSimulation];
+
   const primary = await readStructuredFile(primaryStructuredPoolPath, answerOverrides);
-  if (primary.length > 0) return [...primary, ...pdfWorkRelation];
+  if (primary.length > 0) return [...primary, ...mergedSupplements];
+
   const fallback = await readStructuredFile(fallbackStructuredPoolPath, answerOverrides);
-  if (fallback.length > 0) return [...fallback, ...pdfWorkRelation];
-  return pdfWorkRelation;
+  if (fallback.length > 0) return [...fallback, ...mergedSupplements];
+
+  return mergedSupplements;
 }
