@@ -30,6 +30,7 @@ export type StructuredInterviewQuestion = {
   round: string;
   answer?: string;
   answerStatus: string;
+  imagePaths?: string[];
 };
 
 const allowedExamTypes = new Set<ExamType>(["national-civil-service", "provincial-civil-service", "public-institution", "state-owned-enterprise"]);
@@ -172,6 +173,9 @@ function normalizeStructuredQuestions(parsed: unknown, answerOverrides: Record<s
         round: normalizeRound(item.round),
         answer: answerOverrides[id] || itemAnswer || buildFallbackAnswer(question, primaryType),
         answerStatus: "answered",
+        imagePaths: Array.isArray(item.imagePaths)
+          ? item.imagePaths.map(String).filter(Boolean)
+          : [],
       };
     })
     .filter((item) => allowedExamTypes.has(item.examType))
