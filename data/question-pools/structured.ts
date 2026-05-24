@@ -1,10 +1,13 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { pdfWorkEmergencyQuestions } from "./pdf-work-emergency";
+import { pdfWorkOrganizationQuestions } from "./pdf-work-organization";
 import { pdfWorkRelationQuestions } from "./pdf-work-relation";
 import { pdfWorkSimulationQuestions } from "./pdf-work-simulation";
+import { pdfSocialPhenomenonQuestions } from "./pdf-social-phenomenon";
 
 export type ExamType = "national-civil-service" | "provincial-civil-service" | "public-institution" | "state-owned-enterprise";
-export const canonicalQuestionTypes = ["综合分析", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"] as const;
+export const canonicalQuestionTypes = ["综合分析", "社会现象", "计划组织", "应急应变", "人际沟通", "岗位认知", "现场模拟", "演讲表达", "材料分析", "专业岗题", "无领导讨论"] as const;
 export type QuestionType = (typeof canonicalQuestionTypes)[number];
 
 export type StructuredInterviewQuestion = {
@@ -32,7 +35,7 @@ const primaryStructuredPoolPath = path.join(questionPoolDir, "structured-intervi
 const fallbackStructuredPoolPath = path.join(process.cwd(), "structured_interview_questions_categorized.json");
 
 const roundMap: Record<string, string> = { hr: "HR", business: "业务", manager: "主管", final: "终面", stress: "压力", english: "英文", all: "综合", general: "综合", unknown: "综合" };
-const legacyTypeMap: Record<string, QuestionType> = { 综合分析: "综合分析", 计划组织: "计划组织", 应急应变: "应急应变", 人际关系: "人际沟通", 人际沟通: "人际沟通", 岗位认知: "岗位认知" };
+const legacyTypeMap: Record<string, QuestionType> = { 综合分析: "综合分析", 社会现象: "社会现象", 计划组织: "计划组织", 组织管理: "计划组织", 应急应变: "应急应变", 人际关系: "人际沟通", 人际沟通: "人际沟通", 岗位认知: "岗位认知" };
 
 function containsAny(text: string, keys: string[]) {
   return keys.some((k) => text.includes(k));
@@ -190,9 +193,12 @@ async function readStructuredFile(filePath: string, answerOverrides: Record<stri
 
 export async function loadStructuredInterviewQuestions(): Promise<StructuredInterviewQuestion[]> {
   const answerOverrides = await readAnswerOverrides();
+  const pdfWorkEmergency = normalizeStructuredQuestions(pdfWorkEmergencyQuestions, answerOverrides);
+  const pdfWorkOrganization = normalizeStructuredQuestions(pdfWorkOrganizationQuestions, answerOverrides);
   const pdfWorkRelation = normalizeStructuredQuestions(pdfWorkRelationQuestions, answerOverrides);
   const pdfWorkSimulation = normalizeStructuredQuestions(pdfWorkSimulationQuestions, answerOverrides);
-  const mergedSupplements = [...pdfWorkRelation, ...pdfWorkSimulation];
+  const pdfSocialPhenomenon = normalizeStructuredQuestions(pdfSocialPhenomenonQuestions, answerOverrides);
+  const mergedSupplements = [...pdfWorkEmergency, ...pdfWorkOrganization, ...pdfWorkRelation, ...pdfWorkSimulation, ...pdfSocialPhenomenon];
 
   const primary = await readStructuredFile(primaryStructuredPoolPath, answerOverrides);
   if (primary.length > 0) return [...primary, ...mergedSupplements];
