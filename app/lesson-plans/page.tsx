@@ -11,6 +11,7 @@ export default function LessonPlansPage() {
   const [context,setContext]=useState("");
   const [materials,setMaterials]=useState("");
   const [result,setResult]=useState("");
+  const [resultSources,setResultSources]=useState<KnowledgeCard[]>([]);
   const [loading,setLoading]=useState(false);
   const [libraryCards,setLibraryCards]=useState<KnowledgeCard[]>([]);
   const [selectedIds,setSelectedIds]=useState<string[]>([]);
@@ -31,11 +32,11 @@ export default function LessonPlansPage() {
   function resetRecommendations(){setManualSelection(false);setSelectedIds(recommended.map(card=>card.id));}
 
   async function submit(e:React.FormEvent<HTMLFormElement>){
-    e.preventDefault();setLoading(true);setResult("");
+    e.preventDefault();setLoading(true);setResult("");setResultSources([]);
     try{
       const knowledgeCards=selectedCards.map(card=>({sourceType:card.sourceType,sourceTitle:card.sourceTitle,sourceLocation:card.sourceLocation,content:card.markdown,tags:card.tags}));
       const response=await fetch("/api/lesson-plan",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({theme,grade,duration:Number(duration),context,materials,knowledgeCards})});
-      const data=await response.json();if(!response.ok)throw new Error(data.error||"教案生成失败");setResult(data.markdown||"未返回教案内容");
+      const data=await response.json();if(!response.ok)throw new Error(data.error||"教案生成失败");setResult(data.markdown||"未返回教案内容");setResultSources(selectedCards);
     }catch(error){setResult("生成失败："+(error instanceof Error?error.message:"请稍后重试"));}
     finally{setLoading(false);}
   }
@@ -58,6 +59,6 @@ export default function LessonPlansPage() {
   </section>
   <p className="text-xs leading-5 text-slate-400 md:col-span-2">默认采用体验式活动：情境引入、个人思考、小组任务、技能练习、行动承诺与复盘。若选“多个学段”，教案需提供不同年龄段的调整建议。学生可以选择不公开分享敏感经历。</p>
   <button disabled={loading} className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-5 py-3 font-semibold text-slate-950 disabled:opacity-60 md:col-span-2">{loading?"正在组合知识并设计活动…":"生成活动体验型教案"}</button></form>
-  {result&&<section className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5 md:p-7"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">生成的班会教案</h2><div className="flex gap-2"><button type="button" onClick={()=>navigator.clipboard?.writeText(result)} className="rounded-lg border border-white/15 px-3 py-2 text-sm hover:bg-white/10">复制教案</button><button type="button" onClick={downloadMarkdown} className="rounded-lg border border-cyan-200/30 px-3 py-2 text-sm text-cyan-200 hover:bg-cyan-200/10">导出 Markdown</button></div></div><pre className="mt-5 whitespace-pre-wrap font-sans text-sm leading-7 text-slate-200">{result}</pre></section>}
+  {result&&<section className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-5 md:p-7"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-xl font-bold">生成的班会教案</h2><div className="flex gap-2"><button type="button" onClick={()=>navigator.clipboard?.writeText(result)} className="rounded-lg border border-white/15 px-3 py-2 text-sm hover:bg-white/10">复制教案</button><button type="button" onClick={downloadMarkdown} className="rounded-lg border border-cyan-200/30 px-3 py-2 text-sm text-cyan-200 hover:bg-cyan-200/10">导出 Markdown</button></div></div><pre className="mt-5 whitespace-pre-wrap font-sans text-sm leading-7 text-slate-200">{result}</pre>{resultSources.length>0&&<div className="mt-6 rounded-2xl border border-cyan-200/15 bg-cyan-200/[0.04] p-4"><h3 className="font-semibold text-cyan-100">本次教案使用的知识来源</h3><ul className="mt-3 space-y-2">{resultSources.map(card=><li key={card.id} className="text-sm leading-6 text-slate-300"><span className="font-medium">{card.sourceTitle}</span><span className="block text-xs text-slate-400">{card.sourceLocation||"未记录章节/页码/时间戳"}</span></li>)}</ul><p className="mt-3 text-xs text-slate-500">来源清单来自本次选择的知识卡片；请同时核对教案正文中的资料追溯表。</p></div>}</section>}
   </div></main>;
 }
