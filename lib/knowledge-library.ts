@@ -54,12 +54,8 @@ function tokens(value: string): Set<string> {
   return output;
 }
 
-export function selectRelevantKnowledge(
-  cards: KnowledgeCard[],
-  query: string,
-  limit = 5,
-): KnowledgeCard[] {
-  if (cards.length === 0) return [];
+export function selectRelevantKnowledge(cards: KnowledgeCard[], query: string, limit = 5): KnowledgeCard[] {
+  if (cards.length === 0 || !query.trim()) return [];
   const queryTokens = tokens(query);
   const scored = cards.map((card, index) => {
     const sourceText = [card.sourceTitle, card.sourceLocation, card.tags.join(" "), card.markdown.slice(0, 5000)].join(" ");
@@ -70,9 +66,7 @@ export function selectRelevantKnowledge(
     }
     return { card, score, index };
   });
-  const matched = scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score || a.index - b.index);
-  const chosen = matched.length > 0 ? matched.slice(0, limit) : scored.slice(0, Math.min(3, limit));
-  return chosen.map((item) => item.card);
+  return scored.filter((item) => item.score > 0).sort((a, b) => b.score - a.score || a.index - b.index).slice(0, limit).map((item) => item.card);
 }
 
 export function createKnowledgeTags(sourceTitle: string, sourceType: SourceType, markdown: string): string[] {
