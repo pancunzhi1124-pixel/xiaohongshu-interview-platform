@@ -6,6 +6,17 @@ import { createKnowledgeTags, saveKnowledgeCard, type SourceType } from "@/lib/k
 
 type Result = { title?: string; markdown?: string; error?: string };
 
+function resolveEpubPath(packagePath: string, href: string): string {
+  const cleanHref = decodeURIComponent(href.split(/[?#]/, 1)[0]);
+  const stack = packagePath.split("/").slice(0, -1).filter(Boolean);
+  for (const part of cleanHref.split("/")) {
+    if (!part || part === ".") continue;
+    if (part === "..") stack.pop();
+    else stack.push(part);
+  }
+  return stack.join("/");
+}
+
 export default function DistillPage() {
   const [sourceType, setSourceType] = useState<SourceType>("book");
   const [sourceTitle, setSourceTitle] = useState("");
@@ -48,7 +59,44 @@ export default function DistillPage() {
         setSourceLocation((current) => current || `PDF 文本层，前 ${pages.length} 页`);
         return;
       }
-      throw new Error("目前支持 PDF、TXT 和 Markdown 文件；EPUB 等格式请先导出为 PDF/TXT，或直接粘贴章节摘录。");
+      if (/\.epub$/i.test(file.name) || file.type === "application/epub+zip") {
+        const { strFromU8, unzipSync } = await import("fflate");
+        const archive = unzipSync(new Uint8Array(await file.arrayBuffer()));
+        const containerBytes = archive["META-INF/container.xml"];
+        if (!containerBytes) throw new Error("EPUB 文件缺少 container.xml，无法读取目录。");
+        const containerDoc = new DOMParser().parseFromString(strFromU8(containerBytes), "application/xml");
+        const rootfile = containerDoc.getElementsByTagNameNS("*", "rootfile")[0]?.getAttribute("full-path");
+        if (!rootfile || !archive[rootfile]) throw new Error("无法定位 EPUB 的内容目录文件。");
+        const packageDoc = new DOMParser().parseFromString(strFromU8(archive[rootfile]), "application/xml");
+        const manifest = new Map<string, { href: string; mediaType: string }>();
+        for (const item of Array.from(packageDoc.getElementsByTagNameNS("*", "item"))) {
+          const id = item.getAttribute("id");
+          const href = item.getAttribute("href");
+          if (id && href) manifest.set(id, { href, mediaType: item.getAttribute("media-type") || "" });
+        }
+        const sections: string[] = [];
+        let charCount = 0;
+        for (const itemref of Array.from(packageDoc.getElementsByTagNameNS("*", "itemref"))) {
+          if (charCount >= 30000) break;
+          const item = manifest.get(itemref.getAttribute("idref") || "");
+          if (!item || (!/xhtml|html/i.test(item.mediaType) && !/\.(xhtml|html?)($|[?#])/i.test(item.href))) continue;
+          const path = resolveEpubPath(rootfile, item.href);
+          const bytes = archive[path];
+          if (!bytes) continue;
+          const sectionDoc = new DOMParser().parseFromString(strFromU8(bytes), "text/html");
+          const sectionText = (sectionDoc.body?.innerText || sectionDoc.body?.textContent || "").replace(/\s+/g, " ").trim();
+          if (!sectionText) continue;
+          const heading = sectionDoc.querySelector("title")?.textContent?.trim() || item.href;
+          sections.push(`[EPUB 章节：${heading}]\n${sectionText}`);
+          charCount += sectionText.length;
+        }
+        const extracted = sections.join("\n\n").slice(0, 30000);
+        if (!extracted.trim()) throw new Error("没有从 EPUB 中提取到正文，请检查文件是否加密或改用章节摘录。");
+        setContent(extracted);
+        setSourceLocation((current) => current || `EPUB 正文，提取 ${sections.length} 个章节片段`);
+        return;
+      }
+      throw new Error("目前支持 PDF、EPUB、TXT 和 Markdown 文件；其他电子书格式请先导出为 PDF/TXT，或直接粘贴章节摘录。");
     } catch (error) {
       setFileError(error instanceof Error ? error.message : "读取文件失败，请改用粘贴文本。");
     }
@@ -91,9 +139,9 @@ export default function DistillPage() {
           <label className="grid gap-2 text-sm text-slate-200">作者或讲师（可选）<input value={sourceAuthor} onChange={e=>setSourceAuthor(e.target.value)} placeholder="按资料实际信息填写" className="rounded-xl border border-white/10 bg-slate-900 px-3 py-3 text-white placeholder:text-slate-500"/></label>
           <label className="grid gap-2 text-sm text-slate-200">章节、页码或时间戳（可选）<input value={sourceLocation} onChange={e=>setSourceLocation(e.target.value)} placeholder="例如：第 3 章 / pp. 42–48" className="rounded-xl border border-white/10 bg-slate-900 px-3 py-3 text-white placeholder:text-slate-500"/></label>
         </div>
-        <label className="grid gap-2 text-sm text-slate-200">上传 PDF、TXT 或 Markdown 文件（可选）<input type="file" accept=".pdf,.txt,.md,.markdown,.text,application/pdf,text/plain,text/markdown" onChange={e=>{const file=e.target.files?.[0];if(file)void readFile(file);}} className="block w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-3 text-sm text-slate-300 file:mr-4 file:rounded-lg file:border-0 file:bg-cyan-300 file:px-3 file:py-2 file:font-semibold file:text-slate-950"/>{fileName&&<span className="text-xs text-slate-400">已选择：{fileName}</span>}{fileError&&<span role="alert" className="text-sm text-rose-300">{fileError}</span>}</label>
+        <label className="grid gap-2 text-sm text-slate-200">上传 PDF、EPUB、TXT 或 Markdown 文件（可选）<input type="file" accept=".pdf,.epub,.txt,.md,.markdown,.text,application/pdf,application/epub+zip,text/plain,text/markdown" onChange={e=>{const file=e.target.files?.[0];if(file)void readFile(file);}} className="block w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-3 text-sm text-slate-300 file:mr-4 file:rounded-lg file:border-0 file:bg-cyan-300 file:px-3 file:py-2 file:font-semibold file:text-slate-950"/>{fileName&&<span className="text-xs text-slate-400">已选择：{fileName}</span>}{fileError&&<span role="alert" className="text-sm text-rose-300">{fileError}</span>}</label>
         <label className="grid gap-2 text-sm text-slate-200">资料摘录 / 课程文字稿<textarea required minLength={40} maxLength={30000} value={content} onChange={e=>setContent(e.target.value)} rows={10} placeholder="上传文件后会尝试填入可提取文字；也可以直接粘贴你有权使用的章节摘录或老师的文章/文字稿。建议每次处理一个有明确来源的片段。" className="resize-y rounded-xl border border-white/10 bg-slate-900 px-3 py-3 text-white placeholder:text-slate-500"/></label>
-        <p className="text-xs leading-5 text-slate-400">PDF 只提取文字层，不包含扫描件 OCR；EPUB 请先转为 PDF/TXT。请仅处理自己有权使用的资料，系统以原创摘要为主，不应替代原书或完整课程。</p>
+        <p className="text-xs leading-5 text-slate-400">PDF 只提取文字层，不包含扫描件 OCR；EPUB 按阅读顺序提取章节正文。请仅处理自己有权使用的资料，系统以原创摘要为主，不应替代原书或完整课程。</p>
         <button disabled={loading} className="rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-5 py-3 font-semibold text-slate-950 disabled:opacity-60">{loading ? "正在蒸馏…" : "生成并保存知识卡片"}</button>
       </form>
       {result?.error && <p role="alert" className="mt-5 rounded-xl border border-rose-400/30 bg-rose-400/10 p-4 text-rose-200">{result.error}</p>}
