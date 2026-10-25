@@ -3,18 +3,10 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "多类型 AI 视频感模拟面试",
-  description: "多类型面试题库 + AI 评分 + 追问 + 报告",
+  title: "知心教研工作台｜心理知识蒸馏与主题班会教案",
+  description: "整理心理学书籍与教师课程，将知识转化为可执行、可复盘、尊重学生的主题班会教案。",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
-  return (
-    <html lang="zh-CN">
-      <body>{children}</body>
-    </html>
-  );
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  return <html lang="zh-CN"><body>{children}</body></html>;
 }
