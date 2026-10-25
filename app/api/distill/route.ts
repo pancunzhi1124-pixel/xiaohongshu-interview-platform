@@ -4,6 +4,7 @@ import { z } from "zod";
 const requestSchema = z.object({
   sourceType: z.enum(["book", "course", "notes"]),
   sourceTitle: z.string().trim().min(1).max(300),
+  sourceAuthor: z.string().trim().max(300).default(""),
   sourceLocation: z.string().trim().max(300).default(""),
   content: z.string().trim().min(40).max(30000),
 });
@@ -18,8 +19,20 @@ export async function POST(request: Request) {
       model: process.env.BAILIAN_MODEL ?? "qwen-plus",
       temperature: 0.2,
       messages: [
-        { role: "system", content: "你是严谨的教育知识蒸馏助手。根据用户提供的片段输出中文 Markdown，不能虚构来源、页码、研究、数据或讲师原话；区分资料明确表达的观点与自己的教学转化建议。优先原创概括，不要续写或大段复现受版权保护的原文。心理学结论如无法从片段判断依据，请标注待核实。输出结构：来源卡片、核心摘要、核心概念（解释/适用条件/常见误解）、可转化的方法、适合的班会主题、边界与注意事项、来源追溯与待核实问题。" },
-        { role: "user", content: JSON.stringify({ sourceType: parsed.data.sourceType, sourceTitle: parsed.data.sourceTitle, sourceLocation: parsed.data.sourceLocation || "未提供", sourceText: parsed.data.content }) },
+        {
+          role: "system",
+          content: "你是严谨的教育知识蒸馏助手。根据用户提供的片段输出中文 Markdown，不能虚构来源、页码、研究、数据或讲师原话；区分资料明确表达的观点与自己的教学转化建议。优先原创概括，不要续写或大段复现受版权保护的原文。心理学结论如无法从片段判断依据，请标注待核实。输出结构：来源卡片（仅使用输入的书名/作者/讲师/章节信息）、核心摘要、核心概念（解释/适用条件/常见误解）、可转化的方法、适合的班会主题、活动体验点子、边界与注意事项、来源追溯与待核实问题。若未提供作者、页码或时间戳，明确写未提供，不要自行补全。",
+        },
+        {
+          role: "user",
+          content: JSON.stringify({
+            sourceType: parsed.data.sourceType,
+            sourceTitle: parsed.data.sourceTitle,
+            sourceAuthor: parsed.data.sourceAuthor || "未提供",
+            sourceLocation: parsed.data.sourceLocation || "未提供",
+            sourceText: parsed.data.content,
+          }),
+        },
       ],
     });
     const markdown = completion.choices[0]?.message?.content?.trim();
