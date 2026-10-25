@@ -21,6 +21,7 @@ export default function DistillPage() {
   async function readFile(file: File) {
     setFileError("");
     setFileName(file.name);
+    setContent("");
     if (!sourceTitle.trim()) setSourceTitle(file.name.replace(/\.[^.]+$/, ""));
     try {
       if (file.size > 20 * 1024 * 1024) throw new Error("单个文件不能超过 20 MB。");
@@ -29,7 +30,7 @@ export default function DistillPage() {
         return;
       }
       if (/\.pdf$/i.test(file.name) || file.type === "application/pdf") {
-        const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+        const pdfjs = await import("pdfjs-dist");
         pdfjs.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
         const pdf = await pdfjs.getDocument({ data: await file.arrayBuffer(), useSystemFonts: true }).promise;
         const pages: string[] = [];
