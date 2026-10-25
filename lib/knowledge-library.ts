@@ -13,19 +13,24 @@ export type KnowledgeCard = {
 const STORAGE_KEY = "zhixin-knowledge-library-v1";
 const MAX_CARDS = 100;
 
+function isKnowledgeCard(item: unknown): item is KnowledgeCard {
+  if (!item || typeof item !== "object") return false;
+  const card = item as Partial<KnowledgeCard>;
+  return typeof card.id === "string" &&
+    (card.sourceType === "book" || card.sourceType === "course" || card.sourceType === "notes") &&
+    typeof card.sourceTitle === "string" &&
+    typeof card.sourceLocation === "string" &&
+    typeof card.markdown === "string" &&
+    typeof card.createdAt === "string" &&
+    Array.isArray(card.tags) &&
+    card.tags.every((tag) => typeof tag === "string");
+}
+
 export function readKnowledgeCards(): KnowledgeCard[] {
   if (typeof window === "undefined") return [];
   try {
     const value: unknown = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "[]");
-    if (!Array.isArray(value)) return [];
-    return value.filter((item): item is KnowledgeCard =>
-      !!item &&
-      typeof item.id === "string" &&
-      typeof item.sourceTitle === "string" &&
-      typeof item.markdown === "string" &&
-      typeof item.createdAt === "string" &&
-      Array.isArray(item.tags),
-    );
+    return Array.isArray(value) ? value.filter(isKnowledgeCard) : [];
   } catch {
     return [];
   }
@@ -37,6 +42,15 @@ export function saveKnowledgeCard(card: KnowledgeCard): KnowledgeCard[] {
   const next = [card, ...current].slice(0, MAX_CARDS);
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   return next;
+}
+
+export function importKnowledgeCards(input: unknown): KnowledgeCard[] {
+  if (typeof window === "undefined" || !Array.isArray(input)) return readKnowledgeCards();
+  const imported = input.filter(isKnowledgeCard);
+  const existing = readKnowledgeCards();
+  const merged = [...imported, ...existing.filter((item) => !imported.some((candidate) => candidate.id === item.id))].slice(0, MAX_CARDS);
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+  return merged;
 }
 
 export function removeKnowledgeCard(id: string): KnowledgeCard[] {
