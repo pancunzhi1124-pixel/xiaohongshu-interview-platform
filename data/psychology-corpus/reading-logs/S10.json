@@ -1,0 +1,319 @@
+{
+  "sourceId": "S10",
+  "title": "The Psychology of Intelligence",
+  "sourceSha256": "447fcf7211c42edbc6806617fcc805e067a44274645b20b3a9978c824035c7b9",
+  "format": "PDF",
+  "readingMethod": "各负责读者连续阅读全文并按章记录；图表/图像正文/异常另视读。各范围由原账本及总审计核对；非提取后自动标读。",
+  "scope": "本次提供的电子文件全部内容；外部论文、链接、配套视频与印刷本被删内容不在范围内。",
+  "physicalPageCount": 216,
+  "readRanges": [
+    [
+      1,
+      216
+    ]
+  ],
+  "epubReadUnits": [],
+  "unreadGaps": [],
+  "chapters": [
+    {
+      "chapter": "1",
+      "title": "Intelligence and Biological Adaptation",
+      "pdfRange": [
+        16,
+        32
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者把智力置于生物适应和逻辑结构两种解释之间，主张以发展过程解释智力，而不把它视为预先存在的独立官能。行为的情感能量与认知结构相互依存：行动既包含价值和兴趣，也包含组织环境关系的方式。同化将经验纳入已有行动模式，顺应调整行动模式以应对对象；智力表现为这种交互逐步形成更灵活、可逆的平衡。全章比较六种理论取向，并将自身的操作理论与静态完形或单向经验解释区分。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "同化",
+          "顺应",
+          "适应平衡",
+          "功能连续与结构差异",
+          "情感与认知不可分",
+          "可逆操作"
+        ],
+        "limits": [
+          "1947年起源的理论讨论，不是现代神经机制或临床评估规范。",
+          "不能据课堂单个表现判断智力水平；不能用同化/顺应为学生贴固定类型标签。"
+        ],
+        "teachingTranslation": "教师备课可先了解学生已有解释，再通过可操作的新情境促成解释调整；复盘同时询问理解过程和任务价值，而不把不投入直接判为能力不足。此为原创教学转化，非书中班会教案。"
+      }
+    },
+    {
+      "chapter": "2",
+      "title": "Thought Psychology and the Psychological Nature of Logical Operations",
+      "pdfRange": [
+        33,
+        68
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "本章先区分逻辑公理化的规范结构与心理学研究的实际建构过程，批评将思维视为既成逻辑法则的镜像。对罗素、维尔茨堡学派、Bühler与Selz的回顾指出，受控内省能描述思维结果，却不足以追溯其形成。操作被解释为内化、可组合和可逆的行动；孤立操作只有放回系统才有意义，分类、系列化、对应与价值安排均依赖整体关系。作者给出群集的组合、可逆、结合、恒等及同一性五类条件，并区分类运算、关系运算、空间时间的下逻辑运算与命题运算；最后强调这些结构的描述仍需要发展证据解释其形成。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "逻辑规范与心理事实的方法区分",
+          "内化行动",
+          "操作系统与群集",
+          "可逆性",
+          "分类/系列化/对应",
+          "发展解释而非静态描述"
+        ],
+        "limits": [
+          "群集是历史理论的形式化框架，不可当作经现代验证的认知诊断工具。",
+          "年龄实例来自作者当时研究，不能作为当前学生的硬性门槛。",
+          "公式与逻辑分类主要供教师理解，低学段不直接灌输。"
+        ],
+        "teachingTranslation": "设计活动时让学生实际分类、排序、改变条件并撤销选择，再解释改变前后哪些关系保持；评价不只看会说原则，还看能否协调多个关系。若用于合作或公平主题，可用虚构任务安排而非抽象人格评价。"
+      }
+    },
+    {
+      "chapter": "3",
+      "title": "Intelligence and Perception",
+      "pdfRange": [
+        72,
+        108
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者回顾知觉恒常性及完形理论，认可整体结构描述的贡献，但反对把所有结构视为不随发展改变的既成形式。通过大小恒常、标准误差、Delboeuf错觉、Weber阈限、空间与时间转移等例子，区分知觉的统计性、局部中心化与可逆操作的协调。知觉活动中的去中心化、比较、预期及转移随发展而变化，为操作提供支架，却并不等同于完整的操作可逆性。作者的结论不是知觉与智力毫无联系，而是功能连续、结构有别。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "知觉恒常性与操作守恒的区别",
+          "中心化/去中心化",
+          "标准误差",
+          "知觉统计性",
+          "比较/转移/预期",
+          "功能连续与结构差异"
+        ],
+        "limits": [
+          "视觉错觉的具体模型与发育年龄是作者的历史理论主张，不等于当前研究的完整结论。",
+          "不能用学生看错一次图形或观察方式推断智龄，避免沿用书中贬损性历史措辞。",
+          "可用错觉说明观察需要核对，但不能直接证明人际理解偏误有相同机制。"
+        ],
+        "teachingTranslation": "班会中可让学生比较同一虚构情境的不同观察线索，并主动寻找未看到的角度；把第一眼印象与进一步核对分开。低段可用实物或简单图片，高段可加入解释改变的原因。"
+      }
+    },
+    {
+      "chapter": "4",
+      "title": "Habit and Sensori-motor Intelligence",
+      "pdfRange": [
+        109,
+        141
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "本章把习惯与早期智力放在感觉运动同化的共同发展中，而不以被动联结、预设智力或纯随机试误解释。对条件反射、效果律和Claparede假设生成理论的讨论强调需要、意义和既有图式对尝试的定向作用。作者依次描述反射练习、初级/次级/三级循环反应、手段目标协调及内部协调创新，认为突然领悟有前期图式发展基础。对象永久性、形状大小恒常及位移群相互关联：婴儿逐渐将自身行动纳入客观的对象关系。早期实践性组织仍不同于后来的符号和反思性操作。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "习惯的形成与自动执行不同",
+          "有意义的同化图式",
+          "定向试误",
+          "初级/次级/三级循环反应",
+          "手段与目标",
+          "对象永久性",
+          "空间位移协调"
+        ],
+        "limits": [
+          "婴儿阶段与动物实验用于理论说明，不是多学段课堂分级测试。",
+          "不能复制书中电击、强迫或剥夺实验，也不能由一次藏物反应判断发育正常与否。",
+          "新技能不等于单靠重复，仍需任务意义、条件及适切支持。"
+        ],
+        "teachingTranslation": "教师可把班会技能练习设计成先尝试、比较结果、改变一个条件、解释新策略，允许已有方法迁移后再调整；对学生的突然成功追问其准备与尝试，避免神化天赋或把重复机械化。"
+      }
+    },
+    {
+      "chapter": "5",
+      "title": "The Growth of Thought—Intuition and Operations",
+      "pdfRange": [
+        144,
+        183
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "从实践性感觉运动协调到反思性概念操作，需要把连续行动整合为可同时把握的关系、意识到机制，并扩展到不在场对象；它不是简单增加语言标签。作者依次分析符号与前概念、直觉及其局部调节、具体操作和形式操作：守恒、分类包含、系列化、旋转与时间案例揭示单一中心化如何逐步转为多关系协调和可逆推理。具体操作仍依赖内容，物质、重量、体积等领域可不同步；形式操作则对表达具体操作的命题进行第二阶协调，允许假设演绎。本章也区分测验的表现估计与建构机制解释，并讨论历史智龄测验应用。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "符号功能与语言",
+          "前概念和转导",
+          "直觉调节",
+          "具体操作",
+          "形式操作/假设演绎",
+          "水平与垂直不同步",
+          "测验表现与机制解释的区别"
+        ],
+        "limits": [
+          "作者提供的年龄与顺序是历史理论及其研究表述，不作为当前学生必达的固定标准。",
+          "不得沿用章末历史智力障碍术语、分类或测试作诊断。",
+          "不能凭一项守恒任务、语言题或课堂表现估计智龄或给学生贴能力标签。"
+        ],
+        "teachingTranslation": "同一班会目标先给具体校园情境或可操作任务，再尝试改变一个条件的假设问题。低段允许画图和演示，高段或中学可比较多种条件；同一学生在不同题材上的理解不能简单外推。活动复盘关注关系与理由，不只看答对与否。"
+      }
+    },
+    {
+      "chapter": "6",
+      "title": "Social Factors in Intellectual Development",
+      "pdfRange": [
+        184,
+        195
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者把社会影响具体区分为语言符号、交流内容和规范，以及现实互动类型，而不把社会作为笼统单一因果。儿童会按自身结构同化社会提供的概念；复述正确意见或接受权威并不等于形成推理。合作强调区分并协调视角、互惠讨论、验证和词义稳定，与单向强制不同。内部操作协调和外部共同操作是同一平衡过程的互补面，既不能单独归因为孤立个体，也不能归因为社会灌输。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "社会影响的具体机制",
+          "观点分化与互惠",
+          "合作与强制的区别",
+          "验证规范",
+          "内外协调互为条件"
+        ],
+        "limits": [
+          "章节论断属于历史理论；不能把儿童的观点协调困难归为道德自私。",
+          "不把合作神化为唯一发展因素，仍需考虑具体任务、语言、文化和支持条件。"
+        ],
+        "teachingTranslation": "合作班会设置信息不同但平等的角色，让学生先说自己的依据，再复述对方观点并检查共同规则是否一致。教师不以全班齐声复述正确答案当作理解证据。"
+      }
+    },
+    {
+      "chapter": "conclusion",
+      "title": "Rhythms, Regulations and Groupings",
+      "pdfRange": [
+        196,
+        203
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "结论用节律、调节和群集梳理发展结构：重复的反射或本能节律提供起点，经验中的反向修正使调节出现，而可协调、可逆并保持整体稳定的操作群集构成作者所说的终端平衡。表面产出相似不代表行动组织相同，因此理解发展需考察形成与变换，而非只看最终图形或答案。作者同时坚持功能连续性与各层结构差异。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "节律",
+          "调节",
+          "群集",
+          "表面结果与过程结构的区分",
+          "功能连续与结构差异"
+        ],
+        "limits": [
+          "这是全书理论综合，不是成熟神经生理机制或课堂干预效果证据。"
+        ],
+        "teachingTranslation": "观察活动中的计划、试做、修改和说明，使同样完成任务的学生也能获得符合其过程的反馈。以连续的支持与练习改进设计，避免把某次答案当终身能力。"
+      }
+    }
+  ],
+  "frontMatter": [],
+  "backMatter": [],
+  "limitations": [],
+  "audit": {
+    "sourceId": "S10",
+    "format": "PDF",
+    "sourceSha256": "447fcf7211c42edbc6806617fcc805e067a44274645b20b3a9978c824035c7b9",
+    "shaMatchesInventory": true,
+    "physicalPageCount": 216,
+    "pageCountMatchesInventory": true,
+    "title": "The Psychology of Intelligence",
+    "shaMatchesLedger": true,
+    "shaLedgerNote": null,
+    "status": "ledger_audit_passed_with_source_limits",
+    "fullBookReadAudited": true,
+    "ledgerEvidence": [
+      {
+        "sha256": "3a7f008ab9e3126874cf2831087b979af41fb2b4cd7b4e683bb0ce0379c9ac77",
+        "status": "full_book_read",
+        "fullBookRead": true
+      }
+    ],
+    "actuallyAccountedPhysicalRanges": [
+      [
+        1,
+        216
+      ]
+    ],
+    "actuallyAccountedPhysicalPageCount": 216,
+    "unaccountedPhysicalRanges": [],
+    "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 7,
+    "frontAndBackCoverageOutsideChapterRanges": [
+      [
+        1,
+        15
+      ],
+      [
+        69,
+        71
+      ],
+      [
+        142,
+        143
+      ],
+      [
+        204,
+        216
+      ]
+    ],
+    "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+    "chapterContinuityAudit": {
+      "overlappingPhysicalPages": [],
+      "interChapterPagesNotInsideChapterRanges": [
+        [
+          69,
+          71
+        ],
+        [
+          142,
+          143
+        ]
+      ],
+      "allInterChapterPagesAccountedElsewhere": true,
+      "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+    },
+    "visualAudit": {
+      "embeddedRasterImagePageCount": 2,
+      "embeddedRasterImagePages": [
+        1,
+        4
+      ],
+      "actuallyRecordedVisualPageCount": 25,
+      "actuallyRecordedVisualPages": [
+        1,
+        4,
+        16,
+        22,
+        59,
+        61,
+        68,
+        88,
+        90,
+        94,
+        99,
+        105,
+        124,
+        128,
+        134,
+        138,
+        149,
+        156,
+        162,
+        173,
+        183,
+        189,
+        193,
+        202,
+        216
+      ],
+      "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+      "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+      "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+      "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing.",
+      "supplementalReviewEvidence": "读者后续实际查看PDF4，确认题名、译者、Routledge出版标志与城市；visualChecks已补存，不存在正文图表遗漏。"
+    },
+    "issues": []
+  },
+  "historicalPendingResolutions": []
+}

@@ -1,0 +1,518 @@
+{
+  "sourceId": "S05",
+  "title": "创伤与复原 — Judith Herman，施宏达/陈文琪译，机械工业出版社2015",
+  "sourceSha256": "94aaf7e7b8610ffa93f1baee1da0a44eb598e02a1c42e2bc6b4baa2f8b074de8",
+  "format": "PDF",
+  "readingMethod": "各负责读者连续阅读全文并按章记录；图表/图像正文/异常另视读。各范围由原账本及总审计核对；非提取后自动标读。",
+  "scope": "本次提供的电子文件全部内容；外部论文、链接、配套视频与印刷本被删内容不在范围内。",
+  "physicalPageCount": 408,
+  "readRanges": [
+    [
+      1,
+      408
+    ]
+  ],
+  "epubReadUnits": [],
+  "unreadGaps": [],
+  "chapters": [
+    {
+      "chapter": "1 一段被遗忘的历史",
+      "title": "1 一段被遗忘的历史",
+      "pdfRange": [
+        22,
+        65
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者以19世纪末歇斯底里研究、两次世界大战与越战后的战争创伤研究，以及女性主义推动的性/家庭暴力研究为三条线，说明谁被倾听、能否免于羞辱及社会支持如何影响创伤获得承认。叙述沙可、让内、弗洛伊德等研究转折，也区分重返工作/战场与长期康复。临床尊重与实际保护不能以快速恢复功能替代。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "避免受害者责备",
+          "支持性见证",
+          "尊重与自主权",
+          "功能恢复不等于痛苦消失",
+          "公共与私人暴力都值得关注"
+        ],
+        "limitations": [
+          "历史叙事中的人物动机与社会政治解释属于作者论证，未独立核验史料",
+          "旧研究比例不能当当前患病率或中国学生比例",
+          "催眠、药物诱发、宣泄和团体重述是历史/临床内容，禁止改成班会治疗",
+          "同情、保护与倾听并不表示教师承担调查取证或诊断职责",
+          "需专业保护流程与具体学校支持，不能承诺绝对保密或永远只留在同伴间"
+        ],
+        "activityTranslation": "用虚构的同伴求助对话比较“快忘了吧/你自找的”与“谢谢你告诉我，我们找可信任成人帮助”等回应。学生可旁观或退出，不询问真实经历，不模拟侵害。"
+      }
+    },
+    {
+      "chapter": "2 恐怖经历",
+      "title": "2 恐怖经历",
+      "pdfRange": [
+        66,
+        94
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者把创伤后反应描述为过度警觉、记忆侵扰、麻木与退缩的交替，指出威胁消退后反应仍可能持续；平静外表不等于已经没有痛苦。描述冻结、解离和情绪反应的保护背景，反对简单地把反应视为意志或品性问题；临床病例和追踪资料显示个体恢复过程差异大。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "反应可能不同且波动",
+          "外表正常不能推断内在体验",
+          "允许暂停与不参与",
+          "避免突然刺激"
+        ],
+        "limitations": [
+          "三类症状是本书的概念组织，不能作为现行诊断标准或学生筛查清单",
+          "PDF75–77游戏/感官记忆的推断不能用于从学生游戏猜测侵害事实",
+          "不采用催眠、追问恢复记忆、让儿童重演、强迫暴露或宣泄",
+          "神经系统永久改变、梦境真实性等说法不能概括所有人，也不由本次阅读外部证实",
+          "旧军人及受害者样本的自杀/物质使用比例不外推学生",
+          "回避有时有保护作用，教师不应以克服回避为名移除学生界限"
+        ],
+        "activityTranslation": "开课用清楚流程、可预期声光和自由退出约定，让学生在安静旁观、画画、一般讨论间选择；用虚构紧张情景练习询问“你希望我怎样帮助”，不模拟创伤。"
+      }
+    },
+    {
+      "chapter": "3 外部关系的断绝",
+      "title": "3 外部关系的断绝",
+      "pdfRange": [
+        95,
+        131
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "创伤可能损害安全、价值、信赖与意义感。关系中的支持可缓冲伤害，责备、否认、擅自代作决定或报复可能加重无助；支持应尊重自主与距离，也维持不伤害他人的边界。作者讨论个体与环境差异、公开承认与弥补，以及社群如何帮助恢复联系。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "不责备受害者",
+          "保护与自主并重",
+          "接纳靠近或保持距离的需要",
+          "具体支持和公平责任归属",
+          "支持不等于容忍暴力"
+        ],
+        "limitations": [
+          "PDF105–109保护性特质与应对策略是研究关联及作者解释，不能说受害者因不够勇敢而受伤，也不教统一抵抗策略",
+          "PDF123–124涉及风险与行为评价时必须坚持加害者责任，不将衣着、沉默、冻结等视作同意或过错",
+          "本章“唯一方法”“永久性损毁”等绝对措辞不作所有人的预后结论",
+          "法律与报案数据是书中历史地域描述，不能当当前中国法律建议或阻止求助",
+          "不要求公开经历、原谅、参与社会运动或承担倡导使命才算康复",
+          "听到可能持续侵害须进入适当保护与专业支持流程，不由班级讨论调查"
+        ],
+        "activityTranslation": "学生自选画出日常需要帮助时可联系的两类可信任成人（可私下完成），并练习先询问、陪同求助、不给责备和不传播隐私；不把家庭自动视为安全来源，提供校内备选。"
+      }
+    },
+    {
+      "chapter": "4 囚禁",
+      "title": "4 囚禁",
+      "pdfRange": [
+        132,
+        167
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "长期重复侵害常伴随无法安全离开的处境，阻碍未必是实体围栏，也可能是经济依赖、威胁和孤立。作者描述胁迫对自主、外界联系、时间感、行动与关系的侵蚀，并反对把受害者的受限行动简单称为被动无助。威胁与偶尔的小惠可并存，不能把后者视为没有伤害的证明。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "识别控制与孤立",
+          "外部支持渠道",
+          "行为应放回处境理解",
+          "不将讨好与依赖视为同意"
+        ],
+        "limitations": [
+          "不将普通冲突一律称为囚禁或据此给任何人诊断",
+          "不复制胁迫技巧作课堂体验",
+          "PDF140–151绝食/自杀作为抵抗的历史叙述不纳入活动，不浪漫化自伤",
+          "不可逆、自我丧失等是作者及个案措辞，不能宣判任何学生的未来",
+          "无法离开可能涉及现实危险与资源，不能建议直接反抗或责问为何不走"
+        ],
+        "activityTranslation": "用虚构社交邀请辨别“可以拒绝并保留其他朋友”与“必须保密、断联、接受威胁”等信号，练习向可信任成人求助。不让学生扮演囚徒或施暴者。"
+      }
+    },
+    {
+      "chapter": "5 受虐儿童",
+      "title": "5 受虐儿童",
+      "pdfRange": [
+        168,
+        199
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "儿童依赖照顾者且难以逃离，会在不安全中发展复杂的求生反应；自责、讨好、警戒、解离等在本书中被解释为适应处境的方式。外表优秀或正常不能排除痛苦。作者也明确反对受虐必然代际循环，多数受害者不会成为加害者。成人支持应提供安全与尊重，而不是要求孩子自救或牺牲自己保护别人。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "把安全责任放在成人与制度",
+          "不以表面顺从推定同意",
+          "不以成绩或行为排除支持需要",
+          "避免代际循环污名"
+        ],
+        "limitations": [
+          "症状与受虐经历关联不等于可由单一行为反推出受虐；不从作文/游戏/走神猜测事实",
+          "不把解离与人格分裂作为课堂诊断或能力训练",
+          "对成年再受害与防御变化的比例/年龄说法不能作命定预言",
+          "本章部分绝对/贬损形容保留为历史文本，不用于学生身份描述",
+          "不讲授自伤方式，不用痛苦刺激作情绪调节练习；有安全担忧须由合适成人及时接手",
+          "不将个人反应解释为主动寻求侵害或自找"
+        ],
+        "activityTranslation": "用虚构无细节故事练习识别令自己不舒服的要求、允许说不/离开/找成人；给不方便公开发言者私密求助渠道和校内替代支持，不要求儿童承担保护其他儿童的责任。"
+      }
+    },
+    {
+      "chapter": "6 一个全新的诊断分析",
+      "title": "6 一个全新的诊断分析",
+      "pdfRange": [
+        200,
+        221
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者批判将胁迫下的行为当成人格缺陷，回顾被虐人格诊断的争论，并提出以复合性创伤概念理解长期受害者的多重困难。强调准确理解经历有助合作与去污名，同时应识别医疗关系中的二次伤害。文中仍在讨论DSM第四版的拟议归类，必须以历史临床论述阅读。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "反对以人格标签责备求助者",
+          "区分处境与个人缺陷",
+          "尊重求助经历"
+        ],
+        "limitations": [
+          "本章诊断提案不是现行DSM或ICD标准，须另查现行权威来源才能对外作诊断说明",
+          "作者将躯体化/边缘性/多重人格概括为复合创伤变体是本书论证，不能当所有病例统一病因或等同关系",
+          "临床样本比例不外推普通学生；不能由诊断推断童年侵害事实",
+          "不因为批判旧误诊而鼓励自行停药、否认专业诊断或替代治疗",
+          "本次只读此书，未读其所有引用研究全文"
+        ],
+        "activityTranslation": "教师备课时审查教案中“天生坏、难搞、故意操纵”等词，换成可观察行为、支持需要与清楚边界。"
+      }
+    },
+    {
+      "chapter": "7 治疗关系",
+      "title": "7 治疗关系",
+      "pdfRange": [
+        222,
+        256
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "复原强调归还自主与重建联系，帮助者不能代替当事人。作者区分治疗中的公正/中立与不否认伤害的立场，讨论移情、反移情、过度拯救和权力滥用风险。清楚目标、规则和界限、持续督导及同侪支持，是维护双方安全的重要条件。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "合作与选择",
+          "清楚关系界限",
+          "帮助者不是全能救主",
+          "持续专业支持"
+        ],
+        "limitations": [
+          "不能从教师情绪、梦或直觉推断学生遭遇；本章反移情线索不构成证据",
+          "不采用用指甲刺掌等疼痛方式调节状态",
+          "不能以治疗契约名义要求学生尽情表露、恢复秘密记忆或原谅帮助者",
+          "不照搬部分个案中情感负担式话语，例如要求患者不得离开治疗师",
+          "保密边界、未成年人保护与紧急协助须按实际适用制度处理，不能由本书替代",
+          "触碰、照片、私人联系等须遵守教师职业边界，不能依据个案合理化越界"
+        ],
+        "activityTranslation": "教师备课写清楚活动目的、可拒绝事项、谁能提供后续支持；教师发现自己过度卷入或能力不足时寻求校内专业协作，而非承诺独自解决。"
+      }
+    },
+    {
+      "chapter": "8 安全",
+      "title": "8 安全",
+      "pdfRange": [
+        257,
+        288
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者明确三阶段仅为参考，非固定线性真理；合理安全应先于深入创伤记忆工作。安全涵盖身体照顾、实际环境、经济与社会资源，以及可信任支持。温情承诺不等于危险已解除，家庭也未必是安全来源。短期症状稳定不等于完全康复，过早探究细节或追求一次剧烈宣泄可能加重困难。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "安全优先",
+          "评估实际资源与持续危险",
+          "给选择而非强迫披露",
+          "不把恢复功能等同完全康复",
+          "阶段非固定线性"
+        ],
+        "limitations": [
+          "PDF266–267药物清单及自主管药论述不能作为当前处方、用药或儿童医学建议",
+          "PDF272关于报案完全由当事人决定的叙述不能覆盖儿童保护与法定报告等实际义务",
+          "不照搬要求改口、催促创伤回忆、家庭摊牌或建议继续接触施虐者的个案策略",
+          "阶段时间与终将复现的断言不作个体预后；不宣称一次班会完成复原阶段",
+          "建立安全不是要求孩子独力自保；物质/保护支持责任应由成人与制度承担",
+          "不进行暴露、催眠或宣泄治疗，也不以“面对恐惧”为名取消学生退出权"
+        ],
+        "activityTranslation": "活动前确认安静退出位置、可私下联系的教师/专业支持与材料替代；用不涉及真实经历的情境练习找支持者，不要求公开症状、家庭关系或安全计划。"
+      }
+    },
+    {
+      "chapter": "9 回顾与哀悼",
+      "title": "9 回顾与哀悼",
+      "pdfRange": [
+        289,
+        323
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "本章讨论在专业治疗中逐渐统合经历、情感与意义，并哀悼可见及不可见损失。作者强调患者决定时机、维护安全、监测恶化、允许事实不确定、不凭症状宣告某种侵害，不以神奇宣泄求速成。复原不需要等加害者悔改，也不要求爱或原谅加害者；追求正义与复仇须区分。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "接纳感受而不强迫讲述",
+          "容许事实不确定",
+          "不要求原谅或报复",
+          "生活身份超越创伤经历"
+        ],
+        "limitations": [
+          "直接暴露、满贯、证词、催眠回溯、药物及心理剧等均不迁移为班会技术",
+          "PDF298反对由症状断言侵害；PDF304–308部分回忆恢复建议与强确信叙述需高度谨慎，不能把梦/身体感受/催眠内容当事实证据",
+          "不能要求学生完整详细叙述、反复重体验或依固定节奏哀悼",
+          "不以“须自行负责复原”责备未成年人或停止资源支持",
+          "不将公平赔偿与司法求助一律归为阻碍复原的幻想；作者个案解释不能替代当事人权益",
+          "不把哀悼说成唯一或所有人必经同一路径，也不承诺治愈时间"
+        ],
+        "activityTranslation": "用虚构角色的日常失落讨论“有哪些支持是这个角色自己愿意接受的”，可画支持菜单而不分享私人伤痛；教师认识到讨论不等于治疗。"
+      }
+    },
+    {
+      "chapter": "10 重建联系感",
+      "title": "10 重建联系感",
+      "pdfRange": [
+        324,
+        354
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者把未来生活重建、现实目标、自我关怀、互惠关系与有选择的信任放在复原后期。身份可以超越受害经历，日常生活和有意义联系本身重要；人生变化时困难可能再现，重新求助不意味着先前努力失败。社会行动对部分人有意义，但不是所有人的选择。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "有选择的信任",
+          "自主目标与日常生活",
+          "互惠与界限",
+          "困难再现可再求助"
+        ],
+        "limitations": [
+          "不复制模拟猛烈攻击、耗竭训练、荒野冒险等作为班会体验",
+          "不要求面对加害者、向家人摊牌、公开身份或投身倡导才算康复",
+          "不把生育、恋爱、性关系或原谅作为心理健康达标项",
+          "不将创伤称礼物或要求感恩苦难；获得新能力不证明伤害必要",
+          "安全与责任不能转嫁给受害学生，临床复原标准不作班级评分"
+        ],
+        "activityTranslation": "学生自选画一张“我在乎的日常事物”卡，选一个感兴趣的小行动和可寻求的支持，允许不公开；不要求谈受害经历或证明成长。"
+      }
+    },
+    {
+      "chapter": "11 共通性",
+      "title": "11 共通性",
+      "pdfRange": [
+        355,
+        389
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "群体可能通过归属、认可、互助促进联系，也可能放大冲突、剥削与再创伤；任务和结构必须匹配参与者的需求。作者区分偏安全教育、回顾哀悼与当下人际关系的团体，明确没有人人适用的通用团体。追踪中主观自信提升不等于全部症状或关系都改善。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "任务与结构匹配",
+          "互助与贡献",
+          "参与密度由本人调节",
+          "群体收益与风险并存"
+        ],
+        "limitations": [
+          "不复制创伤揭露、记忆唤回、暴力复仇幻想分享、私人证词互述或家庭伤亡家谱任务",
+          "PDF361–362事故汇报等是历史论述，不作危机后强制团体心理复盘的依据",
+          "不承诺同学能替代专业支持，保密协议无法保证同伴永不外传",
+          "不比较痛苦谁更严重，也不用“只是沧海一滴”否定个人感受",
+          "群体效果的临床报告不直接推定班会有效；不按临床阶段给学生分类"
+        ],
+        "activityTranslation": "合作活动有明确低风险任务与可旁观角色，提供轮流贡献方式和结束回顾；围绕当下可公开的经历，不聚焦个人创伤史，不把密切感或哭泣当成功。"
+      }
+    }
+  ],
+  "frontMatter": [
+    {
+      "pdfRange": [
+        2,
+        7
+      ],
+      "status": "text_read",
+      "summary": "版权与目录：11章分创伤性障碍与复原阶段两部分，另有后记、附表。封面1尚待视觉核查。"
+    },
+    {
+      "pdfRange": [
+        8,
+        11
+      ],
+      "status": "text_read",
+      "summary": "施琪嘉推荐序强调创伤的个人/社会影响与专业帮助；是推荐者观点，不等同作者正文。",
+      "limitations": [
+        "把遗忘称为假装、用群体自卑/自恋概括民族及受害者必转为加害者等推断不纳入教学知识。"
+      ]
+    },
+    {
+      "pdfRange": [
+        12,
+        15
+      ],
+      "status": "text_read",
+      "summary": "徐凯文推荐序以儿童受虐及司法支持经验强调保护、隐私和专业责任；涉及个案，不能搬入班级作体验材料。",
+      "limitations": [
+        "不对创伤类型作绝对严重性排名，不将个案概括所有受害者",
+        "不将旧案叙述当当前法律或服务指南"
+      ]
+    },
+    {
+      "pdfRange": [
+        16,
+        21
+      ],
+      "status": "text_read",
+      "summary": "作者概述20年临床与研究经验，以暴行的否认/见证张力串联社会支持与康复，提出安全、回顾哀悼及重建联系框架。说明案例以假名、综合改写保护隐私。",
+      "limitations": [
+        "不是所有症状都证明受过特定侵害；不可引导学生恢复记忆或追问细节",
+        "诊断及治疗框架属于本书出版时代的临床论述，不能替代当前专业评估"
+      ]
+    }
+  ],
+  "backMatter": [
+    {
+      "pdfRange": [
+        390,
+        405
+      ],
+      "status": "read",
+      "type": "后记与末页提要",
+      "summary": "后记位于原书出版五年后语境，讨论研究扩展、人权与公共承认、记忆争议和研究者权力；作者反思早期对解离保护作用的较正面看法，并指出更严谨的对照治疗研究仍在推进。",
+      "limitations": [
+        "2015为中译电子版年份，不将后记中的最近/未来几年当2026现况",
+        "神经结构、永久改变与记忆争议观点只记为本书时期的主张，需外部复核后才作当前科学说明",
+        "拒绝受害者责备与承认记忆可受暗示并不矛盾；不凭本书替代取证或强加回忆"
+      ]
+    },
+    {
+      "pdfRange": [
+        406,
+        406
+      ],
+      "status": "read_visually",
+      "type": "附表一（图像文字）",
+      "summary": "逐项视觉阅读：长期受控制史及情感、意识、自我认同、对侵害者认知、与他人关系、意义系统等七领域的作者拟议框架；不是学生筛查表或当前诊断标准。"
+    },
+    {
+      "pdfRange": [
+        407,
+        407
+      ],
+      "status": "read_visually",
+      "type": "附表二/三（两幅图像文字）",
+      "summary": "表二并列不同作者/年代的阶段框架；表三比较三类团体在任务、时间定位、重点、成员、限制、凝聚、冲突容忍、时限与结构上的差异。图像文本已逐行看过。第一阶段团体限制性单元出现“具弹性与开放性低”异常合排，与正文364弹性开放叙述需并读，不擅改原表。"
+    },
+    {
+      "pdfRange": [
+        408,
+        408
+      ],
+      "status": "read",
+      "type": "分发广告",
+      "summary": "非作者正文，文字及图像已看，未跟随链接。"
+    }
+  ],
+  "limitations": [],
+  "audit": {
+    "sourceId": "S05",
+    "format": "PDF",
+    "sourceSha256": "94aaf7e7b8610ffa93f1baee1da0a44eb598e02a1c42e2bc6b4baa2f8b074de8",
+    "shaMatchesInventory": true,
+    "physicalPageCount": 408,
+    "pageCountMatchesInventory": true,
+    "title": "创伤与复原 — Judith Herman，施宏达/陈文琪译，机械工业出版社2015",
+    "shaMatchesLedger": true,
+    "shaLedgerNote": null,
+    "status": "ledger_audit_passed_with_source_limits",
+    "fullBookReadAudited": true,
+    "ledgerEvidence": [
+      {
+        "sha256": "23c30e19c2c37735767879d2bddedce659339ce06ee971fa08d10bd8a4b34d30",
+        "status": "full_book_read",
+        "fullBookRead": true
+      }
+    ],
+    "actuallyAccountedPhysicalRanges": [
+      [
+        1,
+        408
+      ]
+    ],
+    "actuallyAccountedPhysicalPageCount": 408,
+    "unaccountedPhysicalRanges": [],
+    "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 11,
+    "frontAndBackCoverageOutsideChapterRanges": [
+      [
+        1,
+        21
+      ],
+      [
+        390,
+        408
+      ]
+    ],
+    "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+    "chapterContinuityAudit": {
+      "overlappingPhysicalPages": [],
+      "interChapterPagesNotInsideChapterRanges": [],
+      "allInterChapterPagesAccountedElsewhere": true,
+      "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+    },
+    "visualAudit": {
+      "embeddedRasterImagePageCount": 4,
+      "embeddedRasterImagePages": [
+        1,
+        406,
+        407,
+        408
+      ],
+      "actuallyRecordedVisualPageCount": 18,
+      "actuallyRecordedVisualPages": [
+        1,
+        4,
+        22,
+        66,
+        95,
+        132,
+        168,
+        200,
+        222,
+        257,
+        289,
+        324,
+        355,
+        390,
+        405,
+        406,
+        407,
+        408
+      ],
+      "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+      "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+      "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+      "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+    },
+    "issues": []
+  },
+  "historicalPendingResolutions": [
+    {
+      "sourceId": "S05",
+      "ledger": "S05-reading.json",
+      "field": "frontMatterRecords[0].summary",
+      "historicalText": "封面1尚待视觉核查",
+      "currentResolution": "后续最终visualReviewPages包含1；pageCoverageValidation.coverImageRead=1，readingMethod也说明封面1已实际视读。旧句是历史待办，已由实际完成证据解除；未修改原账本。",
+      "evidence": [
+        "visualReviewPages includes1",
+        "pageCoverageValidation.coverImageRead=1"
+      ]
+    }
+  ]
+}

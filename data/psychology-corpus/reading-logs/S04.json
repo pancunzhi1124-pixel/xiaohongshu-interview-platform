@@ -1,0 +1,290 @@
+{
+  "sourceId": "S04",
+  "title": "自卑与超越（李青霞译，沈阳出版社2012）",
+  "sourceSha256": "587022bd180ea0e4fbf44bf09f0ee896b040ccc4025acd64b3f6cd260e4a8883",
+  "format": "PDF",
+  "readingMethod": "各负责读者连续阅读全文并按章记录；图表/图像正文/异常另视读。各范围由原账本及总审计核对；非提取后自动标读。",
+  "scope": "本次提供的电子文件全部内容；外部论文、链接、配套视频与印刷本被删内容不在范围内。",
+  "physicalPageCount": 273,
+  "readRanges": [
+    [
+      1,
+      273
+    ]
+  ],
+  "epubReadUnits": [],
+  "unreadGaps": [],
+  "chapters": [
+    {
+      "chapter": "1",
+      "title": "生活的意义",
+      "pdfRange": [
+        10,
+        29
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "以职业、交往、亲密关系为生活任务，主张意义与贡献、合作相关；强调个人对经历的解释与行动目标。论述同时对残障、精神困扰及家庭处境有严重概括和道德化表达。"
+      ],
+      "readingEvidence": {
+        "limitations": "拒绝用缺乏合作解释精神疾病、自杀或孤立，也不采纳五岁性格已定的硬决定论。",
+        "usableTranslation": "可用虚构共同任务讨论帮助他人及多种贡献，不把贡献大小等同人的生命价值。"
+      }
+    },
+    {
+      "chapter": "2",
+      "title": "心灵和肉体",
+      "pdfRange": [
+        30,
+        50
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "将身心视为整体、行为与目标相联系，强调补偿和情绪的身体表现；并提出体型性格、尿床意图、性问题等推断。"
+      ],
+      "readingEvidence": {
+        "limitations": "体型判断性格、尿床是操纵、躯体症状是逃避等不能作为教师判断。页44鼓励攻击发泄的表述不采纳。不得以意志可克服残障替代医疗与无障碍支持。",
+        "usableTranslation": "仅作历史心理学阅读，身体感受可作为谈论体验的入口，允许多种原因。"
+      }
+    },
+    {
+      "chapter": "3",
+      "title": "自卑感与优越感",
+      "pdfRange": [
+        51,
+        70
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "区分一般不足感与退缩、虚构优越位置，提出行动应联系当事人的目标和情境理解；通过儿童、工作与家庭案例解释争取关注。"
+      ],
+      "readingEvidence": {
+        "limitations": "不将愤怒、眼泪、疾病、自杀或受骚扰后的回避诊断为争优越或报复；对母亲和个体动机的推断不能当事实。",
+        "usableTranslation": "失利时给予具体支持与可完成行动，避免仅告诉学生自卑没有用。"
+      }
+    },
+    {
+      "chapter": "4",
+      "title": "早期的记忆",
+      "pdfRange": [
+        71,
+        92
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者用早期回忆寻找当前生活态度，强调整体核对而非凭一件行为定论；列举姐妹竞争、葬礼、拍照、事故失语与父子冲突案例，存在大量从片段推断人格和职业的做法。"
+      ],
+      "readingEvidence": {
+        "limitations": "不采纳全班写早期记忆用于性格推断，不把拒绝回答看成不合作；不据梦或单次回忆定职业、视觉型、家庭关系；失语与失眠必须保留专业评估边界。",
+        "usableTranslation": "可用虚构人物对同一事件不同解释讨论观点，不要求个人早年记忆。"
+      }
+    },
+    {
+      "chapter": "5",
+      "title": "梦",
+      "pdfRange": [
+        93,
+        117
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "比较弗洛伊德与个体心理学，作者把梦理解为强化生活态度的情感与象征，反对固定象征公式，并以战争、婚恋和欺负同伴等案例说明。"
+      ],
+      "readingEvidence": {
+        "limitations": "梦的功能和治疗推论为该书历史理论，不是本次核验的现代事实。不得以激将、羞辱或指向强者施暴来纠正欺凌，也不从性别身份或梦内容推断异常。",
+        "usableTranslation": "可讨论隐喻与情绪表达，但不需要收集梦境，不把梦用于诊断或预测。"
+      }
+    },
+    {
+      "chapter": "6",
+      "title": "家庭的影响",
+      "pdfRange": [
+        118,
+        149
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "强调照护关系、父母合作、平等与反对体罚，讨论偏爱及出生顺序在不同环境中的相对位置；同时包含母职中心、性别角色与排行人格的过度推断。"
+      ],
+      "readingEvidence": {
+        "limitations": "不以单亲、独生、出生顺序、母亲工作、性别或性取向判断学生风险与品质；不采纳恐惧一定是溺爱、性取向由家庭统治导致、人人必须结婚生育等主张。",
+        "usableTranslation": "可保留平等分工、非暴力沟通与照护者支持；用多元家庭的虚构例子讨论共同任务。"
+      }
+    },
+    {
+      "chapter": "7",
+      "title": "学校的影响",
+      "pdfRange": [
+        150,
+        170
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "论教育的社会功能、师生关系、兴趣、合作竞争与分类；反对体罚和固定能力标签，主张情境化、多感官及生活关联教学。"
+      ],
+      "readingEvidence": {
+        "limitations": "不采用视觉/听觉型固定分类、成绩仅由思想束缚导致、遗传作用被一概否定、智商结果保密或不需系统适龄性教育等主张；不可公开学生家庭或诊断资料。",
+        "usableTranslation": "可采用共同任务、轮换分工、具体反馈、低风险真实情境，尊重不同学习起点。"
+      }
+    },
+    {
+      "chapter": "8",
+      "title": "青春期的引导",
+      "pdfRange": [
+        171,
+        185
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "把青春期看成面对独立、社会角色和新任务的情境，讨论身体变化、自我证明、认同需求及性问题，主张鼓励而非施压。"
+      ],
+      "readingEvidence": {
+        "limitations": "不把精神病简化为生活错误可经鼓励治愈，不将危机信息当操纵，不把性取向或性别表达视为不良教养后果；不复制受害者责备与性羞耻。",
+        "usableTranslation": "可让虚构人物比较成熟的不同表现：承担可行责任、协商界限和寻求支持。"
+      }
+    },
+    {
+      "chapter": "9",
+      "title": "犯罪及预防",
+      "pdfRange": [
+        186,
+        222
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "作者用生活目标与合作不足解释犯罪，反对犯罪天生注定，讨论家庭、贫穷、受排斥、惩罚和职业训练；提出从学校建立支持与合作。"
+      ],
+      "readingEvidence": {
+        "limitations": "本章把罪犯、残障、性行为、精神困扰混同的表达及从排行/长相推断动机均不采纳；案例与数字未独立核验，不能把所有犯罪归因于合作缺失或母亲。",
+        "usableTranslation": "仅可把避免羞辱、提供技能与归属支持作为待结合其他证据的教育主题，不能用本章做犯罪风险测评。"
+      }
+    },
+    {
+      "chapter": "10",
+      "title": "职业问题",
+      "pdfRange": [
+        223,
+        235
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "将工作置于相互依赖与分工中，论兴趣、技能、早期训练、榜样、经济限制和技术教育，强调多种劳动的价值。"
+      ],
+      "readingEvidence": {
+        "limitations": "不要求12—14岁必须确定职业，不由早期回忆定职业或感官类型；不把失业与低学历归咎为人格、缺乏兴趣或价值不足，也不让女孩默认以母职为职业。",
+        "usableTranslation": "设计职业角色任务，比较兴趣、资源、能力练习与对他人的贡献；目标允许探索和改变。"
+      }
+    },
+    {
+      "chapter": "11",
+      "title": "个体与社会群体",
+      "pdfRange": [
+        236,
+        247
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "从图腾、宗教与群体谈社会兴趣、沟通和平等，后以精神疾病治疗案例及过失行为说明作者的合作框架。"
+      ],
+      "readingEvidence": {
+        "limitations": "不采纳两周治好抑郁、只要有人陪就无危险、让自伤或拒食任其而为、把自杀归为报复等治疗建议；不以群体合作目标正当化不当手段，宗教史和医学主张未独立核实。",
+        "usableTranslation": "可讨论群体中的平等、公共安全和相互理解，保持个人选择和边界。"
+      }
+    },
+    {
+      "chapter": "12",
+      "title": "爱情与婚姻",
+      "pdfRange": [
+        248,
+        270
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "以平等伙伴关系、双方关心、合作与责任讨论婚姻准备、亲密关系和养育；也包含当时时代的异性婚育中心、性道德和对离婚的价值判断。"
+      ],
+      "readingEvidence": {
+        "limitations": "不把婚育设为人人义务，不由心理学家替当事人决定离婚，不因身体吸引减弱推定不爱；拒绝性别/性取向病理化、纯洁观、取消关系退出权或为维持婚姻忽视安全。",
+        "usableTranslation": "仅在适龄情境中转化为相互尊重、共同协商、诚实与责任；小学使用普通合作关系而非婚恋要求。"
+      }
+    }
+  ],
+  "frontMatter": [],
+  "backMatter": [],
+  "limitations": [],
+  "audit": {
+    "sourceId": "S04",
+    "format": "PDF",
+    "sourceSha256": "587022bd180ea0e4fbf44bf09f0ee896b040ccc4025acd64b3f6cd260e4a8883",
+    "shaMatchesInventory": true,
+    "physicalPageCount": 273,
+    "pageCountMatchesInventory": true,
+    "title": "自卑与超越（李青霞译，沈阳出版社2012）",
+    "shaMatchesLedger": true,
+    "shaLedgerNote": null,
+    "status": "ledger_audit_passed_with_source_limits",
+    "fullBookReadAudited": true,
+    "ledgerEvidence": [
+      {
+        "sha256": "b1b28ee0d1ae34cb409e2ccbe9a650a63148521e599bab1bf54afac694c5ea58",
+        "status": "full_book_read",
+        "fullBookRead": true
+      }
+    ],
+    "actuallyAccountedPhysicalRanges": [
+      [
+        1,
+        273
+      ]
+    ],
+    "actuallyAccountedPhysicalPageCount": 273,
+    "unaccountedPhysicalRanges": [],
+    "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 12,
+    "frontAndBackCoverageOutsideChapterRanges": [
+      [
+        1,
+        9
+      ],
+      [
+        271,
+        273
+      ]
+    ],
+    "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+    "chapterContinuityAudit": {
+      "overlappingPhysicalPages": [],
+      "interChapterPagesNotInsideChapterRanges": [],
+      "allInterChapterPagesAccountedElsewhere": true,
+      "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+    },
+    "visualAudit": {
+      "embeddedRasterImagePageCount": 2,
+      "embeddedRasterImagePages": [
+        1,
+        273
+      ],
+      "actuallyRecordedVisualPageCount": 14,
+      "actuallyRecordedVisualPages": [
+        1,
+        7,
+        44,
+        93,
+        150,
+        157,
+        171,
+        186,
+        223,
+        236,
+        248,
+        270,
+        271,
+        273
+      ],
+      "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+      "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+      "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+      "substantiveFigureScopeEvidence": "核对唯一正文外栅格图像（封面、来源附页）及代表性正文页面；正文为文字排版无内容插图，未逐页截图。"
+    },
+    "issues": []
+  },
+  "historicalPendingResolutions": []
+}

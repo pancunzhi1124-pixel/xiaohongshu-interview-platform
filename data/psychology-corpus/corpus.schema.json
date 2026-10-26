@@ -4,7 +4,11 @@
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "const": "1.0.0"
+      "const": "2.0.0"
+    },
+    "releaseId": {
+      "type": "string",
+      "minLength": 1
     },
     "createdOn": {
       "type": "string",
@@ -21,72 +25,74 @@
     "coverage": {
       "type": "object",
       "properties": {
-        "reportedAttachments": {
+        "initialReportedAttachments": {
+          "type": "number",
+          "const": 16
+        },
+        "requestedBooks": {
           "type": "integer",
-          "minimum": 0,
+          "exclusiveMinimum": 0,
           "maximum": 9007199254740991
         },
         "accessibleBooks": {
           "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991
+        },
+        "pdfBooks": {
+          "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
         },
-        "missingAttachments": {
+        "epubBooks": {
           "type": "integer",
           "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "totalPdfPhysicalPages": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
           "maximum": 9007199254740991
         },
         "fullBooksRead": {
           "type": "integer",
-          "minimum": 0,
+          "exclusiveMinimum": 0,
           "maximum": 9007199254740991
         },
         "readingMode": {
           "type": "string",
           "minLength": 1
         },
-        "pendingSlots": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "slot": {
-                "type": "string",
-                "minLength": 1
-              },
-              "status": {
-                "type": "string",
-                "const": "attachment_not_returned"
-              },
-              "title": {
-                "type": "null"
-              },
-              "reason": {
-                "type": "string",
-                "minLength": 1
-              }
-            },
-            "required": [
-              "slot",
-              "status",
-              "title",
-              "reason"
-            ],
-            "additionalProperties": false
-          }
+        "scopeOrigin": {
+          "type": "string",
+          "minLength": 1
+        },
+        "auditPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "auditSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       },
       "required": [
-        "reportedAttachments",
+        "initialReportedAttachments",
+        "requestedBooks",
         "accessibleBooks",
-        "missingAttachments",
+        "pdfBooks",
+        "epubBooks",
+        "totalPdfPhysicalPages",
         "fullBooksRead",
         "readingMode",
-        "pendingSlots"
+        "scopeOrigin",
+        "auditPath",
+        "auditSha256"
       ],
       "additionalProperties": false
     },
     "sources": {
+      "minItems": 1,
       "type": "array",
       "items": {
         "type": "object",
@@ -115,50 +121,128 @@
             "type": "string",
             "pattern": "^[a-f0-9]{64}$"
           },
+          "format": {
+            "type": "string",
+            "enum": [
+              "PDF",
+              "EPUB"
+            ]
+          },
           "pdfPageCount": {
-            "type": "integer",
-            "exclusiveMinimum": 0,
-            "maximum": 9007199254740991
+            "anyOf": [
+              {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "status": {
             "type": "string",
-            "enum": [
-              "selected_sections_inspected",
-              "toc_only",
-              "not_processed"
-            ]
+            "const": "full_book_read"
           },
-          "bibliographyPages": {
+          "readRanges": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "exclusiveMinimum": 0,
-              "maximum": 9007199254740991
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
             }
           },
-          "tocPages": {
+          "bodyRanges": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "exclusiveMinimum": 0,
-              "maximum": 9007199254740991
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
             }
           },
-          "bodyPages": {
+          "epubReadUnits": {
             "type": "array",
             "items": {
-              "type": "integer",
-              "exclusiveMinimum": 0,
-              "maximum": 9007199254740991
+              "type": "object",
+              "properties": {
+                "spine": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "href": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "paragraphs": {
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    {
+                      "type": "integer",
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "spine",
+                "href",
+                "paragraphs"
+              ],
+              "additionalProperties": false
             }
           },
-          "visuallyCheckedPages": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "exclusiveMinimum": 0,
-              "maximum": 9007199254740991
-            }
+          "readingLogPath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "readingLogSha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "chapterRecordCount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
           },
           "inspectedScope": {
             "type": "string",
@@ -180,12 +264,15 @@
           "edition",
           "originalFilename",
           "sha256",
+          "format",
           "pdfPageCount",
           "status",
-          "bibliographyPages",
-          "tocPages",
-          "bodyPages",
-          "visuallyCheckedPages",
+          "readRanges",
+          "bodyRanges",
+          "epubReadUnits",
+          "readingLogPath",
+          "readingLogSha256",
+          "chapterRecordCount",
           "inspectedScope",
           "limitations",
           "unprocessedScope"
@@ -283,7 +370,10 @@
           },
           "inspectionStatus": {
             "type": "string",
-            "const": "selected_sections_inspected"
+            "enum": [
+              "selected_sections_inspected",
+              "from_fully_read_source"
+            ]
           },
           "sourceSummary": {
             "type": "string",
@@ -297,44 +387,126 @@
             "minItems": 1,
             "type": "array",
             "items": {
-              "type": "object",
-              "properties": {
-                "sourceId": {
-                  "type": "string",
-                  "minLength": 1
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "sourceId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "pdfPages": {
+                      "minItems": 1,
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    },
+                    "chapter": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "printedPages": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "evidenceNote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "sourceId",
+                    "pdfPages",
+                    "chapter",
+                    "printedPages",
+                    "evidenceNote"
+                  ],
+                  "additionalProperties": false
                 },
-                "pdfPages": {
-                  "minItems": 1,
-                  "type": "array",
-                  "items": {
-                    "type": "integer",
-                    "exclusiveMinimum": 0,
-                    "maximum": 9007199254740991
-                  }
-                },
-                "chapter": {
-                  "type": "string",
-                  "minLength": 1
-                },
-                "printedPages": {
-                  "type": [
-                    "string",
-                    "null"
-                  ]
-                },
-                "evidenceNote": {
-                  "type": "string",
-                  "minLength": 1
+                {
+                  "type": "object",
+                  "properties": {
+                    "sourceId": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "pdfPages": {
+                      "type": "array",
+                      "prefixItems": [],
+                      "items": false,
+                      "maxItems": 0
+                    },
+                    "epubLocation": {
+                      "type": "object",
+                      "properties": {
+                        "spine": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "href": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "paragraphs": {
+                          "type": "array",
+                          "prefixItems": [
+                            {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          ],
+                          "items": false,
+                          "minItems": 2,
+                          "maxItems": 2
+                        }
+                      },
+                      "required": [
+                        "spine",
+                        "href",
+                        "paragraphs"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "chapter": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "printedPages": {
+                      "type": "null"
+                    },
+                    "evidenceNote": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "sourceId",
+                    "pdfPages",
+                    "epubLocation",
+                    "chapter",
+                    "printedPages",
+                    "evidenceNote"
+                  ],
+                  "additionalProperties": false
                 }
-              },
-              "required": [
-                "sourceId",
-                "pdfPages",
-                "chapter",
-                "printedPages",
-                "evidenceNote"
-              ],
-              "additionalProperties": false
+              ]
             }
           },
           "evidenceLevel": {
@@ -563,6 +735,7 @@
   },
   "required": [
     "schemaVersion",
+    "releaseId",
     "createdOn",
     "language",
     "pageConvention",

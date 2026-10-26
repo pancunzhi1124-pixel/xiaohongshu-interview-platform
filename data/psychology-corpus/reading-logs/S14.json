@@ -1,0 +1,682 @@
+{
+  "sourceId": "S14",
+  "title": "Guide to Research Techniques in Neuroscience",
+  "sourceSha256": "10899b884a78e8616d53b61cd89e1a84f4ed67761414f3a4c3221db76827b7fb",
+  "format": "PDF",
+  "readingMethod": "各负责读者连续阅读全文并按章记录；图表/图像正文/异常另视读。各范围由原账本及总审计核对；非提取后自动标读。",
+  "scope": "本次提供的电子文件全部内容；外部论文、链接、配套视频与印刷本被删内容不在范围内。",
+  "physicalPageCount": 417,
+  "readRanges": [
+    [
+      1,
+      417
+    ]
+  ],
+  "epubReadUnits": [],
+  "unreadGaps": [],
+  "chapters": [
+    {
+      "chapter": "Introduction",
+      "title": "Introduction",
+      "pdfRange": [
+        24,
+        29
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "神经科学可在基因、蛋白、细胞、神经回路、认知与行为多个层面提出问题；案例、筛查、描述和操纵的证据作用不同。技术应服从问题，必要性/充分性操纵的解释须考虑替代机制与对照。"
+      ],
+      "readingEvidence": {}
+    },
+    {
+      "chapter": "1 Whole-Brain Imaging",
+      "title": "1 Whole-Brain Imaging",
+      "pdfRange": [
+        30,
+        66
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "区分结构成像与功能测量；脑图像依赖间接信号、实验比较、统计及模板配准，不是思想直接拍照。各种方法在空间/时间精度、成本和侵入性上有取舍；研究应从问题、变量、任务范式、先导试验与伦理程序出发。"
+      ],
+      "readingEvidence": {
+        "limitations": [
+          "BOLD与任务相关不能自动证明特定脑区造成某种心理活动。",
+          "书中部分PET时间精度与表1.1存在差异，不能直接沿用为现行指标。",
+          "书内10—20例典型样本的经验描述不作为当下研究功效依据。",
+          "不将2015年的技术限制和医学用途视为现行操作或治疗指南。"
+        ]
+      }
+    },
+    {
+      "chapter": "2 Animal Behavior",
+      "title": "2 Animal Behavior",
+      "pdfRange": [
+        68,
+        98
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "动物行为研究依赖物种自然行为及可量化指标，并须排除感觉、运动、健康、处理和环境造成的替代解释。介绍啮齿类、果蝇、线虫和灵长类的行为范式；模型在人类行为上的适用性取决于表面、构念和预测效度，不能把单项表现当人的心理状态。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "模型选择与研究问题匹配",
+          "行为测量须多方法交叉检验",
+          "基线活动、环境、昼夜节律与遗传背景影响结果",
+          "动物伦理的替代、减少、优化原则"
+        ],
+        "limitations": [
+          "强迫游泳、悬尾等被书中解释为绝望的模型不是人类抑郁的直接测量，不外推作学生诊断。",
+          "不得让学生或动物经历电击、疼痛、饥渴、剥夺睡眠、惊吓或公开羞辱。",
+          "灵长类研究中神经元数量不能被课堂读者当成独立样本数或足够功效的通用规则。",
+          "本轮核读不构成原始研究的独立验证或现行伦理规则确认。"
+        ],
+        "teachingTranslation": "仅供教师理解行为证据的局限，适合初高中以上讨论同一行为可能有多种解释。可用虚构成绩变化案例列出睡眠、任务理解、资源等替代解释，不能开展本章动物实验。"
+      }
+    },
+    {
+      "chapter": "3 Stereotaxic Surgeries and In Vivo Techniques",
+      "title": "3 Stereotaxic Surgeries and In Vivo Techniques",
+      "pdfRange": [
+        102,
+        115
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "活体测量需要在完整生物的真实环境和局部干预带来的破坏、控制难度之间权衡。立体定位依赖图谱、实际个体位置验证和伦理审批；神经化学的微透析、伏安与安培测量各有采样、时间精度、分子选择与校准限制。"
+      ],
+      "readingEvidence": {
+        "limitations": [
+          "所有手术、植入、麻醉、药理与活体侵入方法均不可转为班会活动。",
+          "体外校准不保证活体浓度真实，不能从采样值直接推定心理状态。",
+          "书中药理及无菌细节属于2015年专业材料，不作为现行医疗或动物操作规程。"
+        ],
+        "teachingTranslation": "供高中及以上讨论测量指标与目标概念的差异：用无危险的虚构仪器数据讨论回收率、背景噪声和替代解释。小学至初中只供教师备课，不教实验操作。"
+      }
+    },
+    {
+      "chapter": "4 Electrophysiology",
+      "title": "4 Electrophysiology",
+      "pdfRange": [
+        118,
+        143
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "电生理从不同电极位置与组织制备研究神经信号，细胞外记录适合动作电位与群体活动，细胞内及膜片钳适合局部电位、离子通道与分子机制。电压钳、电流钳和动态钳问的问题不同；记录值和数据图依赖参考电极、阈值、噪声、细胞状态及制备条件。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "局部电位与全或无的动作电位",
+          "记录不是思想或人格的直接读数",
+          "数据单位、尺度与分析门限影响解释",
+          "异源表达、原代细胞、切片与活体环境的控制和真实性取舍"
+        ],
+        "limitations": [
+          "不将电极、刺激、动物制备、药理或膜片操作搬入班会。",
+          "麻醉、切片与培养环境会改变生理，不直接外推人的课堂行为。",
+          "不凭某神经元放电次数或单个通道变化断言学生情绪、能力或诊断。",
+          "PDF131图中横轴为声音频率，并非通常的时间直方图；不照抄正文中可能混淆的坐标说明。"
+        ],
+        "teachingTranslation": "高中及以上可用教师自制、无身体接触的虚构信号图，比较同一数据不同阈值或坐标尺度怎样影响判断；低段仅用于教师避免神经科学话语滥用。"
+      }
+    },
+    {
+      "chapter": "5 Microscopy",
+      "title": "5 Microscopy",
+      "pdfRange": [
+        146,
+        171
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "放大倍率不等于分辨率；数值孔径、光源波长、成像构型和样本制备决定可见信息。光学、荧光、共焦、双光子、TIRF及电镜各有适合的问题和限制。图像处理、曝光、光漂白、自发荧光及串色会改变解释，因此需要一致处理、盲法、对照和量化。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "分辨率与空放大",
+          "固定样本与活体信息的取舍",
+          "图像是测量与处理的产物",
+          "代表性图片需要重复性和量化支持"
+        ],
+        "limitations": [
+          "不复制本书图像或整表为教材；用原创简图。",
+          "不在课堂让学生接触研究染料、强光激光、电镜制备或生物组织。",
+          "不从显微图像的颜色或亮度直接推定情绪、人格或智力。",
+          "技术数值与最佳方法反映2015年语境，不当作当前设备规格。"
+        ],
+        "teachingTranslation": "教师可用完全自制的生活图片和虚构数据演示放大并不增加信息、曝光与裁剪影响判断，培养信息核实；小学看同图不同缩放，高中及以上比较共同处理与选择性美化。教学活动是原创类比，不声称本章测试了课堂效果。"
+      }
+    },
+    {
+      "chapter": "6 Visualizing Neural Structure",
+      "title": "6 Visualizing Neural Structure",
+      "pdfRange": [
+        174,
+        194
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "结构图可帮助提出功能假设，不能自行证明功能。固定、切片、染色和示踪各自选择性地显示形态、基因或蛋白表达及回路连接。ISH的mRNA表达、IHC蛋白标记、报告基因和酶活性不是同一种证据；各须阳性阴性对照并验证特异性。顺行、逆行和跨突触示踪回答不同连接问题。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "制备可能改变或丢失结构",
+          "标记强度受放大和背景影响，不总与原始分子量线性对应",
+          "表达位置、结构连接和真实活动须区分",
+          "抗体批次及固定条件影响结果"
+        ],
+        "limitations": [
+          "不复制组织、注射、染料、病原示踪、放射标记或转基因实验。",
+          "不能从单张染色图直接推断学生心理、人格或能力。",
+          "表格中的病毒宿主与毒性描述属2015年材料，未经现行验证，不作为生物安全依据。",
+          "书中植物凝集素段将不同分子并列，不能据此教学为同类。"
+        ],
+        "teachingTranslation": "小学以上可将教师原创校园地图与人员活动记录区分，初高中讨论知道连接不等于知道功能；本章主要供教师科学素养备课，不在班会开展生物实验。"
+      }
+    },
+    {
+      "chapter": "7 Visualizing Neural Function",
+      "title": "7 Visualizing Neural Function",
+      "pdfRange": [
+        196,
+        210
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "单张结构图像不能呈现动态功能。固定组织的即时早期基因与细胞周期标记、脉冲追踪，以及活细胞中的电压/钙/囊泡探针和蛋白相互作用成像，分别回答不同层级和时间尺度的问题；必须明确直接测量的是哪种替代指标及其控制条件。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "IEG表达需要实验组与对照组，不能独立判定活动",
+          "BrdU掺入只提示当时DNA合成，不能独立证明最终成为功能细胞",
+          "钙信号是电活动的间接指标且探针本身可改变钙缓冲",
+          "FRET/BiFC/FRAP等的可见信号依赖探针与测量机制"
+        ],
+        "limitations": [
+          "不开展动物、染料、基因、强光、放射标记或生物制备实验。",
+          "不能从荧光强弱推断情绪或学习能力。",
+          "PDF204 Fura-2图注使用emission字样而图轴是excitation；应保留此来源限制，不将其原句作为教材。",
+          "技术性能描述为2015年状态，不等于现行最优性能。"
+        ],
+        "teachingTranslation": "初高中可用教师原创连续校园照片与单张照片比较，讨论推断一个人参与合作还缺什么证据；教师备课区分过程记录和一次测量，低段只用日常图像。"
+      }
+    },
+    {
+      "chapter": "8 Manipulating Neural Activity",
+      "title": "8 Manipulating Neural Activity",
+      "pdfRange": [
+        214,
+        229
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "增加功能实验检验特定条件下的充分性，丧失功能实验检验必要性；两者可分离且都需排除对运动、清醒等基础功能的影响。物理、电、药理、遗传、化学遗传与光遗传操纵在细胞特异性、时间/空间精度、可逆性和侵入性之间取舍。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "必要不等于专门负责某心理功能",
+          "发展期补偿可能掩盖或改变操纵结果",
+          "刺激轴突末端仍可能逆向影响胞体及其他连接",
+          "任何操纵须验证实际靶点和非特异效应"
+        ],
+        "limitations": [
+          "不开展药理、刺激、植入、基因或强光实验，也不提供治疗和认知增强指导。",
+          "2015年的人体应用状态、CNO惰性、超声机制和工具性能不能直接当作当前事实。",
+          "表8.2/8.3给药途径与正文有差异，故不照抄为操作指南。"
+        ],
+        "teachingTranslation": "初高中以上用纸面虚构因果网络区分必要条件与充分条件，如钥匙、供电和门锁；仅转化推理框架，不在课堂操纵神经活动。"
+      }
+    },
+    {
+      "chapter": "9 Identifying Genes and Proteins of Interest",
+      "title": "9 Identifying Genes and Proteins of Interest",
+      "pdfRange": [
+        232,
+        245
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "从DNA、转录、RNA加工与翻译的简化基础出发，区分正向筛查由表型寻找候选基因、反向研究由基因检验表型。序列相似性、表达谱与RNAi筛查可产生候选解释，仍需后续操纵与独立验证。模式生物选择也受历史积累和共享工具影响。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "基因型到行为不是一对一的标签关系",
+          "同源或相似序列不保证相同功能",
+          "多基因筛查会出现假阳性，需要重复和控制",
+          "一个筛查结果只构成后续验证的起点"
+        ],
+        "limitations": [
+          "不开展致突变、遗传筛查、组织采集或学生基因分类。",
+          "对基因的定义为蛋白编码片段是本章简化，不应外推为所有基因都编码蛋白。",
+          "文中模式生物比例、基因组工具规模及所有神经元已知等为2015年语境，不沿用为当前统计。"
+        ],
+        "teachingTranslation": "高中及以上可用原创虚构资料卡比较先找表现差异再找因素与先提出因素再看表现的研究路线；中小学教师用作避免基因决定论的备课背景。"
+      }
+    },
+    {
+      "chapter": "10 Molecular Cloning and Recombinant DNA Technology",
+      "title": "10 Molecular Cloning and Recombinant DNA Technology",
+      "pdfRange": [
+        248,
+        265
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "分子克隆是隔离并扩增特定DNA片段，通过载体保存与后续操作；切割、扩增、连接、宿主复制、纯化与序列验证是不同环节。PCR、逆转录PCR、实时定量PCR和核酸印迹测量对象不同，不能混用其证据。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "复制、检出与功能证明是不同问题",
+          "基因组文库与cDNA文库的取样范围不同",
+          "选择标记筛出载体存在仍不能证明插入序列方向或内容正确",
+          "最终构建须独立验证而非假定操作成功"
+        ],
+        "limitations": [
+          "不把本章实验操作、抗生素筛选、培养、紫外染料或序列构建作为班会活动。",
+          "本章为2015年流程和工具概览，不作为当前实验参数依据。",
+          "cDNA只含编码外显子的说法是简化，文库可能含非翻译区，课堂不照抄绝对表述。"
+        ],
+        "teachingTranslation": "高中可用完全虚构的纸质信息片段与校对任务说明制作产物后仍须验证，教师备课学习明确术语与证据范围。"
+      }
+    },
+    {
+      "chapter": "11 Gene Delivery Strategies",
+      "title": "11 Gene Delivery Strategies",
+      "pdfRange": [
+        268,
+        280
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "物理、化学和病毒递送适合不同细胞与环境，效率、通量、表达持续时间、靶向性、载荷和对细胞损伤各有取舍。载体进入、基因表达、持续表达和功能改变须分别确认，递送本身亦可能造成混杂。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "高表达并不等于无细胞损伤",
+          "递送选择依赖研究场景而非统一最好方法",
+          "细胞类型、活体环境和时间窗共同限制外推"
+        ],
+        "limitations": [
+          "不得将病毒生产、基因枪、电穿孔、注射、转染或培养流程用于班会。",
+          "AAV的整合与安全表述、载体规格、效率和应用限制均须当代专业资料复核，不作当前技术或生物安全事实。",
+          "不将生物技术类比为能直接改变学生人格、记忆或心理。"
+        ],
+        "teachingTranslation": "本章仅作教师科学方法背景；高中可用无生物材料的虚构运输方案比较任务匹配，不讲具体递送与制备操作。"
+      }
+    },
+    {
+      "chapter": "12 Making and Using Transgenic Organisms",
+      "title": "12 Making and Using Transgenic Organisms",
+      "pdfRange": [
+        282,
+        298
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "报告、测量、操纵、消融与干扰内源功能的转基因用途不同。调控序列决定表达背景，但随机整合位置和拷贝数仍可改变表达。二元表达系统组合不同构建以限制时间和细胞群；建立品系后须验证遗传、表达位置与真实表型。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "基因存在与表达及功能不同",
+          "设计中的特异性不能替代实际验证",
+          "整合位置与拷贝数是混杂来源",
+          "二元系统使空间和时间控制可分别组合"
+        ],
+        "limitations": [
+          "不将动物繁育、胚胎、毒素、基因递送或药物诱导转换成班会实验。",
+          "不把教材转基因营养产品描述作为食品推荐或婴幼儿营养依据。",
+          "2015年的工具数量、成功率、时间及新近状态须另行核实才可作当前描述。"
+        ],
+        "teachingTranslation": "仅供教师理解实验设计；高中可以纸面虚构信息规则比较多条件同时满足才触发输出，无须教授基因构建。"
+      }
+    },
+    {
+      "chapter": "13 Manipulating Endogenous Genes",
+      "title": "13 Manipulating Endogenous Genes",
+      "pdfRange": [
+        302,
+        320
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "基因敲除、敲入和条件敲除在基因组层面操作，RNAi和morpholino影响转录产物，显性负性构建影响蛋白功能。经典同源重组与核酸酶介导编辑的方法不同，但都须验证基因型、表达和表型，并控制遗传背景、发育补偿与脱靶。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "基因必要性不能直接等同于其心理功能名称",
+          "无明显表型不等于基因毫无作用",
+          "多个独立探针与挽救实验增强特异性解释",
+          "发育期与成年期、全身与特定组织的操作不可混同"
+        ],
+        "limitations": [
+          "不进行基因编辑、RNA干扰、动物繁育、药物或胚胎操作。",
+          "书中技术适用范围、时间成本和CRISPR新近状态属于2015年。",
+          "不把假孕称为心理上相信怀孕，该拟人化文字不能迁移到心理教学。",
+          "复杂行为与基因之间不采用单因决定论。"
+        ],
+        "teachingTranslation": "高中可用教师原创虚构系统故障图，比较删除部件、阻止消息和阻断执行三类作用；班会只保留因果与替代解释训练，低段供教师备课。"
+      }
+    },
+    {
+      "chapter": "14 Cell Culture Techniques",
+      "title": "14 Cell Culture Techniques",
+      "pdfRange": [
+        324,
+        337
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "体外培养以更强的控制和可接近性换取与完整生物环境的差别。永生细胞、原代切片/组织块/分离培养以及不同干细胞适合不同问题，各受细胞来源、异质性、传代变化、营养环境和污染影响。干细胞身份须功能检验，单靠标记或形成球体不充分。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "模型便利不等于代表真实整体",
+          "细胞身份与功能需要多种证据",
+          "神经球可能由前体形成或融合，不能简单计为单个干细胞",
+          "体外发现需要完整神经系统验证"
+        ],
+        "limitations": [
+          "不开展人体或动物取材、细胞培养、胚胎干细胞、基因递送、药理或抗体操作。",
+          "不依据培养研究承诺心理治疗或干细胞疗法。",
+          "本章开头将所有干细胞定义为pluripotent，后文又区分multipotent，教学采用后文范围区分且不照抄绝对定义。",
+          "生物安全柜与层流柜不可根据书中并列措辞当作当前安全等效设施。"
+        ],
+        "teachingTranslation": "小学至高中可用教师原创情境讨论实验室简化模型与真实同伴互动环境有何差别；教师用作避免把细胞结果直接套用班级的备课原则。"
+      }
+    },
+    {
+      "chapter": "15 Biochemical Assays and Intracellular Signaling",
+      "title": "15 Biochemical Assays and Intracellular Signaling",
+      "pdfRange": [
+        340,
+        371
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "研究蛋白应区分表达量和位置、蛋白之间相互作用、翻译后修饰及蛋白与DNA的结合/调控功能。不同抗体、纯化与检测体系回答不同问题；共沉淀不证明直接结合，试管或酵母中的结合能力不等于活体发生，结合DNA也不等于能调控表达。需要互补方法、阳性阴性对照和合适的起始量参照。"
+      ],
+      "readingEvidence": {
+        "keyConcepts": [
+          "方法服从问题而不是因仪器先进就信结论",
+          "抗体在一种用途有效不能保证另一用途有效",
+          "含量、结合、修饰和功能是不同证据层级",
+          "标准曲线及上样/输入对照决定能否比较"
+        ],
+        "limitations": [
+          "不得转为动物免疫、血液/组织采样、培养、放射标记、化学纯化或基因操作活动。",
+          "不由分子水平发现直接承诺班会干预或治疗效果。",
+          "PDF367图中阳极标负号，不能沿用图例作实验教学。",
+          "图示条带及方法灵敏度为教学概览，不能忽视曝光、抗体特异性、样本差异和当前验证标准。"
+        ],
+        "teachingTranslation": "初高中可用原创纸面证据矩阵，判断资料只能证明两人同组、实际对话、共同完成任务中的哪一层，强调选择与结论匹配的证据；小学用日常观察描述，不引入分子实验。"
+      }
+    }
+  ],
+  "frontMatter": {
+    "pdfPages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "status": "cover_visually_reviewed_front_text_and_contents_read"
+  },
+  "backMatter": [
+    {
+      "section": "Glossary",
+      "pdfPages": [
+        374,
+        375,
+        376,
+        377,
+        378,
+        379,
+        380,
+        381,
+        382,
+        383,
+        384,
+        385,
+        386,
+        387,
+        388,
+        389,
+        390,
+        391,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405
+      ],
+      "status": "all_entries_text_read",
+      "summary": "术语表复核正文术语的范围。PDF382的Dominant negative与Double helix释义在视觉页中确认互换，不能照录；另有干细胞、多巴胺工具、动物抑郁测量与现代病毒技术的简化或时效限制，优先依据正文精确定义并在实际应用前作额外复核。"
+    },
+    {
+      "section": "Index",
+      "pdfPages": [
+        406,
+        407,
+        408,
+        409,
+        410,
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417
+      ],
+      "status": "all_entries_read_as_navigation_not_new_evidence",
+      "summary": "索引页用于导航，f/t/b分别代表图、表、框；不是新增研究证据。索引自身有拼写和异常页码，引用只采用实际正文中核实的PDF物理页。"
+    }
+  ],
+  "limitations": [
+    "前言中的人类基因数量和技术现状为2015年资料，不作现行数值依据。",
+    "本书的实验与医学技术不能直接搬入班会，不能据脑图像给学生贴认知或诊断标签。",
+    "全文提取和元数据读取不计作已读，只有实际输出并核读的完整正文页进入账本。",
+    "全读仅代表已覆盖本文件内容，书内技术与临床状态截至2015年，不等于当代事实核验。",
+    "本书主要贡献为教师理解证据与研究边界，并非经过学校实测的班会干预手册。",
+    "所记教学转换是原创类比，不声称本书验证过其课堂效果。"
+  ],
+  "audit": {
+    "sourceId": "S14",
+    "format": "PDF",
+    "sourceSha256": "10899b884a78e8616d53b61cd89e1a84f4ed67761414f3a4c3221db76827b7fb",
+    "shaMatchesInventory": true,
+    "physicalPageCount": 417,
+    "pageCountMatchesInventory": true,
+    "title": "Guide to Research Techniques in Neuroscience",
+    "shaMatchesLedger": true,
+    "shaLedgerNote": null,
+    "status": "ledger_audit_passed_with_source_limits",
+    "fullBookReadAudited": true,
+    "ledgerEvidence": [
+      {
+        "sha256": "f981211ff6d2f8be92513e76bf0d85ada445c1609d6f9736a7eebcc4e3caca07",
+        "status": "full_book_read_with_source_limitations",
+        "fullBookRead": true
+      }
+    ],
+    "actuallyAccountedPhysicalRanges": [
+      [
+        1,
+        417
+      ]
+    ],
+    "actuallyAccountedPhysicalPageCount": 417,
+    "unaccountedPhysicalRanges": [],
+    "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 16,
+    "frontAndBackCoverageOutsideChapterRanges": [
+      [
+        1,
+        23
+      ],
+      [
+        67,
+        67
+      ],
+      [
+        99,
+        101
+      ],
+      [
+        116,
+        117
+      ],
+      [
+        144,
+        145
+      ],
+      [
+        172,
+        173
+      ],
+      [
+        195,
+        195
+      ],
+      [
+        211,
+        213
+      ],
+      [
+        230,
+        231
+      ],
+      [
+        246,
+        247
+      ],
+      [
+        266,
+        267
+      ],
+      [
+        281,
+        281
+      ],
+      [
+        299,
+        301
+      ],
+      [
+        321,
+        323
+      ],
+      [
+        338,
+        339
+      ],
+      [
+        372,
+        417
+      ]
+    ],
+    "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+    "chapterContinuityAudit": {
+      "overlappingPhysicalPages": [],
+      "interChapterPagesNotInsideChapterRanges": [
+        [
+          67,
+          67
+        ],
+        [
+          99,
+          101
+        ],
+        [
+          116,
+          117
+        ],
+        [
+          144,
+          145
+        ],
+        [
+          172,
+          173
+        ],
+        [
+          195,
+          195
+        ],
+        [
+          211,
+          213
+        ],
+        [
+          230,
+          231
+        ],
+        [
+          246,
+          247
+        ],
+        [
+          266,
+          267
+        ],
+        [
+          281,
+          281
+        ],
+        [
+          299,
+          301
+        ],
+        [
+          321,
+          323
+        ],
+        [
+          338,
+          339
+        ]
+      ],
+      "allInterChapterPagesAccountedElsewhere": true,
+      "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+    },
+    "visualAudit": {
+      "embeddedRasterImagePageCount": 80,
+      "actuallyRecordedVisualPageCount": 195,
+      "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+      "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+      "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+      "substantiveFigureScopeEvidence": "引言与15章所有正文连续全文核读；所有术语表条目与索引条目逐页输出核读；前置文字/目录/参考书目已核读，空白页归类；正文全部编号图/表/框及旋转续表进行视觉核查。全读不代表独立复现研究、访问书外引用或逐像素检查无图普通文字页。"
+    },
+    "issues": []
+  },
+  "historicalPendingResolutions": []
+}

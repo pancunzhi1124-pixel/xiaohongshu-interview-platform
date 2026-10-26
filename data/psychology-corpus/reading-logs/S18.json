@@ -1,0 +1,333 @@
+{
+  "sourceId": "S18",
+  "title": "The Psychology of the Child",
+  "sourceSha256": "b1972d4a227f9c9f8ae4af87d71ae5b8be7e5336d3a021293797a4f4af6faa90",
+  "format": "EPUB",
+  "readingMethod": "各负责读者连续阅读全文并按章记录；图表/图像正文/异常另视读。各范围由原账本及总审计核对；非提取后自动标读。",
+  "scope": "本次提供的电子文件全部内容；外部论文、链接、配套视频与印刷本被删内容不在范围内。",
+  "physicalPageCount": null,
+  "readRanges": [],
+  "epubReadUnits": [
+    {
+      "spine": 1,
+      "href": "titlepage.xhtml",
+      "paragraphs": [
+        1,
+        1
+      ],
+      "note": "空提取段，实际为已核对的cover.jpg"
+    },
+    {
+      "spine": 2,
+      "href": "index_split_000.html",
+      "paragraphs": [
+        1,
+        292
+      ]
+    },
+    {
+      "spine": 3,
+      "href": "index_split_001.html",
+      "paragraphs": [
+        1,
+        342
+      ]
+    }
+  ],
+  "unreadGaps": [],
+  "chapters": [
+    {
+      "chapter": "1",
+      "title": "The Sensori-Motor Level",
+      "pdfRange": null,
+      "epubLocation": {
+        "spine": 2,
+        "paragraphs": [
+          131,
+          191
+        ]
+      },
+      "summaries": [
+        "婴幼儿在尚无语言的阶段已通过动作图式解决实际问题：从反射练习、循环反应，发展到协调已有手段、尝试新手段及内在组合。客体、空间、时间、因果的组织与动作协调共同发展，情感与认知分别体现活动的动力和结构。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "同化与顺应",
+          "目的—手段分化",
+          "客体永久性",
+          "动作协调与去中心化",
+          "情感与认知相互依存"
+        ],
+        "limitations": [
+          "所述月龄是历史研究概括，不能作个体能力或照料质量的诊断标准",
+          "不复制婴儿受挫、分离或机构剥夺情境",
+          "不把精神分析式关系解释当成课堂诊断"
+        ],
+        "activityTranslation": "低年级用可移动实物尝试多种达到目标的方法，再口述自己如何改变策略；更高年级可用合作搭建反思从只看自己操作到注意共同对象。此为教学转化，并非书中原教案。"
+      }
+    },
+    {
+      "chapter": "2",
+      "title": "The Development of Perception",
+      "pdfRange": null,
+      "epubLocation": {
+        "spine": 2,
+        "paragraphs": [
+          192,
+          242
+        ]
+      },
+      "summaries": [
+        "知觉场中的集中、取样和错觉，与随经验和年龄发展的探索活动相互作用。知觉恒常与运算守恒有联系却不能直接等同；看见同样或记住形象，并不自动带来对可逆变换的理解。动作组织也会反过来引导观察。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "知觉场效应",
+          "探索与取样",
+          "恒常性与守恒的区别",
+          "动作对知觉活动的组织"
+        ],
+        "limitations": [
+          "不把错觉易感或守恒任务表现用于智力分组",
+          "段215所嵌SVG尚需读图，不能称章内材料全读"
+        ],
+        "activityTranslation": "各学段用安全的线条错觉或同量不同容器活动，让学生分别报告看见的样子、预测、操作验证和解释；讨论初印象可能需要补充观察。"
+      }
+    },
+    {
+      "chapter": "3",
+      "title": "The Semiotic or Symbolic Function",
+      "pdfRange": null,
+      "epubLocation": [
+        {
+          "spine": 2,
+          "paragraphs": [
+            243,
+            292
+          ]
+        },
+        {
+          "spine": 3,
+          "paragraphs": [
+            1,
+            38
+          ]
+        }
+      ],
+      "summaries": [
+        "延迟模仿、象征游戏、绘画、心象、记忆和语言共同扩大对不在场事物的表征，但不等于已经掌握运算。心象的准确与守恒推理可以分离，记忆也受图式组织而含重建成分。语言丰富沟通和思维范围，却不能仅靠词句训练保证理解。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "符号与能指/所指分化",
+          "象征游戏",
+          "静态与变换心象",
+          "记忆重建",
+          "语言与动作协调的关系"
+        ],
+        "limitations": [
+          "历史样本的年龄与百分比不作为当代学生常模",
+          "原文对聋盲群体的术语和能力比较有年代局限，不能转化成群体缺陷标签",
+          "不把学生画画、游戏象征或记忆差异作心理诊断",
+          "图像材料与全书后注尚未读完"
+        ],
+        "activityTranslation": "小学可先画出情境、角色演演、实际变换后再用话解释；初高中比较同一事件的多种记忆与叙述，以允许修正的方式回顾事实和推断。"
+      }
+    },
+    {
+      "chapter": "4",
+      "title": "The Concrete Operations of Thought and Interpersonal Relations",
+      "pdfRange": null,
+      "epubLocation": {
+        "spine": 3,
+        "paragraphs": [
+          39,
+          126
+        ]
+      },
+      "summaries": [
+        "从能成功做事到能表征和可逆推理仍需重建。分类、排序、数、空间时间和守恒逐渐协调，社会关系中也需要区分并协调视角。作者将合作、相互尊重与道德自主相联系，强调认识上的自我中心不等于道德自私。规则可经群体协议改变，与单纯服从权威有别。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "可逆性与守恒",
+          "分类包含与排序传递性",
+          "去中心化与视角协调",
+          "机遇、不可逆混合与概率",
+          "单向尊重/相互尊重",
+          "他律/自主及意图与后果"
+        ],
+        "limitations": [
+          "历史任务中的年龄序列并非固定课程门槛",
+          "不把自我中心当自私的道德标签",
+          "不以规则可以协商为由取消保护性底线",
+          "不在班级公开审判真实学生或逼迫自我揭露",
+          "spine3段51、56、66有原EPUB/OCR公式损坏；未伪造复原，数学符号不用于知识卡精确引文"
+        ],
+        "activityTranslation": "小学用轮流描述共同图形、同伴复述并核对、共同修订小游戏规则练习协调；初高中用虚构的冲突情境区分事实、意图、后果及规则理由，再协商公平修复方案。"
+      }
+    },
+    {
+      "chapter": "5",
+      "title": "The Preadolescent and the Propositional Operations",
+      "pdfRange": null,
+      "epubLocation": {
+        "spine": 3,
+        "paragraphs": [
+          127,
+          183
+        ]
+      },
+      "summaries": [
+        "形式思维可暂离具体事实，把现实放在可能组合中考察。作者用组合、INRC四种变换、比例、双重参照、静水压、概率和控制变量实验说明这种结构，并把面向未来的价值、理想和生涯计划与认知可能性的扩展联系起来。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "假设—演绎推理",
+          "穷尽组合",
+          "INRC四群",
+          "因素分离与控制变量",
+          "未来价值与理想"
+        ],
+        "limitations": [
+          "作者明确实现程度会受学校和社会环境影响，不以年级保证自动掌握",
+          "实验模型不是人际行为的机械因果模型",
+          "不用酒精、锐利金属杆等原实验材料进入低龄课堂",
+          "正文146等有EPUB公式OCR错误；四群正文SVG已实际看图核对"
+        ],
+        "activityTranslation": "初中到高中用纸桥或安全摆动模型提出多种可能因素，每轮只改变一项，再对预测、证据和替代解释作比较；班会可让学生用假设条件讨论未来选择，并列出可尝试的小行动。"
+      }
+    },
+    {
+      "chapter": "Conclusion",
+      "title": "Factors in Mental Development",
+      "pdfRange": null,
+      "epubLocation": {
+        "spine": 3,
+        "paragraphs": [
+          184,
+          200
+        ]
+      },
+      "summaries": [
+        "作者以整合性阶段描述发展，并提出成熟、动作经验、社会交往与传递、平衡化四因素。前三者都必要而各自不足，儿童通过反馈和预期的自我调节主动构建新结构。情感动力与认知结构不可相互化约，也无法分离。"
+      ],
+      "readingEvidence": {
+        "concepts": [
+          "成熟提供可能性",
+          "物理经验与逻辑数学经验",
+          "社会传递需主动同化",
+          "平衡化、自我调节与主动补偿"
+        ],
+        "limitations": [
+          "阶段固定顺序与结构解释是本书历史理论立场，不当作当代研究已全部确定的事实",
+          "不以制造强烈心理冲突推动发展",
+          "不把一次课堂活动说成跨越完整发展阶段"
+        ],
+        "activityTranslation": "各学段活动采用尝试—描述—发现不一致—交换解释—再尝试的循环，让同伴反馈帮助学生修订策略；用可选择的困难程度和表达方式适应差异。"
+      }
+    }
+  ],
+  "frontMatter": [],
+  "backMatter": [],
+  "limitations": [
+    "EPUB可见文字包含OCR错误，尤其spine3段51、56、66、146等数学关系和运算符损坏；这是已阅读源本的缺陷，未凭空还原。需要精确数学引文时须另取可靠版本。",
+    "SVG page0298的公式与英文释义部分对应存在可见源文本异常，作为原书电子版本问题记录，不以其符号生成逻辑教案。",
+    "注释编号顺序在部分位置不完全单调，按原EPUB全部看过，未重新排序冒充纸书顺序。",
+    "正文历史术语、残障群体比较和精神分析解释不能直接作为当代教育诊断或归因。"
+  ],
+  "audit": {
+    "sourceId": "S18",
+    "format": "EPUB",
+    "title": "The Psychology of the Child",
+    "sourceSha256": "b1972d4a227f9c9f8ae4af87d71ae5b8be7e5336d3a021293797a4f4af6faa90",
+    "shaMatchesInventory": true,
+    "shaMatchesLedger": true,
+    "physicalPageCount": null,
+    "locatorRule": "EPUB正文顺序spine、HTML文件、段落号或原文件page锚点与图像名；锚点不是PDF页码。",
+    "status": "ledger_audit_passed_with_source_limits",
+    "fullBookReadAudited": true,
+    "ledgerEvidence": [
+      {
+        "sha256": "d603c5604f04e32bf1e4ad534288da25c76b6735c0c927e05c70ef110bbf3cc4",
+        "status": "full_book_read",
+        "fullBookRead": true
+      }
+    ],
+    "spineAudit": {
+      "actualSpineSectionCount": 3,
+      "totalExtractedParagraphUnits": 635,
+      "readTextUnits": [
+        {
+          "spine": 1,
+          "href": "titlepage.xhtml",
+          "paragraphs": [
+            1,
+            1
+          ],
+          "note": "空提取段，实际为已核对的cover.jpg"
+        },
+        {
+          "spine": 2,
+          "href": "index_split_000.html",
+          "paragraphs": [
+            1,
+            292
+          ]
+        },
+        {
+          "spine": 3,
+          "href": "index_split_001.html",
+          "paragraphs": [
+            1,
+            342
+          ]
+        }
+      ],
+      "unreadParagraphGaps": [],
+      "coverOnlySpine": "Spine1 is cover.jpg with no visible body text; empty extracted paragraph1 is not missing text."
+    },
+    "visualAudit": {
+      "actualUniqueImageAssets": 153,
+      "recordedActuallyViewedUniqueAssets": 153,
+      "missingImageAssets": [],
+      "allAssetsRecordedViewed": true,
+      "svgCount": 140,
+      "jpegCount": 13,
+      "sourceEvidence": "13幅JPEG及140幅SVG均已实际看图，含全部向量正文、公式、版权和附注、索引；cover.jpg同时为spine1封面。后部锚点page0202等为EPUB内部页锚，不是PDF页码。"
+    },
+    "sourceQualityCaveat": [
+      "EPUB可见文字包含OCR错误，尤其spine3段51、56、66、146等数学关系和运算符损坏；这是已阅读源本的缺陷，未凭空还原。需要精确数学引文时须另取可靠版本。",
+      "SVG page0298的公式与英文释义部分对应存在可见源文本异常，作为原书电子版本问题记录，不以其符号生成逻辑教案。",
+      "注释编号顺序在部分位置不完全单调，按原EPUB全部看过，未重新排序冒充纸书顺序。",
+      "正文历史术语、残障群体比较和精神分析解释不能直接作为当代教育诊断或归因。"
+    ],
+    "issues": []
+  },
+  "historicalPendingResolutions": [
+    {
+      "sourceId": "S18",
+      "ledger": "development/S18-ledger.json",
+      "field": "chapters[1].limitations[1]",
+      "historicalText": "段215所嵌SVG尚需读图，不能称章内材料全读",
+      "currentResolution": "后续最终图像阅读已完成；visualReadImages确含page0215_0000.svg，coverageValidation记录153/153全部资产已实际视读、无缺口。此句保留为历史阶段待办，不代表当前仍待看；未修改原账本。",
+      "evidence": [
+        "visualReadImages: page0215_0000.svg",
+        "coverageValidation.allImageAssetsActuallyViewed=true",
+        "visualNotes: 13 JPEG + 140 SVG actually viewed"
+      ],
+      "remainingSourceLimit": "page0215等SVG仍有源字形/公式缺损；看完全部图不等于修复缺损，S18 sourceQualityLimitations继续有效。"
+    },
+    {
+      "sourceId": "S18",
+      "ledger": "development/S18-ledger.json",
+      "field": "chapters[2].limitations",
+      "historicalText": "图像材料与全书后注尚未读完",
+      "currentResolution": "后续最终visualReadImages153项、endnotesRead含引言及五章全部附注、coverageValidation.allTextRangesRead/allImageAssetsActuallyViewed为真，已实际完成；旧句仅记录当时阶段未读事实，当前已解除。",
+      "evidence": [
+        "endnotesRead: Introduction + chapters1–5",
+        "coverageValidation all images153 and text ranges read"
+      ]
+    }
+  ]
+}

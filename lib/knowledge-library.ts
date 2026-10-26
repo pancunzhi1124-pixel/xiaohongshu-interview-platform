@@ -43,7 +43,8 @@ export function readKnowledgeCards(): KnowledgeCard[] {
 export function saveKnowledgeCard(card: KnowledgeCard): KnowledgeCard[] {
   if (typeof window === "undefined") return [];
   const current = readKnowledgeCards().filter((item) => item.id !== card.id);
-  const next = [card, ...current].slice(0, MAX_CARDS);
+  if (current.length >= MAX_CARDS) throw new Error("知识库空间不足，请先导出并整理卡片。");
+  const next = [card, ...current];
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   return next;
 }
@@ -52,7 +53,10 @@ export function importKnowledgeCards(input: unknown): KnowledgeCard[] {
   if (typeof window === "undefined" || !Array.isArray(input)) return readKnowledgeCards();
   const imported = input.filter(isKnowledgeCard);
   const existing = readKnowledgeCards();
-  const merged = [...imported, ...existing.filter((item) => !imported.some((candidate) => candidate.id === item.id))].slice(0, MAX_CARDS);
+  const unique = Array.from(new Map(imported.map(card => [card.id, card])).values());
+  const additions = unique.filter(card => !existing.some(item => item.id === card.id));
+  if (existing.length + additions.length > MAX_CARDS) throw new Error("知识库空间不足，请先导出并整理；本次没有覆盖或删除已有卡片。");
+  const merged = [...additions, ...existing];
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
   return merged;
 }

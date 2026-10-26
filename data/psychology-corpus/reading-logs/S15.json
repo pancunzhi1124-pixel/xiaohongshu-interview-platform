@@ -1,0 +1,332 @@
+{
+  "sourceId": "S15",
+  "title": "How to Change — Katy Milkman",
+  "sourceSha256": "a6aea772ad69d0b9e4c63a3e0afcecb20c25d1f2bfaa0fd7ef4a138f8461da32",
+  "format": "PDF",
+  "readingMethod": "各负责读者连续阅读全文并按章记录；图表/图像正文/异常另视读。各范围由原账本及总审计核对；非提取后自动标读。",
+  "scope": "本次提供的电子文件全部内容；外部论文、链接、配套视频与印刷本被删内容不在范围内。",
+  "physicalPageCount": 223,
+  "readRanges": [
+    [
+      1,
+      223
+    ]
+  ],
+  "epubReadUnits": [],
+  "unreadGaps": [],
+  "chapters": [
+    {
+      "chapter": "前言与导论",
+      "title": "前言与导论",
+      "pdfRange": [
+        10,
+        20
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "改变方法要针对具体障碍；用网球教练调整战术的故事引出分辨启动、冲动、拖延、遗忘、惯性、自信及同伴影响。故事只作说明，不能替代证据。行为受资源与环境约束，不能把未改变归因于意志薄弱。"
+      ],
+      "readingEvidence": {}
+    },
+    {
+      "chapter": "1 Getting Started",
+      "title": "1 Getting Started",
+      "pdfRange": [
+        21,
+        38
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "时间地标和角色变化可带来重新开始的动力；实际情境变动也会打断习惯。书中区分观察研究与实验，提示启动作用不等于持续作用，重置还可能干扰已经成功者。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "象征性新起点",
+          "保存已有进展",
+          "情境变化时重建线索"
+        ],
+        "limitations": [
+          "成人运动和退休储蓄研究不能直接推定儿童效果",
+          "书中击球率.246到.294标为29%的数值与算术不符，不能沿用",
+          "不等待特殊日子才开始，也不把重启当成维持方法"
+        ],
+        "activityTranslation": "新学期或周一由学生自选一件微小行动，保留已经有效的做法；不贬低过去的自己。"
+      }
+    },
+    {
+      "chapter": "2 Impulsivity",
+      "title": "2 Impulsivity",
+      "pdfRange": [
+        39,
+        55
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "当下偏好会使延迟收益的行动缺乏吸引力；把必要行动本身变得愉快、适度捆绑轻松兴趣或游戏化可能帮助行动。读到运动捆绑与游戏化试验，也读到效果衰减及强迫游戏的反作用。游戏要有自主认同，不能以参与即接受为前提。"
+      ],
+      "readingEvidence": {
+        "limitations": [
+          "不能同时捆绑两件要求高度注意的任务",
+          "钢琴楼梯视频不构成长效证据",
+          "成人实验效果不能直接用于儿童；不以食物、酒精或强迫运动为课堂奖励",
+          "PDF51–55：员工不认同游戏时情绪变差，表现略降；认同者更积极不等于证明工作产出提高",
+          "个人康复故事不构成治疗保证；儿童活动需可选与非竞争替代",
+          "后置脚注PDF215补充：销售下降仅边缘显著，不能断言已确证绩效损害；不变更为零效果，也不作强因果结论。"
+        ]
+      }
+    },
+    {
+      "chapter": "3 Procrastination",
+      "title": "3 Procrastination",
+      "pdfRange": [
+        56,
+        73
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "自愿的承诺装置通过预先安排条件或成本帮助抵御将来的诱惑。书中描述储蓄锁定账户、分段截止日期、金钱承诺及软承诺，强调小而重复的承诺易于执行。不同人的采用意愿与风险不同，过强限制也可能自毁或令人失去信任。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "预先安排",
+          "任务分段",
+          "短周期自选承诺"
+        ],
+        "limitations": [
+          "不把成人现金惩罚、羞辱、饮食体重目标、强制锁定等用于班会",
+          "不把书中naïfs/sophisticates理论分组作学生人格标签",
+          "疾病与突发事件会使履约不受个人控制，不能以失败归罪",
+          "本记录尚未外部复核原试验与后续复制，百分比只作书中研究报告定位"
+        ],
+        "activityTranslation": "中高年级把自选项目拆成两三个检查点，与同伴约定支持方式；低年级由教师示范一个小步骤。允许修改或退出。"
+      }
+    },
+    {
+      "chapter": "4 Forgetfulness",
+      "title": "4 Forgetfulness",
+      "pdfRange": [
+        74,
+        93
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "有行动意愿仍可能遗忘；在可以立即行动时出现的提醒更有用。线索型计划把明确可见的时间、地点或动作与下一步联结，特别有助于此前没有计划的情境。计划还可分解大任务，复杂步骤可用清单；过多竞争目标会削弱承诺。书中也区分计划提示与正式预约、单纯提醒、对他人承诺。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "及时提醒",
+          "线索型计划",
+          "显眼且可遇见的线索",
+          "小步骤与清单"
+        ],
+        "limitations": [
+          "PDF90：计划不能替代本人意愿",
+          "PDF90–91：一次只选少量优先事项，避免计划过载",
+          "遗忘曲线的固定百分比来自特定无意义材料与程序，不能当所有儿童学习的统一规律",
+          "提醒效果受渠道和行动窗口影响；成人投票/医疗试验不等于班会效果",
+          "不把未行动一律称为懒惰，需考虑资源和支持不足"
+        ],
+        "activityTranslation": "学生为一个自己愿意做的行动绘制“看到/做完某事→下一步”提示卡，演练线索是否真实可见；一周后用匿名汇总检验是否需要改线索。"
+      }
+    },
+    {
+      "chapter": "5 Laziness",
+      "title": "5 Laziness",
+      "pdfRange": [
+        94,
+        111
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "减少行动阻力、设置透明默认选项可以降低反复决策成本；需要重复行动时，可把新行为接在熟悉线索后反复练习并给予反馈。书中运动实验发现固定时点虽加强该时点行动，但过于僵化降低总体执行；保有替代时间的弹性更稳健。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "降低阻力",
+          "透明可退出的默认选项",
+          "旧习惯带新行为",
+          "弹性备选路径",
+          "私密过程记录"
+        ],
+        "limitations": [
+          "章节标题的懒惰不是学生人格诊断",
+          "默认项须明确告知、有真实选择与退出，不替学生自动公开隐私",
+          "连续记录不能变成断签羞辱或带病坚持",
+          "书中药物/避孕/成瘾示例不作课堂医学指导；身体健康不应通过打卡评判",
+          "不将运动研究概括为所有习惯固定天数形成",
+          "后置脚注PDF218：默认项可通过推荐暗示、常态推断、损失感起作用，不应把机制唯一归于懒惰。"
+        ],
+        "activityTranslation": "小组设计容易取得材料的教室角落，学生为一个小行动选熟悉线索及替代时段；模拟“原计划受阻”时怎样调整。"
+      }
+    },
+    {
+      "chapter": "6 Confidence",
+      "title": "6 Confidence",
+      "pdfRange": [
+        112,
+        130
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "自我效能与反馈影响行动；有时让学习者提供经验，比不请自来的说教更有帮助。书中高中生建议写作实验报告小幅成绩改善，并承认不能使所有人成为尖子。允许有限意外、把挫折看作调整线索、关注具体进步可以帮助恢复；同时需校准过度自信。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "征求建议",
+          "双向同伴支持",
+          "具体进步反馈",
+          "挫折后重启",
+          "保留调整空间"
+        ],
+        "limitations": [
+          "不是所有学生已具备所需知识；征求建议不能取代教学与专业帮助",
+          "信念影响经历不等于意念能治病，安慰剂/奶昔/家政研究只记为书中报告未外部复核",
+          "成长型思维不等于只要努力必成功，需策略、资源、休息及支持",
+          "不沿用饮食体重、cheat meals、羞耻感为班会目标",
+          "不强迫公开失败或把同伴当咨询师"
+        ],
+        "activityTranslation": "中高年级写给低年级的一条亲自试过的学习建议，并说明适用条件；低年级口述一个遇到困难后可求助或调整的办法，教师记录。"
+      }
+    },
+    {
+      "chapter": "7 Conformity",
+      "title": "7 Conformity",
+      "pdfRange": [
+        131,
+        148
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "同伴影响既来自归属压力也来自信息；主动观察并借鉴适合自身条件的具体策略比被动比较可能更有帮助。书中同时详述强弱学生混编反而分化、储蓄规范信息反而降低报名的失败，提示差距过大可能打击信心。可见性带来压力与伦理责任，群体常态并非行动正当性的依据。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "信息与规范影响的区别",
+          "选择适合自己的可模仿步骤",
+          "辨识社会压力",
+          "同伴差距与比较反作用"
+        ],
+        "limitations": [
+          "不得把低分学生称作坏同伴或隔离",
+          "不复制隐瞒、孤立三名学生并当众追问的课堂鼓掌示范",
+          "不伪造多数人数据或上升趋势",
+          "不公开未参与者名单，不用奖惩制造从众；可退出也需避免隐性羞辱",
+          "同伴规范的因果与机制需按研究设计判断，不把事后解释当已证实机制"
+        ],
+        "activityTranslation": "给学生虚构的“大家都这样”的邀请卡，分辨事实证据、个人意愿、安全界限；讨论暂停、询问和求助。另可自愿交换一个可操作学习技巧。"
+      }
+    },
+    {
+      "chapter": "8 Changing for Good",
+      "title": "8 Changing for Good",
+      "pdfRange": [
+        149,
+        153
+      ],
+      "epubLocation": null,
+      "summaries": [
+        "持续行为支持撤去后，干预效果常衰减；维护需要重复的合适支持，而非一次活动永久改变。障碍可能随时间变化，应重新评估方法。若某条路径屡次不适合，可回到更大目标选择别的方式，而不是不断责备自己。"
+      ],
+      "readingEvidence": {
+        "practicalConcepts": [
+          "持续支持",
+          "随时间重新评估障碍",
+          "调整路径而保留目标"
+        ],
+        "limitations": [
+          "书中慢性病类比只是行为支持比喻，不能将普通困难病理化",
+          "一次班会不能承诺长期改变或治疗效果",
+          "失败也可能来自外部限制，不只内部心理障碍",
+          "不把饮食体重记录用于儿童群体活动"
+        ],
+        "activityTranslation": "班会结束只选一个自愿小尝试，一周与一个月后询问是否仍有用、遇到什么资源障碍及是否需要换方法；成功定义包含合理调整。"
+      }
+    }
+  ],
+  "frontMatter": [],
+  "backMatter": [],
+  "limitations": [],
+  "audit": {
+    "sourceId": "S15",
+    "format": "PDF",
+    "sourceSha256": "a6aea772ad69d0b9e4c63a3e0afcecb20c25d1f2bfaa0fd7ef4a138f8461da32",
+    "shaMatchesInventory": true,
+    "physicalPageCount": 223,
+    "pageCountMatchesInventory": true,
+    "title": "How to Change — Katy Milkman",
+    "shaMatchesLedger": true,
+    "shaLedgerNote": null,
+    "status": "ledger_audit_passed_with_source_limits",
+    "fullBookReadAudited": true,
+    "ledgerEvidence": [
+      {
+        "sha256": "6b8498e0c619778a79fb9d17b153d502a31a97b9638ac3a54476197f46dc9911",
+        "status": "full_book_read",
+        "fullBookRead": true
+      }
+    ],
+    "actuallyAccountedPhysicalRanges": [
+      [
+        1,
+        223
+      ]
+    ],
+    "actuallyAccountedPhysicalPageCount": 223,
+    "unaccountedPhysicalRanges": [],
+    "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 9,
+    "frontAndBackCoverageOutsideChapterRanges": [
+      [
+        1,
+        9
+      ],
+      [
+        154,
+        223
+      ]
+    ],
+    "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+    "chapterContinuityAudit": {
+      "overlappingPhysicalPages": [],
+      "interChapterPagesNotInsideChapterRanges": [],
+      "allInterChapterPagesAccountedElsewhere": true,
+      "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+    },
+    "visualAudit": {
+      "embeddedRasterImagePageCount": 5,
+      "embeddedRasterImagePages": [
+        1,
+        2,
+        212,
+        213,
+        223
+      ],
+      "actuallyRecordedVisualPageCount": 15,
+      "actuallyRecordedVisualPages": [
+        1,
+        3,
+        21,
+        51,
+        74,
+        94,
+        112,
+        131,
+        149,
+        193,
+        213,
+        215,
+        218,
+        221,
+        223
+      ],
+      "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+      "embeddedRasterPagesNotSeparatelyListedAsViewed": [
+        2,
+        212
+      ],
+      "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+      "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+    },
+    "issues": []
+  },
+  "historicalPendingResolutions": []
+}

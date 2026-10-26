@@ -1,0 +1,1852 @@
+{
+  "auditKind": "reading_ledger_evidence_audit_not_new_fulltext_read",
+  "createdAt": "2026-10-26T15:03:00.316900+08:00",
+  "auditor": "/root/read_neuroscience",
+  "scope": "17 PDFs plus 1 EPUB explicitly authorized by user",
+  "totalRegistered": 18,
+  "pdfCount": 17,
+  "epubCount": 1,
+  "completedLedgerAudits": 18,
+  "pendingOrResolutionRequired": [],
+  "all18Complete": true,
+  "totalPdfPhysicalPages": 11846,
+  "repositoryOrKnowledgeBaseChanged": false,
+  "method": "Ledger evidence only: actual reading page sets/ranges, original substantive chapter notes, front/back records and actual visual-page declarations. Recomputed source SHA, actual PDF page count and embedded-image inventory; EPUB spine/paragraph/image-asset coverage checked. No rereading claim, no extraction/hash/render-generation-as-reading. First/last chapter summaries sampled for every ledger; all chapter ranges and summary-presence fields checked.",
+  "inventoryExtractionStatusCaveat": "Sxx/inventory.json has early completed_not_read/not_started states. Those extraction registers were not changed; subsequent reading ledgers listed here are the reading evidence, not inventory extraction flags.",
+  "globalLimits": [
+    "A ledger evidence audit is not an independent repeat of all book reading or replay of historical tool outputs. Actual reading is attributed to responsible readers and source ledger hashes.",
+    "Scope is each provided file: external papers, online platforms, videos, missing edition content are not counted as read.",
+    "S13 blurred glyphs, S18 OCR/math symbols, S09 formula formatting, S02 missing table and other source defects remain explicit; never claim all glyphs legible or all source claims true.",
+    "Reading clinical, nude, violence or trauma material does not authorize classroom reproduction; distillation remains concise original synthesis with age and safety boundaries."
+  ],
+  "nextAction": "Reading audit complete for all18 provided files. Proceed with original concise source-grounded distillation, preserving source defects and scope limits.",
+  "historicalPendingClarifications": [
+    {
+      "sourceId": "S18",
+      "ledger": "development/S18-ledger.json",
+      "field": "chapters[1].limitations[1]",
+      "historicalText": "段215所嵌SVG尚需读图，不能称章内材料全读",
+      "currentResolution": "后续最终图像阅读已完成；visualReadImages确含page0215_0000.svg，coverageValidation记录153/153全部资产已实际视读、无缺口。此句保留为历史阶段待办，不代表当前仍待看；未修改原账本。",
+      "evidence": [
+        "visualReadImages: page0215_0000.svg",
+        "coverageValidation.allImageAssetsActuallyViewed=true",
+        "visualNotes: 13 JPEG + 140 SVG actually viewed"
+      ],
+      "remainingSourceLimit": "page0215等SVG仍有源字形/公式缺损；看完全部图不等于修复缺损，S18 sourceQualityLimitations继续有效。"
+    },
+    {
+      "sourceId": "S05",
+      "ledger": "S05-reading.json",
+      "field": "frontMatterRecords[0].summary",
+      "historicalText": "封面1尚待视觉核查",
+      "currentResolution": "后续最终visualReviewPages包含1；pageCoverageValidation.coverImageRead=1，readingMethod也说明封面1已实际视读。旧句是历史待办，已由实际完成证据解除；未修改原账本。",
+      "evidence": [
+        "visualReviewPages includes1",
+        "pageCoverageValidation.coverImageRead=1"
+      ]
+    },
+    {
+      "sourceId": "S18",
+      "ledger": "development/S18-ledger.json",
+      "field": "chapters[2].limitations",
+      "historicalText": "图像材料与全书后注尚未读完",
+      "currentResolution": "后续最终visualReadImages153项、endnotesRead含引言及五章全部附注、coverageValidation.allTextRangesRead/allImageAssetsActuallyViewed为真，已实际完成；旧句仅记录当时阶段未读事实，当前已解除。",
+      "evidence": [
+        "endnotesRead: Introduction + chapters1–5",
+        "coverageValidation all images153 and text ranges read"
+      ]
+    },
+    {
+      "sourceId": "S11",
+      "ledger": "neuroscience/S11-reading.json",
+      "field": "limitations[1]",
+      "historicalText": "全书未读完，后续章节不得由目录推断为已处理。",
+      "currentResolution": "后续15章全部实读及书后术语954–1014/参考1015–1316/作者索引1317–1492/主题索引1493–1546均读完，allContentConsideredPhysicalPages实际1546页、unreadPhysicalPages为空；旧提醒未删除，现阶段不再代表未读。",
+      "evidence": [
+        "fullBookRead=true",
+        "completionScope",
+        "backMatterProcessing four full sections",
+        "allContentConsideredPhysicalPages1–1546"
+      ]
+    },
+    {
+      "sourceId": "S08",
+      "ledger": "research-social/S08-reading.json",
+      "field": "chapters[15].limitations",
+      "historicalText": "活动及学段为原创适配，未验证课堂效果；附录及全书后部尚需另行连续阅读。",
+      "currentResolution": "活动未验证仍是有效限制；后半句属章节完毕时历史待办，后续backMatter483–570七节全部有已读记录，actuallyReadPages570页、unreadPages为空，附录与书后已经实际完成。",
+      "evidence": [
+        "backMatter AppendixA483–509/AppendixB510–518/Glossary519–539/References540–552/Name553–555/Subject556–565/Trailing566–570",
+        "fullReadScope",
+        "actuallyReadPages1–570"
+      ]
+    }
+  ],
+  "peerScopeConfirmations": [
+    {
+      "reader": "/root/read_development",
+      "sources": [
+        "S06",
+        "S12",
+        "S13"
+      ],
+      "confirmation": "仅对实质图表、公式及提取异常逐页视觉核对，普通照片/扫描文字和图注均已连续全文阅读，未声称每个嵌图页均另看；当前无已知未处理实质图表。S13 159是额外视觉核查页数，非正文覆盖页数。",
+      "S10Page4": "已实际补看并落盘：仅题名/译者/Routledge标志/城市，无正文图表；总体审计同步该视觉页与新账本哈希。",
+      "S01FinalScope": "313–443全131页、82视觉页实际完成，root444–468也完成；最终S01主账本656页及16章已合并。"
+    },
+    {
+      "reader": "/root/read_research_social",
+      "sources": [
+        "S07",
+        "S08"
+      ],
+      "confirmation": "当前范围声明准确：普通照片按图注上下文，实质图/漫画已按章核；S08未单列栅格图页多为章首/装饰。读者另做补核中，新增视读未完成落盘前不计入本审计。",
+      "supplementalCompletion": "S08额外24页实际视读完成，visual213→237；S07额外PDF315实际看图并重读两栏，visual108→109。均已落原账本并同步总体审计SHA。S07普通照片仍保持图注/上下文阅读范围。"
+    }
+  ],
+  "chineseAuditSummary": {
+    "registered": "17本PDF加1本EPUB，实文件来源SHA与登记全部一致，PDF物理页总计11846。",
+    "completed": "18本提供文件的阅读账本覆盖审计全部通过。17本PDF11846物理页，另1本EPUB按3个spine/635段及153图像资产审计。",
+    "pending": [],
+    "sourceLimit": "原扫描/公式/翻译缺陷保留，不补造；全读不等于所有字形清晰或全部源说法正确。",
+    "visualScope": "实质图表需要视读；普通照片结合完整图注理解、扫描普通文字经完整可读文本层阅读。未单列视觉页不冒称逐页另看原图。",
+    "lastBook": "S01主账本16章及前后置全部656页，分段合并无缺口；重复衔接页443只计一次。"
+  },
+  "completedAt": "2026-10-26T15:15:09.810974+08:00",
+  "ledgerHashesConsistentAtFinalCheck": true,
+  "ledgerChangesRequiringRefresh": [],
+  "books": [
+    {
+      "sourceId": "S01",
+      "format": "PDF",
+      "sourceSha256": "17dd9960b56ee2bcb7350e5943ce40a61b176b0ac92667b84c69b52128b6452d",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 656,
+      "pageCountMatchesInventory": true,
+      "title": "Abnormal Psychology, 12th Edition",
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "3c94fe1206515dd41928b8ff40136d2b1e4edead42317be2adb420499ece3f51",
+          "status": "full_book_fully_read",
+          "fullBookRead": true,
+          "finalMergeEvidence": {
+            "knownReadRanges": [
+              [
+                1,
+                656
+              ]
+            ],
+            "knownReadPageCount": 656,
+            "remainingRanges": [],
+            "remainingCount": 0,
+            "bodyChaptersCurrentlyRecorded": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14,
+              15,
+              16
+            ],
+            "scopeNote": "Only completed chapter reports and actual page sets are merged; contributor ledgers retained. Text extraction/rendering alone is not reading. No knowledge-base/repository integration performed."
+          }
+        },
+        {
+          "sha256": "641c6b864d2133794e12a626d68bee60f25074003e7bf37f573d2e6a347eb5f6",
+          "status": "assigned_scope_complete",
+          "fullBookRead": false
+        },
+        {
+          "sha256": "4bdc75f03b18aa1ab21d97ae2b1ab5335b19480d9ed25a69b9ab5e1bc44a2b2c",
+          "status": "assigned_scope_fully_read",
+          "fullBookRead": null
+        },
+        {
+          "sha256": "813bf418c81804b8ed0187e920fae4c090470c06b5e19eb498e5890e2a0090cc",
+          "status": "assigned_scope_fully_read",
+          "fullBookRead": null
+        },
+        {
+          "sha256": "f05c24f8615b810afa4746e5decbb27c434fe07e5f8ad3d264b801abf9fbabbe",
+          "status": "assigned_scope_fully_read",
+          "fullBookRead": null
+        },
+        {
+          "sha256": "e99cac78698e728195816e164c71f089deac8cbf6828ea19e68310e326ecb31e",
+          "status": "assigned_chapter_fully_read",
+          "fullBookRead": null
+        },
+        {
+          "sha256": "4737fe412896200da63d6ff16cd7a381a40fae137965ec8aedad3513f6ba462e",
+          "status": "assigned_scope_fully_read",
+          "fullBookRead": null
+        },
+        {
+          "sha256": "68b133db6990018be78cc1e86bf5e14519761f14d4937a77687b282dc4a428a3",
+          "status": "assigned_scope_fully_read",
+          "fullBookRead": false
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          656
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 656,
+      "unaccountedPhysicalRanges": [],
+      "remainingAction": null,
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 361,
+        "actuallyRecordedVisualPageCount": 423,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "All chapter substantive figures, tables, case/focus boxes and questions/answers read. Actual visual page union from final merged ledger; ordinary photos remain caption/context scope."
+      },
+      "issues": [],
+      "duplicateIndependentChapterEvidenceMergedByLocator": true,
+      "partialChapter13Scope": {
+        "status": "both_scopes_actually_complete",
+        "developmentReadRange": [
+          419,
+          443
+        ],
+        "rootReadRange": [
+          444,
+          468
+        ],
+        "rootAdditionalBoundaryReadPage": 443,
+        "duplicateBoundaryCountedOnce": true
+      },
+      "textPagesCoveredButChapterReviewPending": null,
+      "uncompletedChapterReviewRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 16,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          26
+        ],
+        [
+          547,
+          656
+        ]
+      ],
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "bodyPhysicalRange": [
+          27,
+          546
+        ],
+        "note": "Physical546 is intentional blank after chapter16; printed chapter text ends519, not520."
+      },
+      "sourceQualityCaveat": "Historical pre-DSM5 draft and US legal/clinical material, substantive errors and limits remain in chapter notes; no current clinical/legal validation claimed."
+    },
+    {
+      "sourceId": "S02",
+      "format": "PDF",
+      "sourceSha256": "7a02fc4856d9da88b07cff04b66ea9d8be0864acc2cab0cc68f6efcc7bf0bed5",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 515,
+      "pageCountMatchesInventory": true,
+      "title": "思考，快与慢 — 丹尼尔·卡尼曼，胡晓姣/李爱民/何梦莹译，中信2012",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "86abf8f14e31f3f2e99b75a7abd61cf5506796ec66860b09e370f58e5adbf2ef",
+          "status": "full_supplied_file_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          515
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 515,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 38,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          22
+        ],
+        [
+          126,
+          126
+        ],
+        [
+          224,
+          224
+        ],
+        [
+          300,
+          300
+        ],
+        [
+          425,
+          425
+        ],
+        [
+          462,
+          515
+        ]
+      ],
+      "sourceQualityCaveat": "PDF383 repeats a figure and omits expected table content; provided-file reading does not include missing original-edition content.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            126,
+            126
+          ],
+          [
+            224,
+            224
+          ],
+          [
+            300,
+            300
+          ],
+          [
+            425,
+            425
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 23,
+        "embeddedRasterImagePages": [
+          1,
+          23,
+          32,
+          34,
+          68,
+          70,
+          93,
+          108,
+          109,
+          120,
+          187,
+          211,
+          317,
+          325,
+          337,
+          358,
+          383,
+          414,
+          428,
+          450,
+          494,
+          502,
+          515
+        ],
+        "actuallyRecordedVisualPageCount": 31,
+        "actuallyRecordedVisualPages": [
+          1,
+          23,
+          32,
+          34,
+          68,
+          70,
+          93,
+          108,
+          109,
+          118,
+          120,
+          187,
+          211,
+          306,
+          317,
+          325,
+          337,
+          355,
+          358,
+          382,
+          383,
+          414,
+          428,
+          429,
+          450,
+          476,
+          483,
+          494,
+          501,
+          502,
+          515
+        ],
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S03",
+      "format": "PDF",
+      "sourceSha256": "57f27d8b5f83303d3b99fdcf516d11057a1904aaf931f4d977c9b8033416bed5",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 2471,
+      "pageCountMatchesInventory": true,
+      "title": "An Introduction to Brain and Behavior",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "2768d55105270b2a1704bb24f1080f3e33fcb4c2c72aa1723fd2c0a4b2905f83",
+          "status": "full_book_read_with_source_limitations",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          2471
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 2471,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 16,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          80
+        ],
+        [
+          1985,
+          2471
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 803,
+        "actuallyRecordedVisualPageCount": 814,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S04",
+      "format": "PDF",
+      "sourceSha256": "587022bd180ea0e4fbf44bf09f0ee896b040ccc4025acd64b3f6cd260e4a8883",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 273,
+      "pageCountMatchesInventory": true,
+      "title": "自卑与超越（李青霞译，沈阳出版社2012）",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "b1b28ee0d1ae34cb409e2ccbe9a650a63148521e599bab1bf54afac694c5ea58",
+          "status": "full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          273
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 273,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 12,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          9
+        ],
+        [
+          271,
+          273
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 2,
+        "embeddedRasterImagePages": [
+          1,
+          273
+        ],
+        "actuallyRecordedVisualPageCount": 14,
+        "actuallyRecordedVisualPages": [
+          1,
+          7,
+          44,
+          93,
+          150,
+          157,
+          171,
+          186,
+          223,
+          236,
+          248,
+          270,
+          271,
+          273
+        ],
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "核对唯一正文外栅格图像（封面、来源附页）及代表性正文页面；正文为文字排版无内容插图，未逐页截图。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S05",
+      "format": "PDF",
+      "sourceSha256": "94aaf7e7b8610ffa93f1baee1da0a44eb598e02a1c42e2bc6b4baa2f8b074de8",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 408,
+      "pageCountMatchesInventory": true,
+      "title": "创伤与复原 — Judith Herman，施宏达/陈文琪译，机械工业出版社2015",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "23c30e19c2c37735767879d2bddedce659339ce06ee971fa08d10bd8a4b34d30",
+          "status": "full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          408
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 408,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 11,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          21
+        ],
+        [
+          390,
+          408
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 4,
+        "embeddedRasterImagePages": [
+          1,
+          406,
+          407,
+          408
+        ],
+        "actuallyRecordedVisualPageCount": 18,
+        "actuallyRecordedVisualPages": [
+          1,
+          4,
+          22,
+          66,
+          95,
+          132,
+          168,
+          200,
+          222,
+          257,
+          289,
+          324,
+          355,
+          390,
+          405,
+          406,
+          407,
+          408
+        ],
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S06",
+      "format": "PDF",
+      "sourceSha256": "055f2ff98529a634721645673b7e4e7d8f46a822343f8a84cd99480d8cac37a5",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 815,
+      "pageCountMatchesInventory": true,
+      "title": "The Life Span: Human Development for Helping Professionals",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "b57ebb02bd7ef4c9b75d9faafdc219177c8c03af8345cf1dffec9ed8f857f6e9",
+          "status": "complete",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          815
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 815,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 16,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          19
+        ],
+        [
+          695,
+          815
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 69,
+        "actuallyRecordedVisualPageCount": 226,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "全部15章及研究方法附录675页正文逐页完整阅读；前置19页、术语表18页、书目80页、主题索引9页、作者索引14页均已读；图表、疑点与提取交错处共226页完成视觉核对。原书疑点保留，未经当前权威原始来源复核的医学/临床主张不得直接转作建议。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S07",
+      "format": "PDF",
+      "sourceSha256": "a2ac08310fbe9775412254cbab0d5135337930777b15e6bc4e34f6076dd50523",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 543,
+      "pageCountMatchesInventory": true,
+      "title": "Social Psychology, Eighth Edition, Pearson New International Edition",
+      "shaMatchesLedger": null,
+      "shaLedgerNote": "No source SHA field in this ledger. Bound via sourceId/title to actual source and matching inventory; not retroactively represented as a preexisting ledger field.",
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "39817abe3234e5f705eda54cb80fab4e0d54e7ad8887fcd8b8358cb36bdaed46",
+          "status": "full_read_of_provided_pdf_completed",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          543
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 543,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 15,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          5
+        ],
+        [
+          528,
+          543
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 399,
+        "actuallyRecordedVisualPageCount": 109,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "含实质信息的图表、图内文字及必要漫画/嵌入剪报已按章节记录复核；普通插图结合完整文字说明理解。未宣称逐像素审查每张装饰照片。",
+        "supplementalReviewEvidence": "S07另外实际看PDF315，重读双栏GroupProcessesSummary，嵌图为装饰底色；其余普通照片仍按图注上下文，不声称全部照片独立视读。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S08",
+      "format": "PDF",
+      "sourceSha256": "7bfa89ebf122ee8765fdc21274a71e35974393de4728a105c5414240ceb381db",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 570,
+      "pageCountMatchesInventory": true,
+      "title": "Research Methods for the Behavioural Sciences, 1st EMEA Edition",
+      "shaMatchesLedger": null,
+      "shaLedgerNote": "No source SHA field in this ledger. Bound via sourceId/title to actual source and matching inventory; not retroactively represented as a preexisting ledger field.",
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "2c64296dc91d48f73645a096fa1b0c5be4c74f8a8038efa646add6dd512d474f",
+          "status": "provided_pdf_full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          570
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 570,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 16,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          24
+        ],
+        [
+          483,
+          570
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 27,
+        "embeddedRasterImagePages": [
+          1,
+          2,
+          22,
+          23,
+          24,
+          25,
+          40,
+          51,
+          74,
+          78,
+          98,
+          105,
+          133,
+          152,
+          183,
+          196,
+          212,
+          223,
+          239,
+          267,
+          297,
+          329,
+          348,
+          376,
+          405,
+          436,
+          455
+        ],
+        "actuallyRecordedVisualPageCount": 237,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "所提供570页PDF：封面、前言目录、16章全部正文/框文/练习答案/图表、附录A全部演算与统计表、附录B完整学生报告、术语表、参考文献、人名索引、主题索引、最后五页空白版权页。普通装饰照片按图注和版面理解；关键实验图、统计表/公式/布局已视觉检查。不是对全部计算与原始研究独立复现。",
+        "supplementalReviewEvidence": "S08额外24页已实际视读，确认为作者肖像、广告、章首装饰和OpenScience标志；无漏读实质栅格图表。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S09",
+      "format": "PDF",
+      "sourceSha256": "ba01aed45874f42d168651cf44cad69f66272ca81c1131418e960fc1a92e118a",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 788,
+      "pageCountMatchesInventory": true,
+      "title": "Research Methods and Statistics in Psychology",
+      "shaMatchesLedger": null,
+      "shaLedgerNote": "No source SHA field in this ledger. Bound via sourceId/title to actual source and matching inventory; not retroactively represented as a preexisting ledger field.",
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "66bab52fdfff945b7d9a7cdccd9143641e77e3c03ed37994bd5eb86f0853f6d9",
+          "status": "provided_pdf_full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          788
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 788,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 24,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          17
+        ],
+        [
+          312,
+          313
+        ],
+        [
+          714,
+          788
+        ]
+      ],
+      "sourceQualityCaveat": "Chapter21 includes source formula-format defects; all available source content was read, but missing mathematical content was not invented.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            312,
+            313
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 35,
+        "embeddedRasterImagePages": [
+          1,
+          26,
+          62,
+          226,
+          235,
+          305,
+          375,
+          376,
+          377,
+          378,
+          379,
+          399,
+          402,
+          412,
+          483,
+          484,
+          485,
+          516,
+          529,
+          558,
+          577,
+          647,
+          648,
+          649,
+          700,
+          701,
+          702,
+          703,
+          704,
+          708,
+          709,
+          710,
+          711,
+          712,
+          713
+        ],
+        "actuallyRecordedVisualPageCount": 459,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "提供的788页PDF从封面至最终索引均实际阅读；24章正文、章节glossary/练习/答案/案例/图表、前后置页、真实附录文章、自身与全书参考条目、全部统计表和索引已读。一般照片以说明/上下文读取；关键图/公式/表/SPSS输出/排版歧义逐页视觉复核，具体页集合见sessionVisuallyCheckedPages。不是每张普通照片都单独视觉复核。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S10",
+      "format": "PDF",
+      "sourceSha256": "447fcf7211c42edbc6806617fcc805e067a44274645b20b3a9978c824035c7b9",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 216,
+      "pageCountMatchesInventory": true,
+      "title": "The Psychology of Intelligence",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "3a7f008ab9e3126874cf2831087b979af41fb2b4cd7b4e683bb0ce0379c9ac77",
+          "status": "full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          216
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 216,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 7,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          15
+        ],
+        [
+          69,
+          71
+        ],
+        [
+          142,
+          143
+        ],
+        [
+          204,
+          216
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            69,
+            71
+          ],
+          [
+            142,
+            143
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 2,
+        "embeddedRasterImagePages": [
+          1,
+          4
+        ],
+        "actuallyRecordedVisualPageCount": 25,
+        "actuallyRecordedVisualPages": [
+          1,
+          4,
+          16,
+          22,
+          59,
+          61,
+          68,
+          88,
+          90,
+          94,
+          99,
+          105,
+          124,
+          128,
+          134,
+          138,
+          149,
+          156,
+          162,
+          173,
+          183,
+          189,
+          193,
+          202,
+          216
+        ],
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing.",
+        "supplementalReviewEvidence": "读者后续实际查看PDF4，确认题名、译者、Routledge出版标志与城市；visualChecks已补存，不存在正文图表遗漏。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S11",
+      "format": "PDF",
+      "sourceSha256": "110b186b020e33288766c279bc6d9d36af68542f4d6e7612fb4b3093b51e2848",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 1546,
+      "pageCountMatchesInventory": true,
+      "title": "Brain & Behavior: An Introduction to Behavioral Neuroscience",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "7838b499ac318b02c4730f57dea7d5460e43583927fa574518b89f8675d29f9f",
+          "status": "full_book_read_with_source_limitations",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          1546
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 1546,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 15,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          34
+        ],
+        [
+          70,
+          70
+        ],
+        [
+          120,
+          120
+        ],
+        [
+          187,
+          187
+        ],
+        [
+          248,
+          248
+        ],
+        [
+          303,
+          303
+        ],
+        [
+          490,
+          490
+        ],
+        [
+          689,
+          689
+        ],
+        [
+          741,
+          741
+        ],
+        [
+          807,
+          807
+        ],
+        [
+          888,
+          888
+        ],
+        [
+          954,
+          1546
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            70,
+            70
+          ],
+          [
+            120,
+            120
+          ],
+          [
+            187,
+            187
+          ],
+          [
+            248,
+            248
+          ],
+          [
+            303,
+            303
+          ],
+          [
+            490,
+            490
+          ],
+          [
+            689,
+            689
+          ],
+          [
+            741,
+            741
+          ],
+          [
+            807,
+            807
+          ],
+          [
+            888,
+            888
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 602,
+        "actuallyRecordedVisualPageCount": 598,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [
+          10,
+          11,
+          24,
+          32
+        ],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "PDF 1–1546：前置材料、15章全部正文及图表/框文/复习题/资源页、术语954–1014、参考文献1015–1316、作者索引1317–1492、主题索引1493–1546，均实际连续阅读。纯图页已视觉核查；954–1546无嵌入图像且文字层可读。读书内参考文献条目不等于读过被引研究全文。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S12",
+      "format": "PDF",
+      "sourceSha256": "9e3dc9a1f84e6bb944139da281337421871bab37dc7b916a4869ad136b62bbee",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 745,
+      "pageCountMatchesInventory": true,
+      "title": "Cognitive Psychology",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "34fdddbf2692bf7300b2ae11aed7a5cea9bfad394593569c95bf995bcd6c0734",
+          "status": "complete",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          745
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 745,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 20,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          31
+        ],
+        [
+          60,
+          63
+        ],
+        [
+          168,
+          171
+        ],
+        [
+          256,
+          259
+        ],
+        [
+          328,
+          331
+        ],
+        [
+          424,
+          429
+        ],
+        [
+          534,
+          537
+        ],
+        [
+          711,
+          745
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            60,
+            63
+          ],
+          [
+            168,
+            171
+          ],
+          [
+            256,
+            259
+          ],
+          [
+            328,
+            331
+          ],
+          [
+            424,
+            429
+          ],
+          [
+            534,
+            537
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 102,
+        "actuallyRecordedVisualPageCount": 226,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S13",
+      "format": "PDF",
+      "sourceSha256": "efe1f08b6aaf64f78e5922e517aeb139cb1bbb2761b2156ecd4333c4dffb7e7d",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 452,
+      "pageCountMatchesInventory": true,
+      "title": "Enfant et raisonnement : le développement cognitif de lenfant",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "e355197b3de78e1812bb97b31b76c11c14d2c720183504b327a943765333c8f7",
+          "status": "full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          452
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 452,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 10,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          10
+        ],
+        [
+          36,
+          36
+        ],
+        [
+          78,
+          78
+        ],
+        [
+          118,
+          118
+        ],
+        [
+          196,
+          196
+        ],
+        [
+          393,
+          452
+        ]
+      ],
+      "sourceQualityCaveat": "Scan PDF252/364 contains individual blurred glyphs that cannot be reliably transcribed. Chapters were read with this source limitation; do not claim every glyph was fully legible.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            36,
+            36
+          ],
+          [
+            78,
+            78
+          ],
+          [
+            118,
+            118
+          ],
+          [
+            196,
+            196
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 452,
+        "actuallyRecordedVisualPageCount": 159,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S14",
+      "format": "PDF",
+      "sourceSha256": "10899b884a78e8616d53b61cd89e1a84f4ed67761414f3a4c3221db76827b7fb",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 417,
+      "pageCountMatchesInventory": true,
+      "title": "Guide to Research Techniques in Neuroscience",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "f981211ff6d2f8be92513e76bf0d85ada445c1609d6f9736a7eebcc4e3caca07",
+          "status": "full_book_read_with_source_limitations",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          417
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 417,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 16,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          23
+        ],
+        [
+          67,
+          67
+        ],
+        [
+          99,
+          101
+        ],
+        [
+          116,
+          117
+        ],
+        [
+          144,
+          145
+        ],
+        [
+          172,
+          173
+        ],
+        [
+          195,
+          195
+        ],
+        [
+          211,
+          213
+        ],
+        [
+          230,
+          231
+        ],
+        [
+          246,
+          247
+        ],
+        [
+          266,
+          267
+        ],
+        [
+          281,
+          281
+        ],
+        [
+          299,
+          301
+        ],
+        [
+          321,
+          323
+        ],
+        [
+          338,
+          339
+        ],
+        [
+          372,
+          417
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            67,
+            67
+          ],
+          [
+            99,
+            101
+          ],
+          [
+            116,
+            117
+          ],
+          [
+            144,
+            145
+          ],
+          [
+            172,
+            173
+          ],
+          [
+            195,
+            195
+          ],
+          [
+            211,
+            213
+          ],
+          [
+            230,
+            231
+          ],
+          [
+            246,
+            247
+          ],
+          [
+            266,
+            267
+          ],
+          [
+            281,
+            281
+          ],
+          [
+            299,
+            301
+          ],
+          [
+            321,
+            323
+          ],
+          [
+            338,
+            339
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 80,
+        "actuallyRecordedVisualPageCount": 195,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "引言与15章所有正文连续全文核读；所有术语表条目与索引条目逐页输出核读；前置文字/目录/参考书目已核读，空白页归类；正文全部编号图/表/框及旋转续表进行视觉核查。全读不代表独立复现研究、访问书外引用或逐像素检查无图普通文字页。"
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S15",
+      "format": "PDF",
+      "sourceSha256": "a6aea772ad69d0b9e4c63a3e0afcecb20c25d1f2bfaa0fd7ef4a138f8461da32",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 223,
+      "pageCountMatchesInventory": true,
+      "title": "How to Change — Katy Milkman",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "6b8498e0c619778a79fb9d17b153d502a31a97b9638ac3a54476197f46dc9911",
+          "status": "full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          223
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 223,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 9,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          9
+        ],
+        [
+          154,
+          223
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 5,
+        "embeddedRasterImagePages": [
+          1,
+          2,
+          212,
+          213,
+          223
+        ],
+        "actuallyRecordedVisualPageCount": 15,
+        "actuallyRecordedVisualPages": [
+          1,
+          3,
+          21,
+          51,
+          74,
+          94,
+          112,
+          131,
+          149,
+          193,
+          213,
+          215,
+          218,
+          221,
+          223
+        ],
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [
+          2,
+          212
+        ],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S16",
+      "format": "PDF",
+      "sourceSha256": "75da0e86da28da2bde8a9083c97593fc4efb89374a9b744845d1b7c7deef8e15",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 437,
+      "pageCountMatchesInventory": true,
+      "title": "Nudge: Como tomar melhores decisões sobre saúde, dinheiro e felicidade",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "52247b16147514dc77d1d9f7c6765c468c355d0d5273f8834724adb4ee50a8f4",
+          "status": "full_text_and_figures_read_with_source_limits",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          437
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 437,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 18,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          29
+        ],
+        [
+          149,
+          149
+        ],
+        [
+          222,
+          223
+        ],
+        [
+          309,
+          309
+        ],
+        [
+          375,
+          437
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [
+          [
+            149,
+            149
+          ],
+          [
+            222,
+            223
+          ],
+          [
+            309,
+            309
+          ]
+        ],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 23,
+        "embeddedRasterImagePages": [
+          1,
+          2,
+          30,
+          32,
+          44,
+          45,
+          46,
+          59,
+          68,
+          89,
+          103,
+          124,
+          262,
+          279,
+          280,
+          420,
+          421,
+          423,
+          426,
+          429,
+          432,
+          435,
+          437
+        ],
+        "actuallyRecordedVisualPageCount": 28,
+        "actuallyRecordedVisualPages": [
+          1,
+          2,
+          5,
+          30,
+          32,
+          44,
+          45,
+          46,
+          59,
+          68,
+          89,
+          90,
+          103,
+          123,
+          124,
+          212,
+          262,
+          279,
+          280,
+          420,
+          421,
+          422,
+          423,
+          426,
+          429,
+          432,
+          435,
+          437
+        ],
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": true,
+        "embeddedRasterPagesNotSeparatelyListedAsViewed": [],
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S17",
+      "format": "PDF",
+      "sourceSha256": "76ed0253dadb34d89cc8790b7615303e3bb3a57eacbea330a3b66b7a91bbf08e",
+      "shaMatchesInventory": true,
+      "physicalPageCount": 771,
+      "pageCountMatchesInventory": true,
+      "title": "Physiology of Behavior",
+      "shaMatchesLedger": true,
+      "shaLedgerNote": null,
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "a0abf66bf301104c1d3804b531380a2b08d7b894ac18f43ec888737bec15fd71",
+          "status": "full_content_read_and_recorded",
+          "fullBookRead": true
+        }
+      ],
+      "actuallyAccountedPhysicalRanges": [
+        [
+          1,
+          771
+        ]
+      ],
+      "actuallyAccountedPhysicalPageCount": 771,
+      "unaccountedPhysicalRanges": [],
+      "chapterRecordCountIncludingIntroductionOrAppendixWherePresent": 18,
+      "frontAndBackCoverageOutsideChapterRanges": [
+        [
+          1,
+          21
+        ],
+        [
+          665,
+          771
+        ]
+      ],
+      "sourceQualityCaveat": "Source-era, translation, formula, figure and legibility limits remain in chapter notes; complete reading is not external verification.",
+      "chapterContinuityAudit": {
+        "overlappingPhysicalPages": [],
+        "interChapterPagesNotInsideChapterRanges": [],
+        "allInterChapterPagesAccountedElsewhere": true,
+        "note": "Separately classified part titles, blank pages, references or introductions are not fabricated into chapter body ranges."
+      },
+      "visualAudit": {
+        "embeddedRasterImagePageCount": 322,
+        "actuallyRecordedVisualPageCount": 456,
+        "allEmbeddedRasterPagesExplicitlyRecordedViewed": false,
+        "interpretation": "Actual substantive figure review is checked against chapter notes. Plain scan-text pages and decorative photographs are not automatically unread when absent from separate visual sets; no blanket claim is made that every ordinary photo was separately viewed.",
+        "substantiveFigureScopeEvidence": "Actual figure review is documented in chapter records and visual page sets; rendered files alone do not establish viewing."
+      },
+      "issues": []
+    },
+    {
+      "sourceId": "S18",
+      "format": "EPUB",
+      "title": "The Psychology of the Child",
+      "sourceSha256": "b1972d4a227f9c9f8ae4af87d71ae5b8be7e5336d3a021293797a4f4af6faa90",
+      "shaMatchesInventory": true,
+      "shaMatchesLedger": true,
+      "physicalPageCount": null,
+      "locatorRule": "EPUB正文顺序spine、HTML文件、段落号或原文件page锚点与图像名；锚点不是PDF页码。",
+      "status": "ledger_audit_passed_with_source_limits",
+      "fullBookReadAudited": true,
+      "ledgerEvidence": [
+        {
+          "sha256": "d603c5604f04e32bf1e4ad534288da25c76b6735c0c927e05c70ef110bbf3cc4",
+          "status": "full_book_read",
+          "fullBookRead": true
+        }
+      ],
+      "spineAudit": {
+        "actualSpineSectionCount": 3,
+        "totalExtractedParagraphUnits": 635,
+        "readTextUnits": [
+          {
+            "spine": 1,
+            "href": "titlepage.xhtml",
+            "paragraphs": [
+              1,
+              1
+            ],
+            "note": "空提取段，实际为已核对的cover.jpg"
+          },
+          {
+            "spine": 2,
+            "href": "index_split_000.html",
+            "paragraphs": [
+              1,
+              292
+            ]
+          },
+          {
+            "spine": 3,
+            "href": "index_split_001.html",
+            "paragraphs": [
+              1,
+              342
+            ]
+          }
+        ],
+        "unreadParagraphGaps": [],
+        "coverOnlySpine": "Spine1 is cover.jpg with no visible body text; empty extracted paragraph1 is not missing text."
+      },
+      "visualAudit": {
+        "actualUniqueImageAssets": 153,
+        "recordedActuallyViewedUniqueAssets": 153,
+        "missingImageAssets": [],
+        "allAssetsRecordedViewed": true,
+        "svgCount": 140,
+        "jpegCount": 13,
+        "sourceEvidence": "13幅JPEG及140幅SVG均已实际看图，含全部向量正文、公式、版权和附注、索引；cover.jpg同时为spine1封面。后部锚点page0202等为EPUB内部页锚，不是PDF页码。"
+      },
+      "sourceQualityCaveat": [
+        "EPUB可见文字包含OCR错误，尤其spine3段51、56、66、146等数学关系和运算符损坏；这是已阅读源本的缺陷，未凭空还原。需要精确数学引文时须另取可靠版本。",
+        "SVG page0298的公式与英文释义部分对应存在可见源文本异常，作为原书电子版本问题记录，不以其符号生成逻辑教案。",
+        "注释编号顺序在部分位置不完全单调，按原EPUB全部看过，未重新排序冒充纸书顺序。",
+        "正文历史术语、残障群体比较和精神分析解释不能直接作为当代教育诊断或归因。"
+      ],
+      "issues": []
+    }
+  ]
+}
