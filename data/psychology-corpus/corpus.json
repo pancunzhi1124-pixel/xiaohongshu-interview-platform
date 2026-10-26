@@ -1,0 +1,1723 @@
+{
+  "schemaVersion": "1.0.0",
+  "createdOn": "2026-10-26",
+  "language": "zh-CN",
+  "pageConvention": "pdfPages为原附件从1开始的物理页码，含封面、空白和目录；printedPages未逐项核对时为null。不得换用别版页码。",
+  "coverage": {
+    "reportedAttachments": 16,
+    "accessibleBooks": 10,
+    "missingAttachments": 6,
+    "fullBooksRead": 0,
+    "readingMode": "目录+书目信息+相关章节片段核读；非全文蒸馏、非模型训练",
+    "pendingSlots": [
+      {
+        "slot": "U01",
+        "status": "attachment_not_returned",
+        "title": null,
+        "reason": "原对话仅返回10个附件；不知道其余书名和内容，未生成知识卡。"
+      },
+      {
+        "slot": "U02",
+        "status": "attachment_not_returned",
+        "title": null,
+        "reason": "原对话仅返回10个附件；不知道其余书名和内容，未生成知识卡。"
+      },
+      {
+        "slot": "U03",
+        "status": "attachment_not_returned",
+        "title": null,
+        "reason": "原对话仅返回10个附件；不知道其余书名和内容，未生成知识卡。"
+      },
+      {
+        "slot": "U04",
+        "status": "attachment_not_returned",
+        "title": null,
+        "reason": "原对话仅返回10个附件；不知道其余书名和内容，未生成知识卡。"
+      },
+      {
+        "slot": "U05",
+        "status": "attachment_not_returned",
+        "title": null,
+        "reason": "原对话仅返回10个附件；不知道其余书名和内容，未生成知识卡。"
+      },
+      {
+        "slot": "U06",
+        "status": "attachment_not_returned",
+        "title": null,
+        "reason": "原对话仅返回10个附件；不知道其余书名和内容，未生成知识卡。"
+      }
+    ]
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Abnormal Psychology",
+      "authors": "Ann M. Kring；Sheri L. Johnson；含 Gerald C. Davison、John M. Neale 早期贡献",
+      "edition": "第12版，Wiley，2012",
+      "originalFilename": "Abnormal psychology (Ann M. Kring, Sheri L. Johnson etc.) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "17dd9960b56ee2bcb7350e5943ce40a61b176b0ac92667b84c69b52128b6452d",
+      "pdfPageCount": 656,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        7,
+        8
+      ],
+      "tocPages": [
+        19,
+        20
+      ],
+      "bodyPages": [
+        28,
+        29,
+        30,
+        31
+      ],
+      "visuallyCheckedPages": [
+        19,
+        29
+      ],
+      "inspectedScope": "第1章 Introduction and Historical Overview：stigma、定义边界",
+      "limitations": "诊断内容面向2013年前后的分类讨论，不能作为现行诊断标准。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S02",
+      "title": "思考，快与慢",
+      "authors": "丹尼尔·卡尼曼；胡晓姣、李爱民、何梦莹译",
+      "edition": "中信出版社，2012年7月第1版",
+      "originalFilename": "思考, 快与慢 = Thinking, Fast and Slow ([美] 丹尼尔 · 卡尼曼 (Daniel Kahneman) 著  李爱民 etc.) (z-library.sk, 1lib.sk, z-lib.sk)(5).pdf",
+      "sha256": "7a02fc4856d9da88b07cff04b66ea9d8be0864acc2cab0cc68f6efcc7bf0bed5",
+      "pdfPageCount": 515,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        2,
+        3
+      ],
+      "tocPages": [
+        6,
+        7,
+        8
+      ],
+      "bodyPages": [
+        23,
+        24,
+        25,
+        26,
+        275,
+        276,
+        277,
+        278
+      ],
+      "visuallyCheckedPages": [
+        6,
+        25
+      ],
+      "inspectedScope": "第1章 行为与注意力；第23章 内部意见与外部意见",
+      "limitations": "叙述性综合；未核验书内每项原始研究或后续重复研究，避免把所有经典实验视为定论。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S03",
+      "title": "An Introduction to Brain and Behavior",
+      "authors": "Bryan Kolb；Ian Q. Whishaw；G. Campbell Teskey",
+      "edition": "第6版，Worth Publishers，2019",
+      "originalFilename": "An Introduction to Brain and Behavior, 6th ed (Bryan Kolb, Ian Q. Whishaw etc.) (z-library.sk, 1lib.sk, z-lib.sk)(3).pdf",
+      "sha256": "57f27d8b5f83303d3b99fdcf516d11057a1904aaf931f4d977c9b8033416bed5",
+      "pdfPageCount": 2471,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        7,
+        10
+      ],
+      "tocPages": [
+        15,
+        16,
+        43,
+        44
+      ],
+      "bodyPages": [
+        1554,
+        1555,
+        1556,
+        1557,
+        1558,
+        1559
+      ],
+      "visuallyCheckedPages": [
+        44,
+        1558
+      ],
+      "inspectedScope": "第13章 13-4 What Does Sleep Accomplish?：睡眠剥夺、睡眠与记忆",
+      "limitations": "2471页为电子书重排；页面页脚1557不是纸书页码。动物与成人实验不可直接外推为儿童处方。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S04",
+      "title": "自卑与超越",
+      "authors": "阿弗雷德·阿德勒；李青霞译",
+      "edition": "沈阳出版社，2012.12",
+      "originalFilename": "自卑与超越(经典完整译本) (阿弗雷德•阿德勒 [阿弗雷德•阿德勒]) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "587022bd180ea0e4fbf44bf09f0ee896b040ccc4025acd64b3f6cd260e4a8883",
+      "pdfPageCount": 273,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        2
+      ],
+      "tocPages": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "bodyPages": [
+        157,
+        158,
+        159
+      ],
+      "visuallyCheckedPages": [
+        7,
+        157
+      ],
+      "inspectedScope": "第7章 学校的影响：课堂里的合作与竞争",
+      "limitations": "历史性个体心理学观点与案例；不采用家庭排行、梦、智商保密或责备儿童等为现代实证结论。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S05",
+      "title": "创伤与复原",
+      "authors": "朱迪思·赫尔曼；施宏达、陈文琪译",
+      "edition": "机械工业出版社，2015年纸版对应电子版",
+      "originalFilename": "创伤与复原 = Trauma And Recovery The Aftermath Of Violence- From Domestic Abuse To Political Terror ([美] 朱迪思・赫尔曼 (Judith Herman) 著  施宏达, 陈文琪 译) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "94aaf7e7b8610ffa93f1baee1da0a44eb598e02a1c42e2bc6b4baa2f8b074de8",
+      "pdfPageCount": 408,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        2
+      ],
+      "tocPages": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "bodyPages": [
+        222,
+        223,
+        224,
+        257,
+        258,
+        268,
+        269
+      ],
+      "visuallyCheckedPages": [
+        6,
+        257
+      ],
+      "inspectedScope": "第7章 治疗关系/恢复自主权；第8章 安全/建立安全环境",
+      "limitations": "专业创伤治疗语境，仅提炼教师安全原则；不在班会实施回顾创伤、暴露或治疗。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S06",
+      "title": "The Life Span: Human Development for Helping Professionals",
+      "authors": "Patricia C. Broderick；Pamela Blewitt",
+      "edition": "第6版，Pearson，版权页2025",
+      "originalFilename": "The Life Span Human Development for Helping Professionals, SE, 6e (Patricia C. Broderick  Pamela Blewitt) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "055f2ff98529a634721645673b7e4e7d8f46a822343f8a84cd99480d8cac37a5",
+      "pdfPageCount": 815,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        4,
+        5
+      ],
+      "tocPages": [
+        7,
+        8,
+        10
+      ],
+      "bodyPages": [
+        288,
+        289,
+        292,
+        293
+      ],
+      "visuallyCheckedPages": [
+        10,
+        292
+      ],
+      "inspectedScope": "第7章 Self-Concept；Self-Esteem, Self-Efficacy, and Narcissism",
+      "limitations": "多维发展与文化差异；年级适配是教学判断，不是年龄诊断或所有学生都相同的阶段。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S07",
+      "title": "Social Psychology",
+      "authors": "Elliot Aronson；Timothy D. Wilson；Robin M. Akert",
+      "edition": "第8版，Pearson Custom Library，2014；章节署2013",
+      "originalFilename": "Social Psychology (8th Edition) (Elliot Aronson, Timothy D. Wilson) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "a2ac08310fbe9775412254cbab0d5135337930777b15e6bc4e34f6076dd50523",
+      "pdfPageCount": 543,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "tocPages": [
+        4,
+        5
+      ],
+      "bodyPages": [
+        383,
+        384,
+        385,
+        468,
+        469,
+        470
+      ],
+      "visuallyCheckedPages": [
+        4,
+        469
+      ],
+      "inspectedScope": "第11章 Prosocial Behavior；第13章 Prejudice/Jigsaw Classroom",
+      "limitations": "本文件是Pearson定制编排。只概括已读机制；不采用未经复核的Genovese故事细节，不复制危险实验。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S08",
+      "title": "Research Methods for the Behavioural Sciences",
+      "authors": "Frederick J. Gravetter；Lori-Ann B. Forzano；Tim Rakow改编",
+      "edition": "第1版EMEA，Cengage，2021；改编自第6版",
+      "originalFilename": "Research Methods For The Behavioural Sciences (Tim Rakow, Frederick Gravetter etc.) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "7bfa89ebf122ee8765fdc21274a71e35974393de4728a105c5414240ceb381db",
+      "pdfPageCount": 570,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        4
+      ],
+      "tocPages": [
+        5,
+        7,
+        8,
+        9,
+        10
+      ],
+      "bodyPages": [
+        75,
+        76,
+        77,
+        78
+      ],
+      "visuallyCheckedPages": [
+        8,
+        77
+      ],
+      "inspectedScope": "第3章 3.1 Constructs and Operational Definitions",
+      "limitations": "研究方法用于改进教学评价；自编课堂观察不具备临床量表的诊断效力。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S09",
+      "title": "Research Methods and Statistics in Psychology",
+      "authors": "Hugh Coolican",
+      "edition": "第6版，Psychology Press，2014",
+      "originalFilename": "Research Methods and Statistics in Psychology (Hugh Coolican) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "ba01aed45874f42d168651cf44cad69f66272ca81c1131418e960fc1a92e118a",
+      "pdfPageCount": 788,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        4,
+        5
+      ],
+      "tocPages": [
+        8,
+        9,
+        10,
+        11
+      ],
+      "bodyPages": [
+        301,
+        302,
+        303,
+        304
+      ],
+      "visuallyCheckedPages": [
+        9,
+        301
+      ],
+      "inspectedScope": "第11章 Ethical Issues：退出权、权力关系、隐私与非自愿参与",
+      "limitations": "研究伦理转化为教学设计建议，不能替代本地学校规定或未成年人保护程序。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    },
+    {
+      "id": "S10",
+      "title": "The Psychology of Intelligence",
+      "authors": "Jean Piaget；Malcolm Piercy、D. E. Berlyne英译",
+      "edition": "Routledge Classics 2001；电子版2003；原作1947/英译1950",
+      "originalFilename": "Psychology of Intelligence (Routledge Classics) (Jean Piaget) (z-library.sk, 1lib.sk, z-lib.sk)(2).pdf",
+      "sha256": "447fcf7211c42edbc6806617fcc805e067a44274645b20b3a9978c824035c7b9",
+      "pdfPageCount": 216,
+      "status": "selected_sections_inspected",
+      "bibliographyPages": [
+        4,
+        5
+      ],
+      "tocPages": [
+        10,
+        11,
+        12
+      ],
+      "bodyPages": [
+        166,
+        167,
+        175,
+        176,
+        184,
+        185
+      ],
+      "visuallyCheckedPages": [
+        11,
+        176
+      ],
+      "inspectedScope": "第5章 Concrete/Formal Operations；第6章 Social Factors",
+      "limitations": "经典发展理论；不把阶段年龄当硬门槛，不据单个任务判断智力。",
+      "unprocessedScope": "除列出的目录、书目信息和正文页外，其余正文尚未逐页核读；全文件文本提取不等于全文阅读。"
+    }
+  ],
+  "topics": [
+    {
+      "id": "respect",
+      "label": "尊重与接纳",
+      "keywords": [
+        "不贴标签",
+        "心理健康素养",
+        "差异尊重"
+      ]
+    },
+    {
+      "id": "self",
+      "label": "自我认识与成长",
+      "keywords": [
+        "自尊",
+        "自我效能",
+        "多维自我",
+        "考试失利"
+      ]
+    },
+    {
+      "id": "cooperation",
+      "label": "同伴关系与合作",
+      "keywords": [
+        "班级凝聚力",
+        "分工",
+        "倾听",
+        "拼图合作"
+      ]
+    },
+    {
+      "id": "help",
+      "label": "安全求助与支持",
+      "keywords": [
+        "旁观者",
+        "欺凌预防",
+        "求助表达",
+        "支持网络"
+      ]
+    },
+    {
+      "id": "decision",
+      "label": "审慎决策与计划",
+      "keywords": [
+        "网络素养",
+        "证据",
+        "直觉",
+        "规划谬误"
+      ]
+    },
+    {
+      "id": "learning",
+      "label": "学习与作息安排",
+      "keywords": [
+        "注意力",
+        "睡眠",
+        "分散学习",
+        "复习计划"
+      ]
+    },
+    {
+      "id": "safety",
+      "label": "参与自主与活动安全",
+      "keywords": [
+        "退出权",
+        "创伤知情",
+        "隐私",
+        "安全感"
+      ]
+    },
+    {
+      "id": "evaluation",
+      "label": "教学观察与评价",
+      "keywords": [
+        "操作化",
+        "匿名反馈",
+        "目标活动评价一致"
+      ]
+    },
+    {
+      "id": "adaptation",
+      "label": "学段与任务适配",
+      "keywords": [
+        "具体操作",
+        "假设推理",
+        "多学段"
+      ]
+    }
+  ],
+  "gradeBands": [
+    "小学低段",
+    "小学高段",
+    "初中",
+    "高中",
+    "中职",
+    "大学"
+  ],
+  "cards": [
+    {
+      "id": "K01",
+      "title": "把标签改写成可观察的行为",
+      "topicIds": [
+        "respect",
+        "help"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "书中把污名描述为标签、负面属性联结、群体隔离和不公平对待相互强化的过程；知道一些病因知识并不自动消除歧视。",
+      "practicalMethod": "将对人的整体评判改成对具体情境、行为和需要的描述，再练习尊重回应。",
+      "sourceRefs": [
+        {
+          "sourceId": "S01",
+          "pdfPages": [
+            28,
+            29
+          ],
+          "chapter": "第1章 Introduction and Historical Overview / Stigma",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "小学可练日常称呼与行为描述；中学及以上可讨论污名机制。学段为教学改编判断。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "把标签改写成可观察的行为体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：教师给出“他就是不合群”等虚构表达，学生自愿选择想修改的一句。",
+          "4分钟：两人区分看到的行为与推断，写出不包含人格标签的描述。",
+          "4分钟：各自加一句询问需要或提供帮助的话；允许只交纸条。",
+          "2分钟：汇总尊重表达的特征。"
+        ],
+        "debriefQuestions": [
+          "这句话中哪些能直接观察，哪些只是猜测？",
+          "怎样提供帮助而不要求对方公布诊断？"
+        ],
+        "observationEvidence": "能在一个新情境中写出行为描述和尊重询问各一句。",
+        "transferAction": "一周内练习一次先询问需要再提供帮助。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "用两张图分清“没加入游戏”和“讨厌别人”，练一句友好询问。",
+          "小学高段": "改写虚构同伴标签，补充行为、情境和需要。",
+          "初中": "辨认群聊中标签如何扩大排斥，写尊重回应。",
+          "高中": "分析标签、证据和排斥规则的关系，制定接纳约定。",
+          "中职": "改写实训中对操作慢同学的称呼，提出具体支持。",
+          "大学": "审查社团招新评价用语，区分能力要求和整体贬低。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "不从本书旧诊断分类推断当前学生状况。",
+        "不让学生辨认班内谁“有病”，也不请有诊断的学生作公开示范。"
+      ],
+      "commonMisconception": "了解心理疾病的生物解释，就一定不会歧视。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K02",
+      "title": "第一反应之后补一次证据核对",
+      "topicIds": [
+        "decision",
+        "cooperation"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "作者用快速自主的加工与需要努力的注意加工说明判断的不同方式；两者各有功能，熟练技能也可能快速运行。",
+      "practicalMethod": "在重要、含糊或容易误判的校园判断前，区分看到什么、想到什么及还需要什么证据。",
+      "sourceRefs": [
+        {
+          "sourceId": "S02",
+          "pdfPages": [
+            23,
+            24,
+            25,
+            26
+          ],
+          "chapter": "第1章 一张愤怒的脸和一道乘法题 / 行为与注意力",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "低段用故事里可见事实；高段以上可讨论转发消息或同伴误会。不是脑区分类。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "第一反应之后补一次证据核对体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：读虚构情境“朋友未及时回复”，写或画第一反应。",
+          "4分钟：在三栏表中区分已知事实、个人推测、待核对信息。",
+          "4分钟：比较至少两种解释，写出一个温和核实问题。",
+          "2分钟：选择适合暂停核对的场景。"
+        ],
+        "debriefQuestions": [
+          "第一反应有用的地方是什么？",
+          "什么信息会改变你的判断？"
+        ],
+        "observationEvidence": "新情境中能分开事实与推测，并提出一条核实办法。",
+        "transferAction": "下次转发一条信息前先确认来源和日期。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "看短故事，分别画“看到了什么”和“还不知道什么”。",
+          "小学高段": "用三栏卡区分事实、猜测与核实问题。",
+          "初中": "分析虚构聊天误会，至少提出两种解释。",
+          "高中": "比较两则消息的证据来源和不确定性，再决定是否转发。",
+          "中职": "分析岗位交接误会，先核对事实再沟通责任。",
+          "大学": "审查项目判断的第一印象，写出可改变判断的证据。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "系统1/2是加工方式的解释框架，不是两个脑器官或两类学生。",
+        "不声称慢想一定正确，也不把快速反应归为品德问题。"
+      ],
+      "commonMisconception": "只要强迫自己慢下来，就能消除一切偏差。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K03",
+      "title": "用相似任务经验校准计划",
+      "topicIds": [
+        "decision",
+        "learning"
+      ],
+      "applicableGrades": [
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "作者区分围绕当前计划细节的内部意见与参照同类项目经验的外部意见；只看理想步骤可能低估时间和失败因素。",
+      "practicalMethod": "先独立估计，再寻找真正可比的过往任务，写明差异、资源和不确定性，保留修改计划的机会。",
+      "sourceRefs": [
+        {
+          "sourceId": "S02",
+          "pdfPages": [
+            275,
+            276,
+            277,
+            278
+          ],
+          "chapter": "第23章 努力养成采纳外部意见的决策习惯",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "小学高段用手工或值日时间；初中以上可做复习与社团计划。低段暂不推荐完整任务。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "用相似任务经验校准计划体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：独立估计一个班级海报任务所需时间。",
+          "4分钟：比较教师准备的两份往次任务记录，圈出相同与不同条件。",
+          "4分钟：修改完成区间并列出一个可能延误因素和可行调整。",
+          "2分钟：说明什么新信息出现时需要重排计划。"
+        ],
+        "debriefQuestions": [
+          "你用了实际记录，还是只凭感觉？",
+          "相似任务有哪些条件其实不同？"
+        ],
+        "observationEvidence": "修订方案至少包含一项可比经验、一项差异和一个调整节点。",
+        "transferAction": "记录一次真实任务的预计与实际用时，供下次使用。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "低段暂不推荐完整任务，可由教师示范图标时间线。",
+          "小学高段": "估计手工作业时间，再比较教师提供的往次记录。",
+          "初中": "用复习或社团筹备用时记录修订计划。",
+          "高中": "对考试复习计划给出区间，写清资料可比性与缓冲。",
+          "中职": "用实训工序的历史时长校准任务安排，核对设备差异。",
+          "大学": "参照同类项目记录修订里程碑，列出中止或重排条件。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "书中团队案例的数字不是本班任务的基础概率。",
+        "缺少可比记录时标注估计不确定，不编造统计基准。"
+      ],
+      "commonMisconception": "计划越细，就越不需要参考既往经验。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K04",
+      "title": "为持续注意留出作息支持",
+      "topicIds": [
+        "learning"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "该节讨论睡眠剥夺与注意、记忆等表现的变化，并强调个体差异、微睡眠及研究时长带来的限制。",
+      "practicalMethod": "分析日常安排中可能挤占休息的因素，制定一个可自主选择、可调整的作息支持步骤。",
+      "sourceRefs": [
+        {
+          "sourceId": "S03",
+          "pdfPages": [
+            1554,
+            1555,
+            1556
+          ],
+          "chapter": "第13章 13-4 / Sleep Deprivation Studies",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "各学段均可用虚构一天安排；具体睡眠时长不由本卡推定，持续睡眠问题应由家长及专业人员评估。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "为持续注意留出作息支持体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：观察虚构学生一天安排，不收集同学真实睡眠记录。",
+          "4分钟：标出学习、休息、不可控照护或通勤要求。",
+          "4分钟：选择一项能调整的行为，例如提前整理书包或协商任务安排。",
+          "2分钟：讨论做不到时可向谁寻求安排支持。"
+        ],
+        "debriefQuestions": [
+          "哪些困难需要环境支持，而不是责备意志力？",
+          "计划怎样留出调整空间？"
+        ],
+        "observationEvidence": "能够提出一项具体安排及一个可寻求支持的渠道。",
+        "transferAction": "在可行条件下试行一个微小调整并自主记录体验。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "用虚构人物作息图寻找可提前准备的一件小事。",
+          "小学高段": "比较两个虚构日程，标出学习与休息冲突。",
+          "初中": "讨论作业、通勤与屏幕安排中的可控和不可控因素。",
+          "高中": "检查备考计划是否挤占休息，提出一项可协商调整。",
+          "中职": "分析实训及通勤安排，识别疲劳时寻求支持的渠道。",
+          "大学": "讨论学业和兼职安排，做一项可行调整，不公开睡眠数据。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "严禁熬夜挑战、剥夺睡眠实验、比较谁更能熬。",
+        "不从一次注意表现诊断失眠或注意缺陷，不提供药物建议。"
+      ],
+      "commonMisconception": "能完成一道题，就说明缺少睡眠不会影响注意。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K05",
+      "title": "把一次突击拆成分散练习",
+      "topicIds": [
+        "learning",
+        "decision"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "该节指出记忆形成需要时间，并讨论集中与间隔训练及睡眠与记忆存储的联系；也呈现了多种机制解释。",
+      "practicalMethod": "把同一学习目标分成几个可完成的小回合，跨日安排，并检查是否真的记住或会用。",
+      "sourceRefs": [
+        {
+          "sourceId": "S03",
+          "pdfPages": [
+            1558,
+            1559
+          ],
+          "chapter": "第13章 13-4 / Sleep for Memory Storage",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "小学低段由教师用图标安排；高段以上由学生调整自己的学习计划。跨日间隔是建议，不是最优处方。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "把一次突击拆成分散练习体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：比较同一份虚构任务的集中与跨日安排。",
+          "4分钟：把任务拆成三个小回合，写出每次练什么。",
+          "4分钟：设计一个不看材料的自检及下次调整办法。",
+          "2分钟：说明计划如何保留正常休息。"
+        ],
+        "debriefQuestions": [
+          "反复看起来熟悉，是否代表能自己完成？",
+          "如果某次练习没完成，怎样调整？"
+        ],
+        "observationEvidence": "计划写明任务、分散回合、自检办法与修订点。",
+        "transferAction": "在下一周试一次分散安排；记录可行性，不承诺成绩提升。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "教师用三个日期图标安排同一小任务，学生指认顺序。",
+          "小学高段": "把词句或技能练习分成跨日小回合并画一次自检。",
+          "初中": "为一周学习目标安排小回合，每回合写明检查内容。",
+          "高中": "把复习章节拆成跨日练习，依据自检结果调整任务量。",
+          "中职": "把操作要点分成安全的实训小回合并安排教师反馈。",
+          "大学": "对项目技能或课程内容安排分散练习与自主检查节点。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "书中段落没有给出适合所有年级的固定间隔或提升百分比。",
+        "自检和活动流程是原创教学扩展，未由本次阅读单独验证效果。"
+      ],
+      "commonMisconception": "只要照固定间隔表做，就能保证记住全部内容。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K06",
+      "title": "让每个人有可完成的合作贡献",
+      "topicIds": [
+        "cooperation",
+        "respect"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "作者在历史性教育论述中强调平等、互助与合作，并提醒学生自主管理仍需要教师指导，避免权力被用于压制同伴。",
+      "practicalMethod": "合作任务设置共享目标、可轮换的具体职责，并检查每个人是否有真实参与机会。",
+      "sourceRefs": [
+        {
+          "sourceId": "S04",
+          "pdfPages": [
+            157,
+            158
+          ],
+          "chapter": "第7章 学校的影响 / 课堂里的合作与竞争",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "低段用双人拼图；高段以上增加角色轮换与协商。课堂适配是原创建议。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "让每个人有可完成的合作贡献体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：说明共同目标“把班级角设计图补完整”。",
+          "4分钟：每人选择一项可承担的贡献，允许记录、整理等低暴露角色。",
+          "4分钟：完成后交换角色并反馈一个具体帮助行为。",
+          "2分钟：写下下一次如何使分工更公平。"
+        ],
+        "debriefQuestions": [
+          "谁的贡献容易被忽略？",
+          "负责人怎样提供支持而不发号施令？"
+        ],
+        "observationEvidence": "每人能指出自己或同伴的一项实际贡献，且小组提出一条轮换规则。",
+        "transferAction": "在下一次值日或小组任务中尝试一次角色轮换。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "双人完成图卡，每人选择一项能做到的贡献。",
+          "小学高段": "班级角任务用材料员、记录员等可轮换职责。",
+          "初中": "讨论小组分工中的隐形贡献，练习轮换与求助。",
+          "高中": "加入时间和资源限制，协商分工并检查权力是否集中。",
+          "中职": "用实训团队任务演练交接和角色轮换。",
+          "大学": "检查社团项目中的工作分配，约定反馈与调整机制。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "案例不能证明所有困难都由缺乏合作或“自私”导致。",
+        "不复制向全班解释某个学生家庭困境的做法；不采用智商结果保密等旧建议。"
+      ],
+      "commonMisconception": "只要让学生自己管理，一切冲突就会自动解决。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K07",
+      "title": "把参与选择权交还学生",
+      "topicIds": [
+        "safety"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "teacher_guidance",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "作者在创伤治疗关系中将恢复自主权和人际联结置于核心，帮助者应支持当事人的选择而非替代其作主。",
+      "practicalMethod": "教师把这一原则转为清楚的活动说明、可退出选项、非公开表达方式和不带惩罚的替代任务。",
+      "sourceRefs": [
+        {
+          "sourceId": "S05",
+          "pdfPages": [
+            222,
+            223,
+            224
+          ],
+          "chapter": "第7章 治疗关系 / 首要原则：恢复自主权",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "适用于所有学段的教师设计；不要求学生学习治疗术语或披露创伤。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "把参与选择权交还学生体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：教师审查一份自编“必须分享最难过经历”的活动稿。",
+          "4分钟：把任务改成虚构人物案例，并补充书写、旁观和跳过选项。",
+          "4分钟：练习回应“我不想说”，确认不扣分、不追问。",
+          "2分钟：核对退出后学生仍能完成什么低风险学习任务。"
+        ],
+        "debriefQuestions": [
+          "学生能否真正拒绝，还是担心被评价？",
+          "选择退出之后怎样保持被接纳？"
+        ],
+        "observationEvidence": "活动说明包含真实可行的退出路径，且替代任务不惩罚学生。",
+        "transferAction": "下次活动开始时先说明参与方式与求助渠道。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "教师用图标说明“听、画、说、旁观”四种参与方式。",
+          "小学高段": "教师准备虚构人物题，替代真实经历分享。",
+          "初中": "教师演练回应“不想讲”，同时提供不扣分替代。",
+          "高中": "教师审查公开表态是否受同伴压力影响。",
+          "中职": "教师为实训反思提供不公开个人困境的表达路径。",
+          "大学": "教师说明资料用途与拒绝分享的真实选择。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "班会不实施心理治疗，不宣称选择权可以治愈创伤。",
+        "涉及现实危险时须按学校流程处理，不能把课堂选择权理解为忽略保护责任。"
+      ],
+      "commonMisconception": "出于好意强迫学生说出来，总能帮他恢复。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K08",
+      "title": "先审查安全与支持，再设计体验",
+      "topicIds": [
+        "safety",
+        "help"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "teacher_guidance",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "书中把安全视为复原的首要任务，同时说明复原阶段只是参考，过程并非线性；支持关系也可能带来帮助或危险。",
+      "practicalMethod": "教师预先识别触发风险、场地与人员支持，安排低风险案例、暂停信号和私下求助渠道。",
+      "sourceRefs": [
+        {
+          "sourceId": "S05",
+          "pdfPages": [
+            257,
+            258,
+            268,
+            269
+          ],
+          "chapter": "第8章 安全 / 建立安全环境",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "适用于全学段教师备课；儿童需要更具体的安全成人和校内路线说明。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "先审查安全与支持，再设计体验体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：选一份虚构班会流程，圈出强迫回忆、突然惊吓等风险。",
+          "4分钟：替换风险环节并安排安静替代位置。",
+          "4分钟：核对可信校内支持角色和现实可达性，不收集学生私人名单。",
+          "2分钟：演练教师如何暂停活动并私下提供支持。"
+        ],
+        "debriefQuestions": [
+          "支持对象真的安全吗，还是仅有亲属身份？",
+          "一个学生不愿继续时，流程能否平稳暂停？"
+        ],
+        "observationEvidence": "备课稿写明风险替代、暂停条件、校内支持与转介边界。",
+        "transferAction": "授课前确认校内负责人员、联系途径和既定危机流程。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "教师确认可达的安全成人，用图片说明求助位置。",
+          "小学高段": "教师审查案例刺激程度，准备安静替代任务。",
+          "初中": "教师事先说明暂停信号和私下求助方式。",
+          "高中": "教师核查支持人员及信息边界，避免公开追问。",
+          "中职": "教师核查实训场地及校内支持流程，不让同伴承担危机处置。",
+          "大学": "教师区分一般课堂支持与专业服务，并核查可达渠道。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "不把安全—回顾—重建联系改造成一节班会的治疗三步法。",
+        "不能默认家庭成员就是安全支持者，不能承诺绝对保密。"
+      ],
+      "commonMisconception": "按三个固定阶段做一遍活动，就完成了创伤复原。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K09",
+      "title": "用多个生活领域认识自己",
+      "topicIds": [
+        "self",
+        "respect"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "本节将自我概念视为涉及学习、社会、情绪和身体等多个相关领域的结构，儿童与青少年的自我描述方式会随发展改变。",
+      "practicalMethod": "让学生用具体行为证据看见多个领域的自己，避免把一次学业表现当成整个人的价值。",
+      "sourceRefs": [
+        {
+          "sourceId": "S06",
+          "pdfPages": [
+            288,
+            289
+          ],
+          "chapter": "第7章 Self-Concept / The Structure of Self-Concept",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "低段画自己做过的事；高段及初中区分不同领域；高中及以上反思情境和评价标准。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "用多个生活领域认识自己体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：看虚构人物一次失利后的“我什么都不行”想法。",
+          "4分钟：用学习、相处、生活等领域寻找该人物的具体行为证据。",
+          "4分钟：自愿为自己画两格或写两句，不涉及外貌评分与同伴排名。",
+          "2分钟：提出一个想发展而非证明价值的方向。"
+        ],
+        "debriefQuestions": [
+          "一次表现能代表全部领域吗？",
+          "什么证据帮助我们把描述说得更具体？"
+        ],
+        "observationEvidence": "能对虚构人物写出至少两个领域的具体描述。",
+        "transferAction": "自选一个领域，记录一次尝试和得到的支持。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "画两件自己做过的具体事情，不用能力排名。",
+          "小学高段": "给虚构人物制作学习、相处和生活三个领域的证据卡。",
+          "初中": "把一次失败的整体标签改写成不同领域的具体表现。",
+          "高中": "分析评价标准如何影响自我描述，保留矛盾与不确定。",
+          "中职": "同时记录实训技能、协作和生活能力的具体证据。",
+          "大学": "结合学习、社团和生活情境制作多领域自我描述。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "领域分类是理解工具，不是人格测验；不复制教材量表或图表。",
+        "低自尊不等于心理障碍，不能对学生公开分组。"
+      ],
+      "commonMisconception": "只有学习成绩好，才算一个有价值的人。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K10",
+      "title": "把我是否有价值和我能否完成区分开",
+      "topicIds": [
+        "self",
+        "learning"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "本节区分对自身价值的总体感受与面对挑战能否成功的效能信念，并强调支持及能力经验的作用；二者相关但不相同。",
+      "practicalMethod": "回应失利时同时保留人格尊重与具体技能分析，再选择一个可练习、可获得帮助的小步骤。",
+      "sourceRefs": [
+        {
+          "sourceId": "S06",
+          "pdfPages": [
+            292,
+            293
+          ],
+          "chapter": "第7章 Understanding Different Kinds of Self-Valuing",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "小学用具体任务语言；初中及以上可显性区分“人的价值”与“某项能力”。不做自恋标签活动。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "把我是否有价值和我能否完成区分开体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：读自编情境“练习没完成，就认为自己不值得被喜欢”。",
+          "4分钟：两栏整理“始终应被尊重”与“还需要练的技能”。",
+          "4分钟：写出一个小步骤、一种资源和一句支持性反馈。",
+          "2分钟：模拟在失败后如何调整，不强迫积极表态。"
+        ],
+        "debriefQuestions": [
+          "认可一个人，是否等于说他已经掌握所有技能？",
+          "反馈中有什么可执行的信息？"
+        ],
+        "observationEvidence": "能写出不否定个人价值、又包含具体技能步骤的反馈。",
+        "transferAction": "选一项可完成练习并寻找一次支持；允许修改难度。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "用“你值得被尊重”和“这一项还可以练”两句示范。",
+          "小学高段": "为虚构人物写一项可练技能和一条支持。",
+          "初中": "用失利情境区分自我价值与具体任务信心。",
+          "高中": "讨论资源限制与策略调整，避免把困难都归为不努力。",
+          "中职": "对实训失误提供人格尊重、操作反馈及下一步练习。",
+          "大学": "用项目受挫情境设计具体反馈和可获得的资源支持。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "不把努力说成唯一决定因素；资源、健康与环境同样需要考虑。",
+        "不可用自信程度判断人格障碍，不将本节相关研究直接表述为单一因果。"
+      ],
+      "commonMisconception": "自尊越高就等于觉得自己比别人更优越。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K11",
+      "title": "把有人会帮忙变成具体求助行动",
+      "topicIds": [
+        "help",
+        "cooperation"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "书中将帮助行为分解为注意、理解需要、承担责任、知道如何帮助与实际行动，并讨论情境含糊和责任分散的影响。",
+      "practicalMethod": "在虚构低风险情境中，练习说清需要、找到具体可帮助的人并确认对方是否收到；涉及危险先保护自身并求助成人。",
+      "sourceRefs": [
+        {
+          "sourceId": "S07",
+          "pdfPages": [
+            383,
+            384,
+            385
+          ],
+          "chapter": "第11章 Prosocial Behavior / Bystander Intervention",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "低段练“找老师并说地点”；高段以上练安全旁观者求助；不训练未成年人冒险介入暴力。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "把有人会帮忙变成具体求助行动体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：展示“走廊里有人需要帮助”的虚构卡。",
+          "4分钟：找出信息缺口，写清地点、可见情况与需要的成人支持。",
+          "4分钟：两人练习具体求助与确认回应，不模拟伤害现场。",
+          "2分钟：讨论何时应先远离危险再寻求帮助。"
+        ],
+        "debriefQuestions": [
+          "大家都在场，为什么仍需确认谁已求助？",
+          "你能做的安全帮助与应交给成人的事分别是什么？"
+        ],
+        "observationEvidence": "求助表达包含具体对象、地点、事实描述和确认回应。",
+        "transferAction": "记住一个可用的校内求助地点及替代渠道。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "练习“老师，某地点有人需要帮助”的简单表达。",
+          "小学高段": "在图卡中找安全成人，说明可见情况与地点。",
+          "初中": "用虚构同伴情境练具体求助和确认回应。",
+          "高中": "讨论模糊危险信息的核实与安全撤离，避免冒险介入。",
+          "中职": "在实训情境中明确报告对象、地点、事实和替代渠道。",
+          "大学": "对校园情境分配安全求助动作，确认信息已传达。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "不复演癫痫、烟雾、倒地等欺骗性危险实验。",
+        "不复述Genovese事件人数和未求助细节为已核实史实；不道德审判旁观学生。"
+      ],
+      "commonMisconception": "没有立刻帮忙，就证明这个人冷漠或品德差。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K12",
+      "title": "用信息互补组织拼图合作",
+      "topicIds": [
+        "cooperation",
+        "respect"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "student_activity",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "书中在共同目标、相互依赖和平等地位等接触条件下介绍拼图课堂：学生掌握不同材料并向同伴解释，组成共同理解。",
+      "practicalMethod": "把自编班级情境信息分给各成员，先独立理解再互教，完成需要多条信息的共同方案；提供语言和阅读支持。",
+      "sourceRefs": [
+        {
+          "sourceId": "S07",
+          "pdfPages": [
+            468,
+            469,
+            470
+          ],
+          "chapter": "第13章 Prejudice / Cooperation and Interdependence: The Jigsaw Classroom",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "低段用两张图卡；高段及以上用3—4条互补材料。人数与时长为教学改编。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "用信息互补组织拼图合作体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：说明共同任务“设计对所有成员友好的班级角”。",
+          "4分钟：各成员阅读不同需求信息，允许教师读卡或图示。",
+          "4分钟：轮流解释信息，组合方案；可由同伴代读，不能因一人暂缺而惩罚全组。",
+          "2分钟：检查每条需求是否被听见，写出下一轮合作改进。"
+        ],
+        "debriefQuestions": [
+          "方案中哪条信息来自同伴？",
+          "怎样确保读得慢的人也拥有平等贡献机会？"
+        ],
+        "observationEvidence": "最终方案能整合至少两条互补信息，并说明各条来源。",
+        "transferAction": "在下一次小组任务中先检查信息是否被少数人垄断。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "用两张互补图卡，两人共同完成一个班级角方案。",
+          "小学高段": "用三张不同需求卡，小组轮流解释并整合。",
+          "初中": "让各成员掌握不同班级需求，检查倾听与信息遗漏。",
+          "高中": "加入资源约束，用每条信息支持共同方案。",
+          "中职": "用岗位或工序的互补信息完成安全协作方案。",
+          "大学": "用项目角色信息设计共同方案并审查信息垄断。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "一次12分钟活动不能保证消除偏见或复制原研究结果。",
+        "不按族群、成绩或真实心理困境公开贴标签分组，不把某成员当成全组失败原因。"
+      ],
+      "commonMisconception": "把学生放进同一组，就已经具备有效合作的条件。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K13",
+      "title": "把班会目标变成可观察的证据",
+      "topicIds": [
+        "evaluation",
+        "cooperation"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "teacher_guidance",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "本节说明抽象构念需要通过具体操作和行为间接测量；测得的表现不等于构念本身，可能遗漏内容或混入其他因素。",
+      "practicalMethod": "教师把“更会合作”等目标转为明确任务和观察证据，使用不暴露隐私的多种表现，并保留替代解释。",
+      "sourceRefs": [
+        {
+          "sourceId": "S08",
+          "pdfPages": [
+            75,
+            76,
+            77,
+            78
+          ],
+          "chapter": "第3章 3.1 Constructs and Operational Definitions",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "全学段可用，低年级可画图或口头作答；由教师掌握评价原则，不让学生互作心理测试。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "把班会目标变成可观察的证据体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：选目标“学会安全求助”，避免只写“心理素质提高”。",
+          "4分钟：定义可观察任务，例如新情境里写出求助对象和一句表达。",
+          "4分钟：设计纸笔或口头两种作答方式，列出阅读难度等干扰。",
+          "2分钟：说明一次课堂观察可以支持什么、不能支持什么。"
+        ],
+        "debriefQuestions": [
+          "没有公开发言，是不会还是选择不说？",
+          "这一证据测到了技能，还是只测到表达意愿？"
+        ],
+        "observationEvidence": "目标、任务与观察标准对应；评语描述行为，不推断人格或临床效果。",
+        "transferAction": "下次班会用匿名退出条和任务表现一起复盘。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "教师把目标变成指认或画图任务，避免只看发言。",
+          "小学高段": "教师用简短情境题与观察记录两种证据。",
+          "初中": "教师区分讨论参与度与实际技能表现。",
+          "高中": "教师设计新情境迁移题，说明一次前后测的限制。",
+          "中职": "教师用可观察操作与协作行为，区分技能和任务条件。",
+          "大学": "教师结合任务产出与自愿反馈，注明替代解释。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "自编课堂指标不是经验证的心理量表。",
+        "单次前后变化不能证明班会导致改变，不能声称治疗有效。"
+      ],
+      "commonMisconception": "测到了一个可计数的行为，就测到了完整的心理能力。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K14",
+      "title": "让退出权和隐私承诺真实可行",
+      "topicIds": [
+        "safety",
+        "evaluation"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "teacher_guidance",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "本章讨论退出权、告知、研究者权力和隐私；形式上的自愿可能受权力关系影响，不署名也可能因细节而被识别。",
+      "practicalMethod": "教师借此审查活动说明、替代任务与数据收集；只保留教学所需的最少信息，公开展示前去除可识别细节。",
+      "sourceRefs": [
+        {
+          "sourceId": "S09",
+          "pdfPages": [
+            301,
+            302,
+            303,
+            304
+          ],
+          "chapter": "第11章 Ethical Issues / Consent, Withdrawal, Privacy",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "适用于全学段教师；未成年人、沟通困难者与需要帮助者应获得可理解的参与说明。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "让退出权和隐私承诺真实可行体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：审查一份“匿名分享真实家庭事件”的虚构任务。",
+          "4分钟：删除可识别细节并改成虚构案例，明确反馈用途。",
+          "4分钟：练习不参与后的平等替代，不以额外作业惩罚退出。",
+          "2分钟：确认谁能看到记录、保存多久、何时需要按校规保护学生。"
+        ],
+        "debriefQuestions": [
+          "去掉姓名后，同班同学仍能猜出是谁吗？",
+          "学生是否可以拒绝而不付出额外代价？"
+        ],
+        "observationEvidence": "备课稿含不惩罚的替代、最少数据范围及明确访问边界。",
+        "transferAction": "活动结束后仅保留必要的汇总教学反馈。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "教师用短句说明可不说个人故事，并提供画图替代。",
+          "小学高段": "教师避免收集真实家庭事件，检查细节能否识别。",
+          "初中": "教师审查群聊、同伴故事的隐私与分享压力。",
+          "高中": "教师说明记录用途、访问范围与不惩罚退出方式。",
+          "中职": "教师不公开实习或家庭隐私，用虚构案例替代。",
+          "大学": "教师区分课堂参与和研究招募，不以额外负担换退出。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "研究伦理与课堂管理的制度要求不同，本卡是设计转化而非法律意见。",
+        "不得承诺危险信息绝不报告；具体报告与记录依学校既定流程。"
+      ],
+      "commonMisconception": "口头说了“自愿”和“匿名”，就足以消除压力和识别风险。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    },
+    {
+      "id": "K15",
+      "title": "按任务表现调整具体与抽象难度",
+      "topicIds": [
+        "adaptation"
+      ],
+      "applicableGrades": [
+        "小学低段",
+        "小学高段",
+        "初中",
+        "高中",
+        "中职",
+        "大学"
+      ],
+      "audience": "teacher_guidance",
+      "inspectionStatus": "selected_sections_inspected",
+      "sourceSummary": "皮亚杰区分依赖具体内容的操作与在假设命题之间推理的形式操作，并讨论不同内容上发展并不同步。",
+      "practicalMethod": "同一班会目标先提供具体可操作的情境，再按学生实际理解增加假设条件；依据表现调整支架，不按年龄贴能力标签。",
+      "sourceRefs": [
+        {
+          "sourceId": "S10",
+          "pdfPages": [
+            166,
+            167,
+            175,
+            176
+          ],
+          "chapter": "第5章 The Growth of Thought / Concrete Operations, Formal Operations",
+          "printedPages": null,
+          "evidenceNote": "已核读列出的PDF正文页；本卡以中文原创概括，不转录原文。"
+        }
+      ],
+      "evidenceLevel": "book_passage_verified_not_independent_research_review",
+      "ageGradeRationale": "小学优先图片、实物和单步判断；中学及以上可尝试假设推理，但仍允许具体支架。年龄是规划线索，不是诊断。",
+      "activity": {
+        "origin": "original_teaching_adaptation",
+        "name": "按任务表现调整具体与抽象难度体验任务",
+        "durationMinutes": 12,
+        "materials": [
+          "教师自编虚构情境卡",
+          "便签或个人记录纸"
+        ],
+        "steps": [
+          "2分钟：选“公平分工”这一共同目标。",
+          "4分钟：写一个图卡版，学生实际分配三项任务。",
+          "4分钟：写一个假设版，加入某成员临时缺席时如何调整。",
+          "2分钟：列出何种表现提示需要退回具体示例或增加挑战。"
+        ],
+        "debriefQuestions": [
+          "学生难在哪里：语言、经验、任务还是推理？",
+          "能否给同一目标提供两种表达方式？"
+        ],
+        "observationEvidence": "同一目标具有具体与假设两种任务，并有调整依据。",
+        "transferAction": "教学后记录学生实际使用的支架，修订下次难度。",
+        "alternatives": [
+          "可独立书写、口头或画图作答；允许旁观或跳过分享，均不扣分。"
+        ],
+        "adaptations": {
+          "小学低段": "用三张任务图实际分配，教师一次给一步。",
+          "小学高段": "在实物分配后解释依据，再尝试一个条件变化。",
+          "初中": "先用熟悉情境，再问“若一人缺席会怎样”。",
+          "高中": "比较两种假设下的分工原则，允许具体图示辅助。",
+          "中职": "先做工序图，再讨论资源变化时的替代方案。",
+          "大学": "用项目约束变化推演多个方案，同时保留具体案例支架。"
+        },
+        "difficultyAdjustment": "可按学生反应降低语言与步骤难度"
+      },
+      "limitations": [
+        "经典理论并非每个年龄必达的硬性阶段表。",
+        "不使用单次守恒或分类任务给学生定智龄，不把不熟悉题目当低智力。"
+      ],
+      "commonMisconception": "达到某年龄，就自然能完成所有抽象推理任务。",
+      "safety": {
+        "prohibited": [
+          "不以活动判断学生心理诊断、智力或人格。",
+          "不强迫披露本人或同学的真实敏感经历，不公开排名。"
+        ],
+        "stopRule": "学生明确拒绝、明显不适或出现现实危险时停止相应活动，提供安静替代；涉及急性危险由教师启动学校既定流程并联系合格专业支持。",
+        "teacherReviewRequired": true
+      },
+      "validationStatus": "source_checked_activity_not_field_tested"
+    }
+  ],
+  "supplementarySafetySources": [
+    {
+      "id": "EXT01",
+      "title": "NCTSN: Schools",
+      "url": "https://www.nctsn.org/trauma-informed-care/creating-trauma-informed-systems/schools",
+      "checkedOn": "2026-10-26",
+      "scope": "学校应提供安全支持、进行课堂适配，并在需要时转介专业人员；仅作教师安全边界补充，不计入16本书或书籍证据。"
+    }
+  ]
+}

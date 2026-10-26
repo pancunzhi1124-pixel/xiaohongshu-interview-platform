@@ -23,5 +23,7 @@ jobs:
         run: npm install
       - name: TypeScript check
         run: npm run typecheck
+      - name: Validate source corpus and retrieval
+        run: npm run test:corpus
       - name: Production build
         run: npm run build

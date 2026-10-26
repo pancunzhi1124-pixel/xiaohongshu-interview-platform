@@ -1,3 +1,5 @@
+import { distillationCardSchema, type DistillationCard } from "./psychology-corpus-schema";
+
 export type SourceType = "book" | "course" | "notes";
 
 export type KnowledgeCard = {
@@ -8,6 +10,7 @@ export type KnowledgeCard = {
   createdAt: string;
   markdown: string;
   tags: string[];
+  distillation?: DistillationCard;
 };
 
 const STORAGE_KEY = "zhixin-knowledge-library-v1";
@@ -23,7 +26,8 @@ function isKnowledgeCard(item: unknown): item is KnowledgeCard {
     typeof card.markdown === "string" &&
     typeof card.createdAt === "string" &&
     Array.isArray(card.tags) &&
-    card.tags.every((tag) => typeof tag === "string");
+    card.tags.every((tag) => typeof tag === "string") &&
+    (card.distillation === undefined || distillationCardSchema.safeParse(card.distillation).success);
 }
 
 export function readKnowledgeCards(): KnowledgeCard[] {
@@ -68,11 +72,23 @@ function tokens(value: string): Set<string> {
   return output;
 }
 
-export function selectRelevantKnowledge(cards: KnowledgeCard[], query: string, limit = 5): KnowledgeCard[] {
+export function isApplicableToGrade(card: KnowledgeCard, grade: string): boolean {
+  if (!card.distillation || !grade || grade === "多个学段") return true;
+  const bands = card.distillation.applicableGrades;
+  if (grade === "小学") return bands.includes("小学低段") || bands.includes("小学高段");
+  return bands.some(band => band === grade);
+}
+
+export function selectRelevantKnowledge(cards: KnowledgeCard[], query: string, limit = 5, grade = ""): KnowledgeCard[] {
   if (cards.length === 0 || !query.trim()) return [];
-  const queryTokens = tokens(query);
-  const scored = cards.map((card, index) => {
-    const sourceText = [card.sourceTitle, card.sourceLocation, card.tags.join(" "), card.markdown.slice(0, 5000)].join(" ");
+  // Grade words appear on almost every card and must not create a topic match alone.
+  const queryTokens = tokens(query.replace(/多个学段|小学低段|小学高段|小学|初中|高中|中职|大学/g, " "));
+  if (!Number.isFinite(limit) || limit <= 0) return [];
+  const scored = cards.filter(card => isApplicableToGrade(card, grade)).map((card, index) => {
+    const structured = card.distillation;
+    const sourceText = structured
+      ? [structured.title, structured.sourceSummary, structured.practicalMethod, card.tags.join(" ")].join(" ")
+      : [card.sourceTitle, card.sourceLocation, card.tags.join(" "), card.markdown.slice(0, 5000)].join(" ");
     const sourceTokens = tokens(sourceText);
     let score = 0;
     for (const token of queryTokens) {

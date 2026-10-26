@@ -1,0 +1,577 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "createdOn": {
+      "type": "string",
+      "minLength": 1
+    },
+    "language": {
+      "type": "string",
+      "const": "zh-CN"
+    },
+    "pageConvention": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coverage": {
+      "type": "object",
+      "properties": {
+        "reportedAttachments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "accessibleBooks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "missingAttachments": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "fullBooksRead": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "readingMode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pendingSlots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slot": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "const": "attachment_not_returned"
+              },
+              "title": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "slot",
+              "status",
+              "title",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "reportedAttachments",
+        "accessibleBooks",
+        "missingAttachments",
+        "fullBooksRead",
+        "readingMode",
+        "pendingSlots"
+      ],
+      "additionalProperties": false
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "authors": {
+            "type": "string",
+            "minLength": 1
+          },
+          "edition": {
+            "type": "string",
+            "minLength": 1
+          },
+          "originalFilename": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "pdfPageCount": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "selected_sections_inspected",
+              "toc_only",
+              "not_processed"
+            ]
+          },
+          "bibliographyPages": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "tocPages": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "bodyPages": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "visuallyCheckedPages": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "inspectedScope": {
+            "type": "string",
+            "minLength": 1
+          },
+          "limitations": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unprocessedScope": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "authors",
+          "edition",
+          "originalFilename",
+          "sha256",
+          "pdfPageCount",
+          "status",
+          "bibliographyPages",
+          "tocPages",
+          "bodyPages",
+          "visuallyCheckedPages",
+          "inspectedScope",
+          "limitations",
+          "unprocessedScope"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "keywords": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "keywords"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "gradeBands": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "小学低段",
+          "小学高段",
+          "初中",
+          "高中",
+          "中职",
+          "大学"
+        ]
+      }
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "topicIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "applicableGrades": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "小学低段",
+                "小学高段",
+                "初中",
+                "高中",
+                "中职",
+                "大学"
+              ]
+            }
+          },
+          "audience": {
+            "type": "string",
+            "enum": [
+              "student_activity",
+              "teacher_guidance"
+            ]
+          },
+          "inspectionStatus": {
+            "type": "string",
+            "const": "selected_sections_inspected"
+          },
+          "sourceSummary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "practicalMethod": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceRefs": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "pdfPages": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "chapter": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "printedPages": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "evidenceNote": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "sourceId",
+                "pdfPages",
+                "chapter",
+                "printedPages",
+                "evidenceNote"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "evidenceLevel": {
+            "type": "string",
+            "const": "book_passage_verified_not_independent_research_review"
+          },
+          "ageGradeRationale": {
+            "type": "string",
+            "minLength": 1
+          },
+          "activity": {
+            "type": "object",
+            "properties": {
+              "origin": {
+                "type": "string",
+                "const": "original_teaching_adaptation"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "durationMinutes": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991
+              },
+              "materials": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "steps": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "debriefQuestions": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "observationEvidence": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transferAction": {
+                "type": "string",
+                "minLength": 1
+              },
+              "alternatives": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "adaptations": {
+                "type": "object",
+                "properties": {
+                  "小学低段": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "小学高段": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "初中": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "高中": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "中职": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "大学": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "小学低段",
+                  "小学高段",
+                  "初中",
+                  "高中",
+                  "中职",
+                  "大学"
+                ],
+                "additionalProperties": false
+              },
+              "difficultyAdjustment": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "origin",
+              "name",
+              "durationMinutes",
+              "materials",
+              "steps",
+              "debriefQuestions",
+              "observationEvidence",
+              "transferAction",
+              "alternatives",
+              "adaptations",
+              "difficultyAdjustment"
+            ],
+            "additionalProperties": false
+          },
+          "limitations": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "commonMisconception": {
+            "type": "string",
+            "minLength": 1
+          },
+          "safety": {
+            "type": "object",
+            "properties": {
+              "prohibited": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "stopRule": {
+                "type": "string",
+                "minLength": 1
+              },
+              "teacherReviewRequired": {
+                "type": "boolean",
+                "const": true
+              }
+            },
+            "required": [
+              "prohibited",
+              "stopRule",
+              "teacherReviewRequired"
+            ],
+            "additionalProperties": false
+          },
+          "validationStatus": {
+            "type": "string",
+            "const": "source_checked_activity_not_field_tested"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "topicIds",
+          "applicableGrades",
+          "audience",
+          "inspectionStatus",
+          "sourceSummary",
+          "practicalMethod",
+          "sourceRefs",
+          "evidenceLevel",
+          "ageGradeRationale",
+          "activity",
+          "limitations",
+          "commonMisconception",
+          "safety",
+          "validationStatus"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "supplementarySafetySources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "checkedOn": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "url",
+          "checkedOn",
+          "scope"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "createdOn",
+    "language",
+    "pageConvention",
+    "coverage",
+    "sources",
+    "topics",
+    "gradeBands",
+    "cards",
+    "supplementarySafetySources"
+  ],
+  "additionalProperties": false
+}
